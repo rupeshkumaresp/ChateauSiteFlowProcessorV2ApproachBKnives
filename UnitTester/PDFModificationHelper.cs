@@ -19,17 +19,14 @@ namespace ChateauSiteFlowApp
     {
         static string _pdfPath = ConfigurationManager.AppSettings["WorkingDirectory"] + ConfigurationManager.AppSettings["ServiceFolderPath"] + @"PDFs/";
 
-
         public void AddBarcodeImage(string path, string fileName, string substrateName, string barcode, string orderId, string quantity)
         {
-
             var barcodeImg = path + @"modified/" + barcode + "_barcode_Mirror.jpg";
 
             if (substrateName == "Jute Shopper")
             {
                 barcodeImg = path + @"modified/" + barcode + "_barcode_Normal.jpg";
             }
-
 
             using (Stream inputPdfStream =
                 new FileStream(path + @"modified/" + "extended_" + fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -53,7 +50,6 @@ namespace ChateauSiteFlowApp
                 image.ScaleToFit(Convert.ToInt32(width),
                     Convert.ToInt32(height));
 
-
                 if (substrateName == "Jute Shopper")
                     image.SetAbsolutePosition(rect.Width / 2 - 140, rect.Height - 250);
                 else
@@ -67,18 +63,13 @@ namespace ChateauSiteFlowApp
 
                 stamper.Close();
             }
-
             var flatening = true;
 
             if (substrateName == "Jute Shopper" || substrateName == "Candle-TheOrangery" || substrateName == "Candle-WalledGarden" || substrateName == "Mini Apron")
-            {
                 flatening = false;
-            }
 
             if (flatening)
-            {
-                FlattenPDFFile(path, fileName, orderId);
-            }
+                FlattenPdfFile(path, fileName, orderId);
 
             try
             {
@@ -92,7 +83,7 @@ namespace ChateauSiteFlowApp
             }
         }
 
-        private static void FlattenPDFFile(string path, string fileName, string orderId)
+        private static void FlattenPdfFile(string path, string fileName, string orderId)
         {
             //convert PDF to psot script
             var filePath = path + @"modified/" + orderId + "_" + fileName;
@@ -254,7 +245,6 @@ namespace ChateauSiteFlowApp
             string src = path + @"original\" + fileName;
             string dest = path + @"modified\extended_" + fileName;
 
-
             File.Copy(src, dest);
 
             return;
@@ -362,7 +352,6 @@ namespace ChateauSiteFlowApp
 
             bitmap1.Save(_pdfPath + @"modified\" + filenameWithoutExtension + "_Mirror.jpg", ImageFormat.Jpeg);
         }
-
 
         public void GetNormalImage(string outputFile, string filenameWithoutExtension)
         {

@@ -11,13 +11,12 @@ using OfficeOpenXml.Style;
 
 namespace ChateauSiteFlowApp
 {
-
     public class GenerateOutputSpreadsheet
     {
-        public ExcelPackage package = new ExcelPackage();
-        public ExcelWorksheet worksheet;
+        public ExcelPackage Package = new ExcelPackage();
+        public ExcelWorksheet Worksheet;
 
-        OrderHelper _orderHelper = new OrderHelper();
+        readonly OrderHelper _orderHelper = new OrderHelper();
 
         public void CreateSpreadSheet(List<ReportData> knivesData)
         {
@@ -32,7 +31,7 @@ namespace ChateauSiteFlowApp
 
             // Save file and return stream
             var fileName = Path.GetTempFileName();
-            package.SaveAs(new FileInfo(fileName));
+            Package.SaveAs(new FileInfo(fileName));
 
             var currentDirectory = Environment.CurrentDirectory;
             if (!Directory.Exists(currentDirectory + @"\" + "Reports"))
@@ -43,7 +42,7 @@ namespace ChateauSiteFlowApp
             var path = currentDirectory + @"\" + @"Reports\" + name + ".xlsx";
             SaveStreamToFile(path, new FileStream(fileName, FileMode.Open));
 
-            package.Dispose();
+            Package.Dispose();
 
             var chateauKnivesReportPath = ConfigurationManager.AppSettings["ChateauKnivesReportPath"];
 
@@ -57,7 +56,7 @@ namespace ChateauSiteFlowApp
 
         private void BuildKnivesDataSheet(string name, List<ReportData> reportData)
         {
-            worksheet = package.Workbook.Worksheets.Add(name);
+            Worksheet = Package.Workbook.Worksheets.Add(name);
             int rowJump = 1;
 
             AddMainHeaderRow(rowJump);
@@ -67,195 +66,195 @@ namespace ChateauSiteFlowApp
             {
                 int cell = 1;
 
-                worksheet.Cells[rowJump, cell].Value = data.OrderId;
-                worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Value = data.OrderId;
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
 
-                worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
-
-                cell++;
-
-                worksheet.Cells[rowJump, cell].Value = data.OrderReference;
-                worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
-                worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
                 cell++;
 
-                worksheet.Cells[rowJump, cell].Value = data.OrderDetailsReference;
-                worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
-                worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Value = data.OrderReference;
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
                 cell++;
 
-                worksheet.Cells[rowJump, cell].Value = data.BarCode;
-                worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
-                worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Value = data.OrderDetailsReference;
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
                 cell++;
 
-                worksheet.Cells[rowJump, cell].Value = data.Attribute;
-                worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
-                worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Value = data.BarCode;
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
                 cell++;
 
-                worksheet.Cells[rowJump, cell].Value = data.Quantity;
-                worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
-                worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Value = data.Attribute;
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
                 cell++;
 
-                worksheet.Cells[rowJump, cell].Value = data.ArtworkUrl;
-                worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
-                worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Value = data.Quantity;
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
                 cell++;
 
-                worksheet.Cells[rowJump, cell].Value = data.CustomerName;
-                worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
-                worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Value = data.ArtworkUrl;
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
                 cell++;
 
-                worksheet.Cells[rowJump, cell].Value = data.CustomerAddress1;
-                worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
-                worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Value = data.CustomerName;
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
                 cell++;
 
-                worksheet.Cells[rowJump, cell].Value = data.CustomerAddress2;
-                worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
-                worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Value = data.CustomerAddress1;
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
                 cell++;
 
-                worksheet.Cells[rowJump, cell].Value = data.CustomerAddress3;
-                worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
-                worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Value = data.CustomerAddress2;
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
                 cell++;
 
-                worksheet.Cells[rowJump, cell].Value = data.CustomerTown;
-                worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
-                worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Value = data.CustomerAddress3;
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
                 cell++;
 
-                worksheet.Cells[rowJump, cell].Value = data.CustomerState;
-                worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
-                worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Value = data.CustomerTown;
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
                 cell++;
 
-                worksheet.Cells[rowJump, cell].Value = data.CustomerPostcode;
-                worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
-                worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Value = data.CustomerState;
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
                 cell++;
 
-                worksheet.Cells[rowJump, cell].Value = data.CustomerCountry;
-                worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
-                worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Value = data.CustomerPostcode;
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
                 cell++;
 
-                worksheet.Cells[rowJump, cell].Value = data.CustomerEmail;
-                worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
-                worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Value = data.CustomerCountry;
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
                 cell++;
 
-                worksheet.Cells[rowJump, cell].Value = data.CustomerCompanyName;
-                worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
-                worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Value = data.CustomerEmail;
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
                 cell++;
 
-                worksheet.Cells[rowJump, cell].Value = data.CustomerPhone;
-                worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
-                worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Value = data.CustomerCompanyName;
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                cell++;
+
+                Worksheet.Cells[rowJump, cell].Value = data.CustomerPhone;
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
                 cell++;
 
                 rowJump++;
             }
 
-            worksheet.Column(1).Width = 15;
-            worksheet.Column(2).Width = 20;
-            worksheet.Column(3).Width = 25;
-            worksheet.Column(4).Width = 15;
-            worksheet.Column(5).Width = 35;
-            worksheet.Column(6).Width = 10;
-            worksheet.Column(7).Width = 55;
-            worksheet.Column(8).Width = 15;
-            worksheet.Column(9).Width = 20;
-            worksheet.Column(10).Width = 20;
-            worksheet.Column(11).Width = 20;
-            worksheet.Column(12).Width = 20;
-            worksheet.Column(13).Width = 20;
-            worksheet.Column(14).Width = 20;
-            worksheet.Column(15).Width = 20;
-            worksheet.Column(16).Width = 30;
-            worksheet.Column(17).Width = 20;
-            worksheet.Column(18).Width = 20;
+            Worksheet.Column(1).Width = 15;
+            Worksheet.Column(2).Width = 20;
+            Worksheet.Column(3).Width = 25;
+            Worksheet.Column(4).Width = 15;
+            Worksheet.Column(5).Width = 35;
+            Worksheet.Column(6).Width = 10;
+            Worksheet.Column(7).Width = 55;
+            Worksheet.Column(8).Width = 15;
+            Worksheet.Column(9).Width = 20;
+            Worksheet.Column(10).Width = 20;
+            Worksheet.Column(11).Width = 20;
+            Worksheet.Column(12).Width = 20;
+            Worksheet.Column(13).Width = 20;
+            Worksheet.Column(14).Width = 20;
+            Worksheet.Column(15).Width = 20;
+            Worksheet.Column(16).Width = 30;
+            Worksheet.Column(17).Width = 20;
+            Worksheet.Column(18).Width = 20;
         }
 
         private void MarkExtractedOrders(List<ReportData> knivesData)
@@ -335,18 +334,16 @@ namespace ChateauSiteFlowApp
             {
                 if (colKvp.Value > 0)
                 {
-                    worksheet.Cells[rowJump, colKvp.Value].Value = colKvp.Key;
-                    worksheet.Cells[rowJump, colKvp.Value].Style.HorizontalAlignment =
+                    Worksheet.Cells[rowJump, colKvp.Value].Value = colKvp.Key;
+                    Worksheet.Cells[rowJump, colKvp.Value].Style.HorizontalAlignment =
                         OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                    worksheet.Cells[rowJump, colKvp.Value].Style.VerticalAlignment =
+                    Worksheet.Cells[rowJump, colKvp.Value].Style.VerticalAlignment =
                         OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
-                    worksheet.Cells[rowJump, colKvp.Value].Style.Font.Bold = true;
-                    worksheet.Cells[rowJump, colKvp.Value].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                    worksheet.Cells[rowJump, colKvp.Value].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                    worksheet.Cells[rowJump, colKvp.Value].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                    worksheet.Cells[rowJump, colKvp.Value].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-
-
+                    Worksheet.Cells[rowJump, colKvp.Value].Style.Font.Bold = true;
+                    Worksheet.Cells[rowJump, colKvp.Value].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    Worksheet.Cells[rowJump, colKvp.Value].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    Worksheet.Cells[rowJump, colKvp.Value].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    Worksheet.Cells[rowJump, colKvp.Value].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
                 }
             }
         }
