@@ -1,0 +1,1364 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ComponentPro.SecureShell</name>
+    </assembly>
+    <members>
+        <member name="M:ComponentPro.Compression.ICompressor.SetInput(System.Byte[],System.Int32,System.Int32,ComponentPro.Compression.BlockFlag)">
+            <summary>
+            SetInput method doesn't set state to MoreOutput necessarily. It may remain in NewInput state. In ZlibDecompressor it may even set state to Finish.
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Compression.ICompressor.Process(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Process method may return zero at any time of the (de)compression process (not only when (de)compressing final block). 
+            It may arise typically when requesting new input.
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Compression.ICompressor.Finish">
+            <summary>
+            Resets (de)compressor for future use.
+            </summary>
+            <returns>Number of bytes remained in the input buffer (that buffer specified to the SetInput method).</returns>
+        </member>
+        <member name="M:ComponentPro.Compression.DeflateCompressor.Analyze">
+            <summary>
+            Performs frequence analysis, computes dynamic tree and decides which method to use.
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Compression.DeflateCompressor.BlockCompressed">
+            <summary>
+            Decides what to do next (block has been completely flushed).
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Compression.DeflateDecompressor.ReadBits(System.Int32)">
+            <summary>
+            Read next (one to _bits) bits from the input buffer.
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Compression.DeflateDecompressor.DecodeRunningLength(System.Int32)">
+            <summary>
+            Decodes running length. Value is stored in _codeLengthBuffer. More bits can be read during decoding.
+            </summary>
+            <param name="value">Value of the running length.</param>
+            <returns>True if the running length was decoded. False if more input is needed.</returns>
+        </member>
+        <member name="M:ComponentPro.Compression.DeflateDecompressor.DecompressDataFast(System.Int32@)">
+            <returns>True if the end of block was reached; false otherwise.</returns>
+        </member>
+        <member name="M:ComponentPro.Compression.DeflateDecompressor.DecodeCopyLength(System.Int32)">
+            <summary>
+            Decodes LZ77 length value. Sets internal properties to correct continuation of the LZ77 copying.
+            </summary>
+            <param name="value">Value of the LZ77 length to be decoded (HAS TO be greater than 256).</param>
+        </member>
+        <member name="M:ComponentPro.Compression.DeflateDecompressor.DecodeDistanceLength(System.Int32)">
+            <summary>
+            Decodes LZ77 distance value. Sets internal properties to correct continuation of the LZ77 copying.
+            </summary>
+            <param name="value">Value of the LZ77 distance to be decoded.</param>
+        </member>
+        <member name="T:ComponentPro.Compression.InvalidCompressedDataException">
+            <summary>
+            The exception that is thrown when an invalid compressed data occurs while decompressing.
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Compression.HuffmanTree.Decode(System.Int32@,System.Int32@)">
+            <summary>
+            Returns the value of the specified huffman code.
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Compression.HuffmanTree.Build(System.Int32[],System.Int32[],System.Int32[],System.Int32)">
+            <summary>
+            Builds dynamic legth limited huffman tree.
+            </summary>
+            <param name="frequency">Frequencies of the values.</param>
+            <param name="codeLengths">An array to fill. It will contain code lengths.</param>
+            <param name="codes">An array to fill. It will contain codes.</param>
+            <param name="maxTreeLength">Maximum tree length.</param>
+            <returns>Number of computed code lengths (and codes).</returns>
+        </member>
+        <member name="T:ComponentPro.Net.ISecureShellClient">
+            <summary>
+            Standardizes members of SSH client classes.
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Net.ISecureShellClient.AuthenticateGssApi(System.String,System.String,System.String)">
+            <summary>
+            Authenticates to the server using GSSAPI.
+            </summary>
+            <remarks>
+            .NET: Kerberos and NTLM methods are supported.<br/>
+            .NET CF: Only NTLM method is supported.
+            </remarks>
+            <param name="userName">The username, or a null reference to use integrated authentication (single sign-on).</param>
+            <param name="password">Password for the specified username.</param>
+            <param name="domain">User's domain, or a null reference - it will be determined from the user name. If not available, the default domain will be used.</param>
+        </member>
+        <member name="M:ComponentPro.Net.ISecureShellClient.ChangePassword(System.String,System.String,System.String)">
+            <summary>
+            Changes the specified user's password on the SSH server and authenticates.
+            </summary>
+            <param name="userName">Username.</param>
+            <param name="oldPassword">Old password.</param>
+            <param name="newPassword">New password.</param>
+            <returns>Password change result.</returns>
+        </member>
+        <member name="M:ComponentPro.Net.ISecureShellClient.KeepAlive">
+            <summary>
+            Sends a data packet to the server to keep the connection alive.
+            </summary>        
+        </member>
+        <member name="E:ComponentPro.Net.ISecureShellClient.Banner">
+            <summary>
+            Occurs when a banner message is received from the server.
+            </summary>
+        </member>
+        <member name="E:ComponentPro.Net.ISecureShellClient.HostKeyVerifying">
+            <summary>
+            Occurs when a fingerprint is received from the server and needs to be validated.
+            </summary>
+        </member>
+        <member name="E:ComponentPro.Net.ISecureShellClient.PasswordChangeRequest">
+            <summary>
+            Occurs when user's password need to be changed.
+            </summary>
+        </member>
+        <member name="E:ComponentPro.Net.ISecureShellClient.AuthenticationRequest">
+            <summary>
+            Occurs when an authentication request is received from the server that cannot be answered programatically.
+            </summary>
+        </member>
+        <member name="P:ComponentPro.Net.ISecureShellClient.ServerId">
+            <summary>
+            Gets the server Id (welcome message) returned after a successful connection.
+            </summary>
+        </member>
+        <member name="P:ComponentPro.Net.ISecureShellClient.WaitForServerWelcomeMessage">
+            <summary>
+            Gets or sets a boolean value indicating whether to wait for server SSH protocol welcome message before sending the client one.
+            </summary>
+        </member>
+        <member name="P:ComponentPro.Net.ISecureShellClient.MacAlgorithms">
+            <summary>
+            Get or sets the allowed message authentication code algorithms.
+            </summary>
+        </member>
+        <member name="P:ComponentPro.Net.ISecureShellClient.EncryptionAlgorithms">
+            <summary>
+            Gets or sets the group of allowed encryption algorithms.
+            </summary>
+        </member>
+        <member name="P:ComponentPro.Net.ISecureShellClient.EncryptionModes">
+            <summary>
+            Gets or sets the group of allowed encryption modes.
+            </summary>
+        </member>
+        <member name="P:ComponentPro.Net.ISecureShellClient.AuthenticationMethods">
+            <summary>
+            Gets or sets the group of allowed authentication methods.
+            </summary>
+        </member>
+        <member name="P:ComponentPro.Net.ISecureShellClient.KeyExchangeAlgorithms">
+            <summary>
+            Gets or sets the group of allowed key exchange algorithms.
+            </summary>
+        </member>
+        <member name="P:ComponentPro.Net.ISecureShellClient.HostKeyAlgorithms">
+            <summary>
+            Gets or sets the group of allowed host key algorithms.
+            </summary>
+        </member>
+        <member name="P:ComponentPro.Net.ISecureShellClient.EnableCompression">
+            <summary>
+            Gets or sets a value indicating whether transfer compression is to be used if supported by the server.
+            </summary>
+            <value><c>true</c> to use compression (default); <c>false</c> to not use compression.</value>
+        </member>
+        <member name="T:ComponentPro.Net.PasswordChangeRequestEventHandler">
+            <summary>
+            Represents the method that will handle the <b>PasswordChangeRequest</b> event.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">A <see cref="T:ComponentPro.Net.PasswordChangeRequestEventArgs"/> that contains the event data.</param>
+        </member>
+        <member name="T:ComponentPro.Net.PasswordChangeRequestEventArgs">
+            <summary>
+            Provides data for the <b>PasswordChangeRequest</b> event.
+            </summary>
+        </member>
+        <member name="P:ComponentPro.Net.PasswordChangeRequestEventArgs.LastAttemptFailed">
+            <summary>
+            Gets a boolean value indicating that the last password change attempt has failed.
+            </summary>
+        </member>
+        <member name="P:ComponentPro.Net.PasswordChangeRequestEventArgs.Prompt">
+            <summary>
+            Gets the server's prompt.
+            </summary>
+        </member>
+        <member name="P:ComponentPro.Net.PasswordChangeRequestEventArgs.Language">
+            <summary>
+            Gets the prompt's language.
+            </summary>
+        </member>
+        <member name="P:ComponentPro.Net.PasswordChangeRequestEventArgs.NewPassword">
+            <summary>
+            Gets or sets the new password to change.
+            </summary>
+        </member>
+        <member name="P:ComponentPro.Net.PasswordChangeRequestEventArgs.Cancel">
+            <summary>
+            Gets or sets a boolean value indicating whether to cancel the password change and throw an exception.
+            </summary>
+        </member>
+        <member name="T:ComponentPro.Net.SshChannel">
+            <summary>
+            Represents an SSH channel.
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Net.SshChannel.RequestPseudoTerminal(System.String,System.Int32,System.Int32)">
+            <summary>
+            Requests a pseudo-terminal.
+            </summary>
+            <param name="terminal">Terminal name, e.g. "vt100".</param>
+            <param name="width">Number of columns.</param>
+            <param name="height">Number of rows.</param>
+        </member>
+        <member name="M:ComponentPro.Net.SshChannel.PassEnvironmentVariable(System.String,System.String)">
+            <summary>
+            Passes an environment variable to the shell/command to be started later.
+            </summary>
+            <param name="name">Variable name.</param>
+            <param name="value">Variable value.</param>
+        </member>
+        <member name="M:ComponentPro.Net.SshChannel.RequestPseudoTerminal">
+            <summary>
+            Requests an 80x25 vt100 pseudo-terminal.
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Net.SshChannel.SetTerminalSize(System.Int32,System.Int32)">
+            <summary>
+            Sets a new terminal size.
+            </summary>
+            <param name="width">Number of columns.</param>
+            <param name="height">Number of rows.</param>
+        </member>
+        <member name="M:ComponentPro.Net.SshChannel.SendEof">
+            <summary>
+            Sends EOF (end-of-file) indicator to the server. No furher data should be sent after this.
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Net.SshChannel.SendBreak(System.Int32)">
+            <summary>
+            Sends a break request to the server. This may or may not have any effect.
+            </summary>
+            <param name="breakLength">Break lenth, in miliseconds (if supported by the underlying channel).</param>
+        </member>
+        <member name="M:ComponentPro.Net.SshChannel.RequestShell">
+            <summary>
+            Requests a shell.
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Net.SshChannel.RequestExec(System.String)">
+            <summary>
+            Requests an execution of the specified command.
+            </summary>
+            <param name="command">Command.</param>
+        </member>
+        <member name="M:ComponentPro.Net.SshChannel.RequestSubsystem(System.String)">
+            <summary>
+            Requests a specified subsystem.
+            </summary>
+            <param name="subsystem">Sybsystem name, such as &quot;sftp&quot;.</param>
+        </member>
+        <member name="M:ComponentPro.Net.SshChannel.Close">
+            <summary>
+            Closes the current channel.
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Net.SshChannel.ToSocket">
+            <summary>
+            Creates an ISocket representation of this channel.
+            </summary>
+            <returns>An ISocket.</returns>
+        </member>
+        <member name="M:ComponentPro.Net.SshChannel.GetAvailable">
+            <summary>
+            Gets the number of bytes available in the receive buffer. 
+            If no data is available, the method will process any pending incoming packets.
+            </summary>
+            <returns>Number of bytes available.</returns>
+        </member>
+        <member name="M:ComponentPro.Net.SshChannel.Poll(System.Int32,ComponentPro.Net.SocketSelectMode)">
+            <summary>
+            Determines the status of the socket.
+            </summary>
+            <param name="microSeconds">Time to wait for a response, in microseconds.</param>
+            <param name="mode">Select mode.</param>
+            <returns>True if data can be sent or read or if the connection was closed.</returns>
+        </member>
+        <member name="M:ComponentPro.Net.SshChannel.Receive(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Receives data send by the server through this channel.
+            </summary>
+            <param name="buffer">The storage location for the received data.</param>
+            <param name="offset">The offset to the array at which to place the received data.</param>
+            <param name="count">Number of bytes to receive.</param>
+            <returns>The number of bytes received.</returns>
+        </member>
+        <member name="M:ComponentPro.Net.SshChannel.Send(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Sends data to the server through this channel.
+            </summary>
+            <param name="buffer">The storage location of the data to be sent.</param>
+            <param name="offset">The offset to the array at which the data starts.</param>
+            <param name="count">Number of bytes to send.</param>
+            <returns>The number of bytes sent.</returns>
+        </member>
+        <member name="M:ComponentPro.Net.SshChannel.ToString">
+            <summary>
+            Returns a string representation of this channel.
+            </summary>
+            <returns>Local channel ID.</returns>
+        </member>
+        <member name="M:ComponentPro.Net.SshChannel.Dispose">
+            <summary>
+            Implementation of IDisposable.Dispose()
+            </summary>
+        </member>
+        <member name="P:ComponentPro.Net.SshChannel.Type">
+            <summary>
+            Gets the type of this channel.
+            </summary>
+            <value>Channel type.</value>
+        </member>
+        <member name="P:ComponentPro.Net.SshChannel.State">
+            <summary>
+            Gets the state of this channel.
+            </summary>
+            <value>Channel state.</value>
+        </member>
+        <member name="P:ComponentPro.Net.SshChannel.ExitStatus">
+            <summary>
+            Gets the channel exit status, if available. Otherwise, it returns null.
+            </summary>
+            <value>Channel exit status.</value>
+        </member>
+        <member name="P:ComponentPro.Net.SshChannel.ExtendedDataMode">
+            <summary>
+            Gets or sets the value indicating how to tread extended channel data.
+            </summary>
+            <value>Extended data mode.</value>
+        </member>
+        <member name="E:ComponentPro.Net.SshChannel.ExtendedDataReceived">
+            <summary>
+            Occurs when extended data is received from the server.
+            </summary>
+        </member>
+        <member name="P:ComponentPro.Net.SshChannel.TerminalWidth">
+            <summary>
+            Gets the terminal width.
+            </summary>
+        </member>
+        <member name="P:ComponentPro.Net.SshChannel.TerminalHeight">
+            <summary>
+            Gets the terminal height.
+            </summary>
+        </member>
+        <member name="P:ComponentPro.Net.SshChannel.Available">
+            <summary>
+            Gets the number of bytes available in the receive buffer.
+            </summary>
+            <returns>Number of bytes available.</returns>
+            <remarks>Unlike the <see cref="M:ComponentPro.Net.SshChannel.GetAvailable"/> method, this property will not process any pending incoming packets.</remarks>
+        </member>
+        <member name="M:ComponentPro.Net.SshChannelSocket.Poll(System.Int32,ComponentPro.Net.SocketSelectMode)">
+            <summary>
+            Determines the status of the socket.
+            </summary>
+            <param name="microSeconds">Time to wait for a response, in microseconds.</param>
+            <param name="mode">Select mode.</param>
+            <returns>True if data can be sent or read or if the connection was closed.</returns>
+        </member>
+        <member name="T:ComponentPro.Net.BannerEventHandler">
+            <summary>
+            Represents the method that will handle the <b>Banner</b> event.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">A <see cref="T:ComponentPro.Net.BannerEventArgs"/> that contains the event data.</param>
+        </member>
+        <member name="T:ComponentPro.Net.SshAuthenticationRequestEventHandler">
+            <summary>
+            Represents the method that will handle the <see cref="E:ComponentPro.Net.SshSession.AuthenticationRequest">AuthenticationRequest</see> event of an <see cref="T:ComponentPro.Net.SshSession"/> class.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">A <see cref="T:ComponentPro.Net.SshAuthenticationRequestEventArgs"/> that contains the event data.</param>
+        </member>
+        <member name="T:ComponentPro.Net.BannerEventArgs">
+            <summary>
+            Provides data for the <see cref="E:ComponentPro.Net.SshSession.Banner">BannerReceived</see> event.
+            </summary>
+        </member>
+        <member name="P:ComponentPro.Net.BannerEventArgs.Banner">
+            <summary>
+            Gets the message.
+            </summary>
+            <value>The message.</value>
+        </member>
+        <member name="T:ComponentPro.Net.HostKeyVerifyingEventHandler">
+            <summary>
+            Represents the method that will handle the <b>HostKeyVerifying</b> event.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">A <see cref="T:ComponentPro.Net.HostKeyVerifyingEventArgs" /> that contains the event data.</param>
+        </member>
+        <member name="T:ComponentPro.Net.HostKeyVerifyingEventArgs">
+            <summary>
+            Provides data for the <b>HostKeyVerifying</b> event.
+            </summary>
+        </member>
+        <member name="P:ComponentPro.Net.HostKeyVerifyingEventArgs.HostKeyData">
+            <summary>
+            Gets the server's host key raw data.
+            </summary>
+        </member>
+        <member name="P:ComponentPro.Net.HostKeyVerifyingEventArgs.HostKey">
+            <summary>
+            Gets the server's host key string.
+            </summary>
+        </member>
+        <member name="P:ComponentPro.Net.HostKeyVerifyingEventArgs.HostKeyAlgorithm">
+            <summary>
+            Gets the server's host key algorithm.
+            </summary>
+        </member>
+        <member name="P:ComponentPro.Net.HostKeyVerifyingEventArgs.Accept">
+            <summary>
+            Gets and sets a value that indicates the application has verified the host key.
+            </summary>
+            <remarks>
+            By default, this property is set to false. If you do not set this to true, then the connection establishment stops and an <see cref="T:ComponentPro.Net.SshException"/> is thrown.
+            </remarks>
+        </member>
+        <member name="T:ComponentPro.Net.SshAuthenticationRequestEventArgs">
+            <summary>
+            Provides data for the <see cref="E:ComponentPro.Net.SshSession.AuthenticationRequest">AuthenticationRequest</see> event.
+            </summary>
+        </member>
+        <member name="P:ComponentPro.Net.SshAuthenticationRequestEventArgs.Name">
+            <summary>
+            Gets the SSH server name.
+            </summary>
+            <value>Server name.</value>
+        </member>
+        <member name="P:ComponentPro.Net.SshAuthenticationRequestEventArgs.Instructions">
+            <summary>
+            Gets instructions.
+            </summary>
+            <value>Instructions.</value>
+        </member>
+        <member name="P:ComponentPro.Net.SshAuthenticationRequestEventArgs.Cancel">
+            <summary>
+            Gets or sets a value indicating whether to cancel the authentication.
+            </summary>
+            <value>True to cancel the authentication; false to continue with the authentication (default).</value>
+        </member>
+        <member name="P:ComponentPro.Net.SshAuthenticationRequestEventArgs.Items">
+            <summary>
+            Collection of prompts and answers for the authentication request.
+            </summary>
+        </member>
+        <member name="T:ComponentPro.Net.SshExtendedDataReceivedEventArgs">
+            <summary>
+            Provides data for the <see cref="E:ComponentPro.Net.SshChannel.ExtendedDataReceived">ExtendedDataReceived</see> event.
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Net.SshExtendedDataReceivedEventArgs.GetData">
+            <summary>
+            Gets a copy of extended data.
+            </summary>
+            <returns>Extended data</returns>
+        </member>
+        <member name="P:ComponentPro.Net.SshExtendedDataReceivedEventArgs.TypeCode">
+            <summary>
+            Gets data type code.
+            </summary>
+            <value>Data type code.</value>
+        </member>
+        <member name="T:ComponentPro.Net.SshException">
+            <summary>
+            The exception that is thrown when an SSH error occurs.
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Net.SshException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ComponentPro.Net.SshException"/> class with serialized data.
+            </summary>
+            <param name="info">The object that holds the serialized object data.</param>
+            <param name="context">The contextual information about the source or destination.</param>
+        </member>
+        <member name="M:ComponentPro.Net.SshException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Sets the <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with information about the <see cref="T:ComponentPro.Net.SshException"/>.
+            </summary>
+            <param name="info">The object that holds the serialized object data.</param>
+            <param name="context">The contextual information about the source or destination.</param>
+        </member>
+        <member name="M:ComponentPro.Net.SshException.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:ComponentPro.Net.SshException"/> class.
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Net.SshException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ComponentPro.Net.SshException"/> class with the specified error message.
+            </summary>
+            <param name="message">The message that describes the error.</param>
+        </member>
+        <member name="M:ComponentPro.Net.SshException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ComponentPro.Net.SshException"/> class with the specified error message
+            and a reference to the inner exception that is the cause of this exception.
+            </summary>
+            <param name="message">The message that describes the error.</param>
+            <param name="inner">The exception that is the cause of the current exception.</param>
+        </member>
+        <member name="P:ComponentPro.Net.SshException.Status">
+            <summary>
+            Gets the exception status.
+            </summary>
+            <value>One of the <see cref="T:ComponentPro.Net.SshExceptionStatus"/> values.</value>
+        </member>
+        <member name="T:ComponentPro.Net.SecureShellFingerprint">
+            <summary>
+            Represents the server public key fingerprint.
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Net.SecureShellFingerprint.Compute(System.Byte[])">
+            <summary>
+            Computes a fingerprint of the specified key.
+            </summary>
+            <param name="key">Key data.</param>
+            <returns>Fingerprint.</returns>
+        </member>
+        <member name="M:ComponentPro.Net.SecureShellFingerprint.FromBase64String(System.String)">
+            <summary>
+            Computes a fingerprint of the specified Base64-encoded key.
+            </summary>
+            <param name="encodedKey">Base64-encoded key data.</param>
+            <returns>Fingerprint.</returns>
+        </member>
+        <member name="M:ComponentPro.Net.SecureShellFingerprint.ToArray">
+            <summary>
+            Returns the fingerprint as a byte array.
+            </summary>
+            <returns>Fingerprint as a byte array.</returns>
+        </member>
+        <member name="M:ComponentPro.Net.SecureShellFingerprint.ToString">
+            <summary>
+            Returns a string representation of the fingerprint.
+            </summary>
+            <returns>A string representation of the fingerprint.</returns>
+        </member>
+        <member name="M:ComponentPro.Net.SecureShellFingerprint.ToArray(ComponentPro.Security.Certificates.HashAlgorithmType)">
+            <summary>
+            Returns the fingerprint produced using the specified algorithm as a byte array.
+            </summary>
+            <param name="algorithm">Algorithm to be used to compute the fingerprint.</param>
+            <returns>Fingerprint as a byte array.</returns>
+        </member>
+        <member name="M:ComponentPro.Net.SecureShellFingerprint.ToString(ComponentPro.Security.Certificates.HashAlgorithmType)">
+            <summary>
+            Returns a string representation of the fingerprint produced using the specified algorithm.
+            </summary>
+            <param name="algorithm">Algorithm to be used to compute the fingerprint.</param>
+            <returns>A string representation of the fingerprint.</returns>
+        </member>
+        <member name="T:ComponentPro.Net.ISshIntegration">
+            <summary>
+            Defines a generalized SSH Integration of SSH Shell and SSH Secure FTP (also known as SFTP).
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Net.ISshIntegration.StartIntegration">
+            <summary>
+            Starts the SSH integration.
+            </summary>
+            <returns>Returns a state object.</returns>
+        </member>
+        <member name="T:ComponentPro.Net.SshPasswordChangeResult">
+            <summary>
+            Defines password change results.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshPasswordChangeResult.Success">
+            <summary>
+            Password has been changed and the user has been authenticated. It is not necessary to call the Authenticate method now.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshPasswordChangeResult.NotAuthenticated">
+            <summary>
+            Password has been changed, but the user has not been authenticated. It is still necessary to call the Authenticate method.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshPasswordChangeResult.Failure">
+            <summary>
+            The password has not been changed. Either password changing was not supported, or the old password was bad.
+            </summary>
+        </member>
+        <member name="T:ComponentPro.Net.SshMacAlgorithm">
+            <summary>
+            MAC algorithm.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshMacAlgorithm.None">
+            <summary>
+            No MAC algorithm.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshMacAlgorithm.MD5">
+            <summary>
+            MD5 algorithm.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshMacAlgorithm.SHA1">
+            <summary>
+            SHA1 algorithm.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshMacAlgorithm.Any">
+            <summary>
+            Any algorithm.
+            </summary>
+        </member>
+        <member name="T:ComponentPro.Net.SshEncryptionAlgorithm">
+            <summary>
+            Encryption algorithm.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshEncryptionAlgorithm.None">
+            <summary>
+            None.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshEncryptionAlgorithm.RC4">
+            <summary>
+            RC4.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshEncryptionAlgorithm.TripleDES">
+            <summary>
+            TripleDES.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshEncryptionAlgorithm.AES">
+            <summary>
+            AES.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshEncryptionAlgorithm.Blowfish">
+            <summary>
+            Blowfish.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshEncryptionAlgorithm.Twofish">
+            <summary>
+            Twofish.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshEncryptionAlgorithm.Any">
+            <summary>
+            Any algorithm.
+            </summary>
+        </member>
+        <member name="T:ComponentPro.Net.SshEncryptionMode">
+            <summary>
+            Encryption mode.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshEncryptionMode.None">
+            <summary>
+            None.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshEncryptionMode.CBC">
+            <summary>
+            CBC mode.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshEncryptionMode.CTR">
+            <summary>
+            CTR mode.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshEncryptionMode.Any">
+            <summary>
+            Any mode.
+            </summary>
+        </member>
+        <member name="T:ComponentPro.Net.SshAuthenticationMethod">
+            <summary>
+            Authentication method.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshAuthenticationMethod.None">
+            <summary>
+            None.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshAuthenticationMethod.Password">
+            <summary>
+            Authentication method "password".
+            </summary>		
+        </member>
+        <member name="F:ComponentPro.Net.SshAuthenticationMethod.KeyboardInteractive">
+            <summary>
+            Authentication method "keyboard-interactive".
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshAuthenticationMethod.PublicKey">
+            <summary>
+            Authentication method "publickey".
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshAuthenticationMethod.GssapiWithMic">
+            <summary>
+            Authentication method "gssapi-with-mic".
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshAuthenticationMethod.Any">
+            <summary>
+            Any method.
+            </summary>
+        </member>
+        <member name="T:ComponentPro.Net.SshKeyExchangeAlgorithm">
+            <summary>
+            Key exchange algorithm.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshKeyExchangeAlgorithm.None">
+            <summary>
+            No algorithm
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshKeyExchangeAlgorithm.DiffieHellmanGroup1SHA1">
+            <summary>
+            Diffie-Hellman, Oakley Group 2.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshKeyExchangeAlgorithm.DiffieHellmanGroup14SHA1">
+            <summary>
+            Diffie-Hellman, Oakley Group 14.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshKeyExchangeAlgorithm.DiffieHellmanGroupExchangeSHA1">
+            <summary>
+            Diffie-Hellman, Group Exchange.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshKeyExchangeAlgorithm.Any">
+            <summary>
+            Any algorithm.
+            </summary>
+        </member>
+        <member name="T:ComponentPro.Net.SshHostKeyAlgorithm">
+            <summary>
+            Host key algorithm.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshHostKeyAlgorithm.None">
+            <summary>
+            No algorithm
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshHostKeyAlgorithm.RSA">
+            <summary>
+            RSA.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshHostKeyAlgorithm.DSS">
+            <summary>
+            DSS.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshHostKeyAlgorithm.Any">
+            <summary>
+            Any algorithm.
+            </summary>
+        </member>
+        <member name="T:ComponentPro.Net.SshExceptionStatus">
+            <summary>
+            Defines status codes for the <see cref="T:ComponentPro.Net.SshException"/> class.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshExceptionStatus.UnclassifiableError">
+            <summary>
+            An unclassifiable error occurred. This is the default value for <see cref="P:ComponentPro.Net.SshException.Status"/>.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshExceptionStatus.ConnectFailure">
+            <summary>
+            The remote service point could not be contacted at the transport level.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshExceptionStatus.ConnectionClosed">
+            <summary>
+            The connection was prematurely closed.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshExceptionStatus.ProtocolError">
+            <summary>
+            The response received from the server was complete but indicated a protocol-level error.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshExceptionStatus.UnexpectedMessage">
+            <summary>
+            The response received from the server was complete but unexpected.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshExceptionStatus.Timeout">
+            <summary>
+            No response was received during the time-out period for a request.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshExceptionStatus.OperationFailure">
+            <summary>
+            The requested operation could not be completed.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshExceptionStatus.PasswordChangeRequired">
+            <summary>
+            Password needs to be changed.
+            </summary>
+        </member>
+        <member name="T:ComponentPro.Net.SshForwardingHandle">
+            <summary>
+            Represents a single TCP forwarding rule.
+            </summary>
+        </member>
+        <member name="P:ComponentPro.Net.SshForwardingHandle.Address">
+            <summary>
+            Gets the listening IP address.
+            </summary>
+            <value>Listening IP address.</value>
+        </member>
+        <member name="P:ComponentPro.Net.SshForwardingHandle.Port">
+            <summary>
+            Gets the listening port.
+            </summary>
+            <value>Listening port.</value>
+        </member>
+        <member name="T:ComponentPro.Net.SshAuthenticationRequestItem">
+            <summary>
+            Represents one question/answer pair for the <see cref="E:ComponentPro.Net.SshSession.AuthenticationRequest">AuthenticationRequest</see> event.
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Net.SshAuthenticationRequestItem.#ctor(System.String,System.Boolean)">
+            <summary>
+            Creates a new instance of <see cref="T:ComponentPro.Net.SshAuthenticationRequestItem"/>.
+            </summary>
+            <param name="prompt">Prompt.</param>
+            <param name="isSecret">A value indicationg whether the prompt at the specified index is secret and should not be displayed.</param>
+        </member>
+        <member name="P:ComponentPro.Net.SshAuthenticationRequestItem.Prompt">
+            <summary>
+            Gets the authentication prompt (question).
+            </summary>
+            <value>Authentication prompt.</value>
+        </member>
+        <member name="P:ComponentPro.Net.SshAuthenticationRequestItem.Response">
+            <summary>
+            Gets or sets response to the prompt.
+            </summary>
+            <value>Response.</value>
+        </member>
+        <member name="P:ComponentPro.Net.SshAuthenticationRequestItem.IsSecret">
+            <summary>
+            Gets a value indicationg whether the response is considered secret and should not be displayed.
+            </summary>
+            <value>True if secret (do not display); false if not secret (safe to display).</value>
+        </member>
+        <member name="T:ComponentPro.Net.SshAuthenticationRequestItemCollection">
+            <summary>
+            Collection of <see cref="T:ComponentPro.Net.SshAuthenticationRequestItem"/> objects.
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Net.SshAuthenticationRequestItemCollection.#ctor">
+            <summary>
+            Creates a new instance of <see cref="T:ComponentPro.Net.SshAuthenticationRequestItemCollection"/>
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Net.SshAuthenticationRequestItemCollection.#ctor(System.String[],System.Boolean[])">
+            <summary>
+            Creates a new instance of SshAuthenticationRequestItemCollection
+            </summary>
+            <param name="prompt">Prompts</param>
+            <param name="echo">Should echo be displayed? (! isSecret)</param>
+        </member>
+        <member name="T:ComponentPro.Net.SecureShellKeyFormat">
+            <summary>
+            Specifies private key file format.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SecureShellKeyFormat.Pkcs8">
+            <summary>PKCS #8 format.</summary>
+        </member>
+        <member name="F:ComponentPro.Net.SecureShellKeyFormat.Putty">
+            <summary>PuTTY PPKv2 format.</summary>
+        </member>
+        <member name="F:ComponentPro.Net.SecureShellKeyFormat.OpenSsh">
+            <summary>OpenSSH/OpenSSL SSLeay format.</summary>
+        </member>
+        <member name="T:ComponentPro.Net.SecureShellKey">
+            <summary>
+            Represents the client's RSA or DSA private key. Private key data also includes the public key.
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Net.SecureShellKey.CreateRsa">
+            <summary>
+            Generates an SSH private key using the RSA algorithm with a key size of 1024 bits.
+            </summary>
+            <returns>SSH private key object.</returns>
+        </member>
+        <member name="M:ComponentPro.Net.SecureShellKey.#ctor(ComponentPro.Net.SshHostKeyAlgorithm,System.Int32)">
+            <summary>
+            Generates an SSH private key using the specified algorithm and key size.
+            </summary>
+            <param name="algorithm">Key algorithm. RSA or DSA.</param>
+            <param name="keySize">Key size.</param>
+            <returns>SSH private key object.</returns>
+        </member>
+        <member name="M:ComponentPro.Net.SecureShellKey.#ctor(System.Security.Cryptography.RSAParameters)">
+            <summary>
+            Creates an SSH private key from the specified RSA parameters.
+            </summary>
+            <returns>SSH private key object.</returns>
+        </member>
+        <member name="M:ComponentPro.Net.SecureShellKey.#ctor(System.Security.Cryptography.DSAParameters)">
+            <summary>
+            Creates an SSH private key from the specified DSA parameters.
+            </summary>
+            <returns>SSH private key object.</returns>
+        </member>
+        <member name="M:ComponentPro.Net.SecureShellKey.#ctor(System.String,System.String)">
+            <summary>
+            Loads a PKCS #8 or SSLeay-format RSA or DSA private key from the specified path.
+            </summary>
+            <param name="path">A path to the private key.</param>
+            <param name="password">Password used to encrypted the private key, or null if not password needed.</param>
+        </member>
+        <member name="M:ComponentPro.Net.SecureShellKey.#ctor(System.IO.Stream,System.String)">
+            <summary>
+            Loads a PKCS #8 or SSLeay-format RSA or DSA private key from the specified stream.
+            </summary>
+            <param name="input">A stream from which to load the private key.</param>
+            <param name="password">Password used to encrypted the private key, or null if not password needed.</param>
+        </member>
+        <member name="M:ComponentPro.Net.SecureShellKey.#ctor(System.Byte[],System.String)">
+            <summary>
+            Loads a PKCS #8 or SSLeay-format RSA or DSA private key from the specified raw data.
+            </summary>
+            <param name="data">Raw private key data.</param>
+            <param name="password">Password used to encrypted the private key, or null if not password needed.</param>
+        </member>
+        <member name="M:ComponentPro.Net.SecureShellKey.Save(System.IO.Stream,System.String,System.Object)">
+            <summary>
+            Saves the private key into the supplied stream in Base64-encoded PKCS #8 format.
+            </summary>
+            <param name="output">A stream to which to save the private key.</param>
+            <param name="password">Password to encrypted the private key, or null if no encryption desired.</param>
+            <param name="encryptionAlgorithm">The algorithm to use for encryption. Ignored if password is null. Null defaults to "3DES".</param>
+            <remarks>
+            The encryptionAlgorithm can accepts a String or a Type.
+            Currently, the following strings and types are accepted:<br/>
+            TripleDES: null, "3DES", "TripleDES", "1.2.840.113549.3.7", typeof(System.Security.Cryptography.TripleDES)<br/>
+            DES: "DES", "1.3.14.3.2.7", typeof(System.Security.Cryptography.DES)<br/>
+            RC2: "RC2", "1.2.840.113549.3.2", typeof(System.Security.Cryptography.RC2)<br/>
+            To save the key in PuTTY format, pass the "putty" string to the encryptionAlgorithm argument.<br/>
+            To save the key on OpenSSH/OpenSSL SSLeay format, pass the "ssleay" or "openssh" string to the encryptionAlgorithm argument.<br/>
+            </remarks>
+        </member>
+        <member name="M:ComponentPro.Net.SecureShellKey.Save(System.String,System.String,System.Object)">
+            <summary>
+            Saves the private key into the specified file in Base64-encoded PKCS #8 format.
+            </summary>
+            <param name="path">A path to stream to which to save the private key.</param>
+            <param name="password">Password to encrypted the private key, or null if no encryption desired.</param>
+            <param name="encryptionAlgorithm">The algorithm to use for encryption. Ignored if password is null. Null defaults to "3DES".</param>
+            <remarks>
+            The encryptionAlgorithm can accepts a String or a Type.
+            Currently, the following strings and types are accepted:<br/>
+            TripleDES: null, "3DES", "TripleDES", "1.2.840.113549.3.7", typeof(System.Security.Cryptography.TripleDES)<br/>
+            DES: "DES", "1.3.14.3.2.7", typeof(System.Security.Cryptography.DES)<br/>
+            RC2: "RC2", "1.2.840.113549.3.2", typeof(System.Security.Cryptography.RC2)<br/>
+            To save the key in PuTTY format, pass the "putty" string to the encryptionAlgorithm argument.<br/>
+            To save the key on OpenSSH/OpenSSL SSLeay format, pass the "ssleay" or "openssh" string to the encryptionAlgorithm argument.<br/>
+            </remarks>
+        </member>
+        <member name="M:ComponentPro.Net.SecureShellKey.Save(System.IO.Stream,System.String,ComponentPro.Net.SecureShellKeyFormat)">
+            <summary>
+            Saves the private key into the supplied stream in the specified format.
+            </summary>
+            <param name="output">A stream to which to save the private key.</param>
+            <param name="password">Password to encrypted the private key, or null if no encryption desired.</param>
+            <param name="format">Private key file format.</param>
+        </member>
+        <member name="M:ComponentPro.Net.SecureShellKey.Save(System.String,System.String,ComponentPro.Net.SecureShellKeyFormat)">
+            <summary>
+            Saves the private key into the supplied stream in the specified format.
+            </summary>
+            <param name="path">A path to stream to which to save the private key.</param>
+            <param name="password">Password to encrypted the private key, or null if no encryption desired.</param>
+            <param name="format">Private key file format.</param>
+        </member>
+        <member name="M:ComponentPro.Net.SecureShellKey.SavePublicKey(System.String)">
+            <summary>
+            Saves the public part of the private key into the supplied stream in Base64-encoded 'SSH2 PUBLIC KEY' format.
+            </summary>
+            <param name="path">A path to stream to which to save the public key.</param>
+        </member>
+        <member name="M:ComponentPro.Net.SecureShellKey.SavePublicKey(System.IO.Stream)">
+            <summary>
+            Saves the public part of the private key into the supplied stream in Base64-encoded 'SSH2 PUBLIC KEY' format.
+            </summary>
+            <param name="output">A stream to which to save the public key.</param>
+        </member>
+        <member name="M:ComponentPro.Net.SecureShellKey.GetPrivateKey">
+            <summary>
+            Gets the raw form of the private key.
+            </summary>
+            <returns>Array of bytes.</returns>
+        </member>
+        <member name="M:ComponentPro.Net.SecureShellKey.GetDSAParameters">
+            <summary>
+            Gets the DSA parameters for a DSA key. May only be used for DSA private keys.
+            </summary>
+            <returns>DSA paramaters.</returns>
+        </member>
+        <member name="M:ComponentPro.Net.SecureShellKey.GetRSAParameters">
+            <summary>
+            Gets the RSA parameters for a RSA key. May only be used for RSA private keys.
+            </summary>
+            <returns>RSA paramaters.</returns>
+        </member>
+        <member name="M:ComponentPro.Net.SecureShellKey.GetPublicKey">
+            <summary>
+            Gets the public key in SSH format.
+            </summary>
+            <returns>Array of bytes.</returns>
+        </member>
+        <member name="P:ComponentPro.Net.SecureShellKey.Comment">
+            <summary>
+            Gets or sets the key comment.
+            </summary>
+            <value>The key comment is used while saving.</value>
+        </member>
+        <member name="P:ComponentPro.Net.SecureShellKey.Fingerprint">
+            <summary>
+            Gets the public key fingerprint.
+            </summary>
+            <value>Public key fingerprint.</value>
+        </member>
+        <member name="P:ComponentPro.Net.SecureShellKey.KeyAlgorithm">
+            <summary>
+            Gets the key algorithm.
+            </summary>
+            <value>Key algorithm.</value>
+        </member>
+        <member name="T:ComponentPro.Net.SshSession">
+            <summary>
+            Represents a client-side SSH 2.0 session.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SshSession.DefaultPort">
+            <summary>
+            Default SSH port (22).
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Net.SshSession.#ctor">
+            <summary>
+            Initializes an instance of the <see cref="T:ComponentPro.Net.SshSession"/> class.
+            </summary>
+            <remarks>
+            The default constructor initializes an instance of the <see cref="T:ComponentPro.Net.SshSession"/>.
+            </remarks>
+        </member>
+        <member name="M:ComponentPro.Net.SshSession.#ctor(System.Net.Sockets.Socket)">
+            <summary>
+            Initializes an instance of the <see cref="T:ComponentPro.Net.SshSession"/> class with the specified base socket.
+            </summary>
+            <param name="socket">Base socket.</param>
+        </member>
+        <member name="M:ComponentPro.Net.SshSession.#ctor(ComponentPro.Net.ISocket)">
+            <summary>
+            Initializes an instance of the <see cref="T:ComponentPro.Net.SshSession"/> class with the specified base socket.
+            </summary>
+            <param name="socket">Base socket.</param>
+        </member>
+        <member name="M:ComponentPro.Net.SshSession.Close">
+            <summary>
+            Terminates the SSH session.
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Net.SshSession.Connect(System.String)">
+            <summary>
+            Establishes a connection to port 22 of an SSH server.
+            </summary>
+            <param name="serverName">The server address - either a hostname or a dotted string address.</param>
+        </member>
+        <member name="M:ComponentPro.Net.SshSession.Connect(System.String,System.Int32)">
+            <summary>
+            Establishes a connection to an SSH server.
+            </summary>
+            <param name="serverName">The server address - either a hostname or a dotted string address.</param>
+            <param name="serverPort">The server port (eg. 22).</param>
+        </member>
+        <member name="M:ComponentPro.Net.SshSession.Connect(System.Net.EndPoint)">
+            <summary>
+            Establishes a connection to an SSH server.
+            </summary>
+            <param name="remoteEP">An <see cref="T:System.Net.EndPoint"/> that represents the remote device.</param>
+        </member>
+        <member name="M:ComponentPro.Net.SshSession.Negotiate">
+            <summary>
+            Requests and performs an additional key exchange. Not all SSH servers support this.
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Net.SshSession.ChangePassword(System.String,System.String,System.String)">
+            <summary>
+            Changes the specified user's password on the SSH server and authenticates.
+            </summary>
+            <param name="userName">Username.</param>
+            <param name="oldPassword">Old password.</param>
+            <param name="newPassword">New password.</param>
+            <returns>Password change result.</returns>
+        </member>
+        <member name="M:ComponentPro.Net.SshSession.Authenticate(System.String,ComponentPro.Net.SecureShellKey)">
+            <summary>
+            Authenticates to the SSH server using a username and an RSA or DSA private key.
+            </summary>
+            <param name="userName">Username.</param>
+            <param name="privateKey">RSA or DSA private key for key-based authentication.</param>
+        </member>
+        <member name="M:ComponentPro.Net.SshSession.Authenticate(System.String,System.String)">
+            <summary>
+            Authenticates to the SSH server using a username and password.
+            </summary>
+            <param name="userName">Username.</param>
+            <param name="password">Password.</param>
+        </member>
+        <member name="M:ComponentPro.Net.SshSession.Authenticate(System.String,System.String,ComponentPro.Net.SecureShellKey)">
+            <summary>
+            Authenticates to the SSH server using a username and an RSA or DSA privatey key and a password.
+            </summary>
+            <param name="userName">Username.</param>
+            <param name="password">Password.</param>
+            <param name="privateKey">RSA or DSA private key for key-based authentication.</param>
+            <remarks>This method is supported by GlobalScape SFTP server.</remarks>
+        </member>
+        <member name="M:ComponentPro.Net.SshSession.Authenticate(ComponentPro.Net.SshGssApiCredentials)">
+            <summary>
+            Authenticates to the server using GSSAPI. Kerberos (not on .NET CF) and NTLM methods are supported.
+            </summary>
+            <param name="credentials">Credentials.</param>
+        </member>
+        <member name="M:ComponentPro.Net.SshSession.OpenChannel(ComponentPro.Net.SshChannelType,System.Int32)">
+            <summary>
+            Opoens an SSH channel of the specified type.
+            </summary>
+            <param name="type">Channel type.</param>
+            <param name="bufferSize">Buffer size.</param>
+            <returns>SSH channel.</returns>
+        </member>
+        <member name="M:ComponentPro.Net.SshSession.OpenSession">
+            <summary>
+            Opens an SSH session channel.
+            </summary>
+            <returns>SSH channel.</returns>
+        </member>
+        <member name="M:ComponentPro.Net.SshSession.OpenTcpIpTunnel(System.Net.IPEndPoint)">
+            <summary>
+            Opens an outgoing TCP/IP tunnel to the specified remote endpoint.
+            </summary>
+            <param name="remoteEP">Remote endpoint.</param>
+            <returns>SSH channel.</returns>
+        </member>
+        <member name="M:ComponentPro.Net.SshSession.OpenTcpIpTunnel(System.String,System.Int32)">
+            <summary>
+            Opens an outgoing TCP/IP tunnel to the specified remote endpoint.
+            </summary>
+            <param name="hostname">Hostname.</param>
+            <param name="port">Port.</param>
+            <returns>SSH channel.</returns>
+        </member>
+        <member name="M:ComponentPro.Net.SshSession.KeepAlive">
+            <summary>
+            Sends an SSH_MSG_IGNORE packet to the server.
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Net.SshSession.StartTcpIpForward(System.String,System.Int32)">
+            <summary>
+            Starts incoming TCP/IP tunnel on the specified IP address and port at the SSH server.
+            </summary>
+            <param name="address">Remote IP address to bind to. Most SSH installations only allow 127.0.0.1.</param>
+            <param name="port">Remote port to bind to. Set this to 0 to get a random port automatically.</param>
+            <returns>A forwarding handle.</returns>
+        </member>
+        <member name="M:ComponentPro.Net.SshSession.StopTcpIpForward(ComponentPro.Net.SshForwardingHandle)">
+            <summary>
+            Stops an incoming TCP/IP tunnel.
+            </summary>
+            <param name="handle">Incoming tunnel handle returned by <see cref="M:ComponentPro.Net.SshSession.StartTcpIpForward(System.String,System.Int32)"/>.</param>
+            <returns>A forwarding handle.</returns>
+        </member>
+        <member name="M:ComponentPro.Net.SshSession.AcceptTcpIpForward(ComponentPro.Net.SshForwardingHandle,System.Int32)">
+            <summary>
+            Accepts a forwarded incoming connection.
+            </summary>
+            <param name="handle">Incoming tunnel handle returned by <see cref="M:ComponentPro.Net.SshSession.StartTcpIpForward(System.String,System.Int32)"/>.</param>
+            <param name="timeout">
+            Specifies an amount of time (in miliseconds) to wait for incoming connections. Use -1 to specify an infinite time and 1 to just return
+            as soon as the current queue status is checked, or a higher value to wait for the specified amount of time.
+            </param>
+            <returns>SSH channel.</returns>
+        </member>
+        <member name="M:ComponentPro.Net.SshSession.AcceptTcpIpForward(ComponentPro.Net.SshForwardingHandle)">
+            <summary>
+            Accepts a forwarded incoming connection. If there is no incoming connection in the queue, waits indefinitely.
+            </summary>
+            <param name="handle">Incoming tunnel handle returned by <see cref="M:ComponentPro.Net.SshSession.StartTcpIpForward(System.String,System.Int32)"/>.</param>
+            <returns>SSH channel.</returns>
+        </member>
+        <member name="M:ComponentPro.Net.SshSession.ToSocketFactory">
+            <summary>
+            Gets a socket factory that creates socket tunneled through this SSH session.
+            </summary>
+            <returns>A socket factory.</returns>
+        </member>
+        <member name="E:ComponentPro.Net.SshSession.Banner">
+            <summary>
+            Occurs when a banner message is received from the server.
+            </summary>
+        </member>
+        <member name="E:ComponentPro.Net.SshSession.AuthenticationRequest">
+            <summary>
+            Occurs when an authentication request is received from the server that cannot be answered programatically.
+            </summary>
+        </member>
+        <member name="P:ComponentPro.Net.SshSession.Timeout">
+            <summary>
+            Gets or sets the length of time before the operation times out (specify -1 or 0 to indicate that the request does not time out).
+            </summary>
+            <value>
+            The length of time, in milliseconds, until the operation times out,
+            or the value -1 or 0 to indicate that the request does not time out.
+            Default is 60000 (60 seconds).
+            </value>
+            <remarks>
+            <p>
+            The internal timeout counter is reset every time data is sent
+            or received from to server. This also means that data transfers only
+            time out after x miliseconds of inactivity, not after x miliseconds
+            from the start of the transfer.
+            </p>
+            <p>
+            Minimal value is 1000. Setting this to a value lower than 1000 will set it to 1000.
+            </p>
+            </remarks>
+        </member>
+        <member name="P:ComponentPro.Net.SshSession.Socket">
+            <summary>
+            Gets the internal <see cref="T:ComponentPro.Net.ISocket"/> value.
+            </summary>
+            <value>The internal <see cref="T:ComponentPro.Net.ISocket"/> value.</value>
+            <remarks>Use with care.</remarks>
+        </member>
+        <member name="P:ComponentPro.Net.SshSession.Encoding">
+            <summary>
+            Gets or sets the <see cref="T:System.Text.Encoding">Encoding</see> to use to encode and decode command parameters and server responses.
+            </summary>
+            <value>The <see cref="T:System.Text.Encoding">Encoding</see> to use to encode and decode command parameters and server responses. Default is <see cref="T:System.Text.Encoding">Encoding.UTF8</see>.</value>
+        </member>
+        <member name="P:ComponentPro.Net.SshSession.RemoteEndPoint">
+            <summary>
+            Gets the remote endpoint.
+            </summary>
+            <value>The remote endpoint that the <see cref="T:ComponentPro.Net.SshSession"/> is using for communications.</value>
+            <remarks>
+            The RemoteEndPoint property gets the network connection information associated with
+            either the remote host or the proxy server.
+            RemoteEndPoint is set by <see cref="T:ComponentPro.Net.SshSession"/> methods that establish a connection
+            to a remote host.
+            </remarks>
+        </member>
+        <member name="P:ComponentPro.Net.SshSession.LocalEndPoint">
+            <summary>
+            Gets the local endpoint.
+            </summary>
+            <value>The local endpoint that the <see cref="T:ComponentPro.Net.SshSession"/> is using for communications.</value>
+            <remarks>
+            The LocalEndPoint property contains the network connection information associated with the local network device.
+            </remarks>
+        </member>
+        <member name="P:ComponentPro.Net.SshSession.Connected">
+            <summary>
+            Gets a value indicating whether a <see cref="T:ComponentPro.Net.SshSession"/> is connected to a remote server.
+            </summary>
+            <value>true if the <see cref="T:ComponentPro.Net.SshSession"/> is connected to a remote server; otherwise, false.</value>
+            <remarks>
+            <p>
+            Gets the connection state of the <see cref="T:ComponentPro.Net.SshSession"/>. This property will return
+            the latest known state of the SshSession. When it returns false, the SshSession was either never
+            connected, or no longer connected. When it returns true, the SshSession was connected at the
+            time of the last I/O operation.
+            </p>
+            <p>
+            <b>Note:</b> There is no guarantee that the Socket is still connected even though
+            Connected returns true.
+            </p>
+            </remarks>
+        </member>
+        <member name="P:ComponentPro.Net.SshSession.Authenticated">
+            <summary>
+            Gets a value indicating whether authentication was already performed.
+            </summary>
+            <value>True if authenticated; false if not authenticated.</value>
+        </member>
+        <member name="P:ComponentPro.Net.SshSession.Parameters">
+            <summary>
+            Gets or sets the security parameters of the current socket.
+            </summary>
+            <value>The security parameters of the current socket.</value>
+        </member>
+        <member name="P:ComponentPro.Net.SshSession.Options">
+            <summary>
+            Gets or sets SshSession options.
+            </summary>
+            <value>SshSession options.</value>
+        </member>
+        <member name="P:ComponentPro.Net.SshSession.Cipher">
+            <summary>
+            Gets the active cipher.
+            </summary>
+            <value>Active cipher.</value>
+        </member>
+        <member name="P:ComponentPro.Net.SshSession.Fingerprint">
+            <summary>
+            Gets the server public key fingerprint.
+            </summary>
+            <value>Server fingerprint.</value>
+        </member>
+        <member name="P:ComponentPro.Net.SshSession.State">
+            <summary>
+            Gets the current session state.
+            </summary>
+            <value>Session state.</value>
+        </member>
+        <member name="P:ComponentPro.Net.SshSession.ServerIdentification">
+            <summary>
+            Gets the server's identification string it returns after connected.
+            </summary>
+            <value>Server's identification string.</value>
+        </member>
+    </members>
+</doc>

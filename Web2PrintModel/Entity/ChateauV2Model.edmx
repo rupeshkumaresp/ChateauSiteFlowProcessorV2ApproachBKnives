@@ -1,0 +1,337 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="Chateau_V2Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="tAdminUsers">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Email" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Password" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tChateauKnives">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="OrderId" Type="bigint" />
+          <Property Name="OrderReference" Type="nvarchar(max)" />
+          <Property Name="OrderDetailsReference" Type="nvarchar(max)" />
+          <Property Name="BarCode" Type="nvarchar(max)" />
+          <Property Name="Attribute" Type="nvarchar(max)" />
+          <Property Name="Quantity" Type="int" />
+          <Property Name="ArtworkUrl" Type="nvarchar(max)" />
+          <Property Name="CustomerName" Type="nvarchar(max)" />
+          <Property Name="CustomerAddress1" Type="nvarchar(max)" />
+          <Property Name="CustomerAddress2" Type="nvarchar(max)" />
+          <Property Name="CustomerAddress3" Type="nvarchar(max)" />
+          <Property Name="CustomerTown" Type="nvarchar(max)" />
+          <Property Name="CustomerState" Type="nvarchar(max)" />
+          <Property Name="CustomerPostcode" Type="nvarchar(max)" />
+          <Property Name="CustomerCountry" Type="nvarchar(max)" />
+          <Property Name="CustomerEmail" Type="nvarchar(max)" />
+          <Property Name="CustomerCompanyName" Type="nvarchar(max)" />
+          <Property Name="CustomerPhone" Type="nvarchar(max)" />
+          <Property Name="EmailSentToProduction" Type="bit" />
+          <Property Name="EmailSentDatetime" Type="datetime" />
+        </EntityType>
+        <EntityType Name="tOrderDetails">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ReferenceNumber" Type="nvarchar(max)" />
+          <Property Name="OrderId" Type="bigint" Nullable="false" />
+          <Property Name="CreatedAt" Type="datetime" />
+          <Property Name="SKU" Type="nvarchar(max)" />
+          <Property Name="Substrate" Type="nvarchar(max)" />
+          <Property Name="Status" Type="nvarchar(max)" />
+          <Property Name="Quantity" Type="int" />
+          <Property Name="Artwork" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="tOrders">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ReferenceNumber" Type="nvarchar(max)" />
+          <Property Name="OrderStatus" Type="nvarchar(max)" />
+          <Property Name="CreatedAt" Type="datetime" />
+          <Property Name="SentToSiteFlow" Type="bit" />
+          <Property Name="SiteflowSentDatetme" Type="datetime" />
+          <Property Name="OriginalSiteflowJson" Type="nvarchar(max)" />
+          <Property Name="ModifiedSiteflowJson" Type="nvarchar(max)" />
+          <Property Name="SiteflowOrderStatus" Type="nvarchar(max)" />
+          <Property Name="DeleteNotes" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="tSiteFlowOrderPushManual">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SiteFlowReadyOrders" Type="nvarchar(max)" />
+          <Property Name="Processed" Type="bit" />
+        </EntityType>
+        <EntityType Name="tSiteFlowResponse">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="OrderId" Type="bigint" Nullable="false" />
+          <Property Name="Response" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_tOrderDetails_tOrders">
+          <End Role="tOrders" Type="Self.tOrders" Multiplicity="1" />
+          <End Role="tOrderDetails" Type="Self.tOrderDetails" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tOrders">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="tOrderDetails">
+              <PropertyRef Name="OrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="Chateau_V2ModelStoreContainer">
+          <EntitySet Name="tAdminUsers" EntityType="Self.tAdminUsers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tChateauKnives" EntityType="Self.tChateauKnives" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tOrderDetails" EntityType="Self.tOrderDetails" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tOrders" EntityType="Self.tOrders" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tSiteFlowOrderPushManual" EntityType="Self.tSiteFlowOrderPushManual" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tSiteFlowResponse" EntityType="Self.tSiteFlowResponse" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_tOrderDetails_tOrders" Association="Self.FK_tOrderDetails_tOrders">
+            <End Role="tOrders" EntitySet="tOrders" />
+            <End Role="tOrderDetails" EntitySet="tOrderDetails" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="Chateau_V2Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="Chateau_V2Entities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="tAdminUsers" EntityType="Chateau_V2Model.tAdminUsers" />
+          <EntitySet Name="tChateauKnives" EntityType="Chateau_V2Model.tChateauKnives" />
+          <EntitySet Name="tOrderDetails" EntityType="Chateau_V2Model.tOrderDetails" />
+          <EntitySet Name="tOrders" EntityType="Chateau_V2Model.tOrders" />
+          <EntitySet Name="tSiteFlowOrderPushManual" EntityType="Chateau_V2Model.tSiteFlowOrderPushManual" />
+          <EntitySet Name="tSiteFlowResponse" EntityType="Chateau_V2Model.tSiteFlowResponse" />
+          <AssociationSet Name="FK_tOrderDetails_tOrders" Association="Chateau_V2Model.FK_tOrderDetails_tOrders">
+            <End Role="tOrders" EntitySet="tOrders" />
+            <End Role="tOrderDetails" EntitySet="tOrderDetails" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="tAdminUsers">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Email" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Password" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="tChateauKnives">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="OrderId" Type="Int64" />
+          <Property Name="OrderReference" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="OrderDetailsReference" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="BarCode" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Attribute" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Quantity" Type="Int32" />
+          <Property Name="ArtworkUrl" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerAddress1" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerAddress2" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerAddress3" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerTown" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerState" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerPostcode" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerCountry" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerEmail" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerCompanyName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerPhone" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="EmailSentToProduction" Type="Boolean" />
+          <Property Name="EmailSentDatetime" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="tOrderDetails">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ReferenceNumber" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="OrderId" Type="Int64" Nullable="false" />
+          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+          <Property Name="SKU" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Substrate" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Status" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Quantity" Type="Int32" />
+          <Property Name="Artwork" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="tOrders" Relationship="Chateau_V2Model.FK_tOrderDetails_tOrders" FromRole="tOrderDetails" ToRole="tOrders" />
+        </EntityType>
+        <EntityType Name="tOrders">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ReferenceNumber" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="OrderStatus" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+          <Property Name="SentToSiteFlow" Type="Boolean" />
+          <Property Name="SiteflowSentDatetme" Type="DateTime" Precision="3" />
+          <Property Name="OriginalSiteflowJson" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ModifiedSiteflowJson" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="SiteflowOrderStatus" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="DeleteNotes" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="tOrderDetails" Relationship="Chateau_V2Model.FK_tOrderDetails_tOrders" FromRole="tOrders" ToRole="tOrderDetails" />
+        </EntityType>
+        <EntityType Name="tSiteFlowOrderPushManual">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SiteFlowReadyOrders" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Processed" Type="Boolean" />
+        </EntityType>
+        <EntityType Name="tSiteFlowResponse">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="OrderId" Type="Int64" Nullable="false" />
+          <Property Name="Response" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <Association Name="FK_tOrderDetails_tOrders">
+          <End Type="Chateau_V2Model.tOrders" Role="tOrders" Multiplicity="1" />
+          <End Type="Chateau_V2Model.tOrderDetails" Role="tOrderDetails" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tOrders">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="tOrderDetails">
+              <PropertyRef Name="OrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="Chateau_V2ModelStoreContainer" CdmEntityContainer="Chateau_V2Entities">
+          <EntitySetMapping Name="tAdminUsers">
+            <EntityTypeMapping TypeName="Chateau_V2Model.tAdminUsers">
+              <MappingFragment StoreEntitySet="tAdminUsers">
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tChateauKnives">
+            <EntityTypeMapping TypeName="Chateau_V2Model.tChateauKnives">
+              <MappingFragment StoreEntitySet="tChateauKnives">
+                <ScalarProperty Name="EmailSentDatetime" ColumnName="EmailSentDatetime" />
+                <ScalarProperty Name="EmailSentToProduction" ColumnName="EmailSentToProduction" />
+                <ScalarProperty Name="CustomerPhone" ColumnName="CustomerPhone" />
+                <ScalarProperty Name="CustomerCompanyName" ColumnName="CustomerCompanyName" />
+                <ScalarProperty Name="CustomerEmail" ColumnName="CustomerEmail" />
+                <ScalarProperty Name="CustomerCountry" ColumnName="CustomerCountry" />
+                <ScalarProperty Name="CustomerPostcode" ColumnName="CustomerPostcode" />
+                <ScalarProperty Name="CustomerState" ColumnName="CustomerState" />
+                <ScalarProperty Name="CustomerTown" ColumnName="CustomerTown" />
+                <ScalarProperty Name="CustomerAddress3" ColumnName="CustomerAddress3" />
+                <ScalarProperty Name="CustomerAddress2" ColumnName="CustomerAddress2" />
+                <ScalarProperty Name="CustomerAddress1" ColumnName="CustomerAddress1" />
+                <ScalarProperty Name="CustomerName" ColumnName="CustomerName" />
+                <ScalarProperty Name="ArtworkUrl" ColumnName="ArtworkUrl" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="Attribute" ColumnName="Attribute" />
+                <ScalarProperty Name="BarCode" ColumnName="BarCode" />
+                <ScalarProperty Name="OrderDetailsReference" ColumnName="OrderDetailsReference" />
+                <ScalarProperty Name="OrderReference" ColumnName="OrderReference" />
+                <ScalarProperty Name="OrderId" ColumnName="OrderId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tOrderDetails">
+            <EntityTypeMapping TypeName="Chateau_V2Model.tOrderDetails">
+              <MappingFragment StoreEntitySet="tOrderDetails">
+                <ScalarProperty Name="Artwork" ColumnName="Artwork" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Substrate" ColumnName="Substrate" />
+                <ScalarProperty Name="SKU" ColumnName="SKU" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="OrderId" ColumnName="OrderId" />
+                <ScalarProperty Name="ReferenceNumber" ColumnName="ReferenceNumber" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tOrders">
+            <EntityTypeMapping TypeName="Chateau_V2Model.tOrders">
+              <MappingFragment StoreEntitySet="tOrders">
+                <ScalarProperty Name="DeleteNotes" ColumnName="DeleteNotes" />
+                <ScalarProperty Name="SiteflowOrderStatus" ColumnName="SiteflowOrderStatus" />
+                <ScalarProperty Name="ModifiedSiteflowJson" ColumnName="ModifiedSiteflowJson" />
+                <ScalarProperty Name="OriginalSiteflowJson" ColumnName="OriginalSiteflowJson" />
+                <ScalarProperty Name="SiteflowSentDatetme" ColumnName="SiteflowSentDatetme" />
+                <ScalarProperty Name="SentToSiteFlow" ColumnName="SentToSiteFlow" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="OrderStatus" ColumnName="OrderStatus" />
+                <ScalarProperty Name="ReferenceNumber" ColumnName="ReferenceNumber" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tSiteFlowOrderPushManual">
+            <EntityTypeMapping TypeName="Chateau_V2Model.tSiteFlowOrderPushManual">
+              <MappingFragment StoreEntitySet="tSiteFlowOrderPushManual">
+                <ScalarProperty Name="Processed" ColumnName="Processed" />
+                <ScalarProperty Name="SiteFlowReadyOrders" ColumnName="SiteFlowReadyOrders" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tSiteFlowResponse">
+            <EntityTypeMapping TypeName="Chateau_V2Model.tSiteFlowResponse">
+              <MappingFragment StoreEntitySet="tSiteFlowResponse">
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="Response" ColumnName="Response" />
+                <ScalarProperty Name="OrderId" ColumnName="OrderId" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

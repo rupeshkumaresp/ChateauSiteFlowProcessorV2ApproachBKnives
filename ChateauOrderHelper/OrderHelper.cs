@@ -1,0 +1,316 @@
+﻿using ChateauEntity.Entity;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using ChateauEntity.SiteFlowEntity;
+using ChateauOrderHelper.Interface;
+using ChateauOrderHelper.Model;
+
+namespace ChateauOrderHelper
+{
+
+    /// <summary>
+    /// ORDER HELPER- CREATE ORDER ITEM IN DATABASE, UPDATE SITEFLOW PUSH STATUS, WRITE LOGS, PROCESS POSTBACKS
+    /// </summary>
+    public class OrderHelper : IOrderHelper
+    {
+        private readonly Chateau_V2Entities _contextChateau = new Chateau_V2Entities();
+        readonly SiteFlowEntities _contextSiteFlowEntities = new SiteFlowEntities();
+
+        public long CreateOrder(string orderReference, DateTime orderDatetime, decimal orderTotal, decimal deliveryCost, string email, string telephone, string originalJson)
+        {
+            var order = new tOrders
+            {
+                OrderStatus = "Order Confirmed",
+                CreatedAt = orderDatetime,
+                ReferenceNumber = orderReference,
+                OriginalSiteflowJson = originalJson
+            };
+
+            _contextChateau.tOrders.Add(order);
+            _contextChateau.SaveChanges();
+
+            return order.ID;
+        }
+
+        public void AddOrderItem(long id, string sku, string referenceNumber, int quantity, string substrate, string artwork)
+        {
+
+            var orderDetail = new tOrderDetails
+            {
+                OrderId = id,
+                ReferenceNumber = referenceNumber,
+                CreatedAt = DateTime.Now,
+                Status = "Proof Accepted",
+                Quantity = quantity,
+                Substrate = substrate,
+                Artwork = artwork,
+                SKU = sku
+            };
+            _contextChateau.tOrderDetails.Add(orderDetail);
+            _contextChateau.SaveChanges();
+        }
+
+        public List<string> GetOrdersToPushToSiteFlowManual()
+        {
+            var orders = _contextChateau.tSiteFlowOrderPushManual.Where(p => p.Processed == null).Select(p => p.SiteFlowReadyOrders).FirstOrDefault();
+
+            if (orders == null)
+                return null;
+
+            return orders.Split(',').ToList();
+
+        }
+
+        public List<long> GetOrdersToPushToSiteFlow()
+        {
+            var orders = _contextChateau.tOrders.Where(o => o.OrderStatus == "Order Confirmed" && (o.SentToSiteFlow == false || o.SentToSiteFlow == null)).Select(o => o.ID).ToList();
+            return orders;
+        }
+
+        public void WriteLog(string message, long orderId)
+        {
+            var log = new tSiteFlowResponse
+            {
+                Response = message,
+                OrderId = orderId,
+                CreatedAt = DateTime.Now
+            };
+
+            _contextChateau.tSiteFlowResponse.Add(log);
+            _contextChateau.SaveChanges();
+        }
+
+        public void MarkOrderPushedTositeFlow(string orderRef)
+        {
+            var order = _contextChateau.tOrders.FirstOrDefault(o => o.ReferenceNumber == orderRef);
+            if (order != null)
+            {
+                order.SentToSiteFlow = true;
+                order.SiteflowSentDatetme = DateTime.Now;
+                _contextChateau.SaveChanges();
+
+                WriteLog("Siteflow submission success", Convert.ToInt64(orderRef));
+            }
+
+
+        }
+
+        public void SubmitModifiedSiteflowJson(long orderId, string modifiedSiteflowJson)
+        {
+            var order = _contextChateau.tOrders.FirstOrDefault(o => o.ID == orderId);
+            if (order != null)
+            {
+                order.ModifiedSiteflowJson = modifiedSiteflowJson;
+                _contextChateau.SaveChanges();
+            }
+        }
+
+        public List<long> GetSiteFlowPushedOrders()
+        {
+            var shippedOrders = _contextChateau.tOrders.Where(o => o.SentToSiteFlow == true && o.SiteflowOrderStatus != "shipped").Select(o => o.ID).ToList();
+
+            return shippedOrders;
+        }
+
+        public void ChateauStatusProcessing(string sourceOrderId, string orderStatus, string json)
+        {
+
+            try
+            {
+                long chateausourceOrderId = Convert.ToInt64(sourceOrderId);
+                var chateauOrder = _contextChateau.tOrders.FirstOrDefault(o => o.ID == chateausourceOrderId);
+
+                if (chateauOrder != null)
+                {
+                    if (chateauOrder.SiteflowOrderStatus == "shipped")
+                        return;
+
+                    chateauOrder.SiteflowOrderStatus = orderStatus;
+                    _contextChateau.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+
+                tSiteFlowResponse response = new tSiteFlowResponse();
+
+                response.OrderId = Convert.ToInt64(sourceOrderId);
+                response.Response = "Site flow postback service error - " + ex.Message + ex.InnerException;
+                _contextChateau.tSiteFlowResponse.Add(response);
+                _contextChateau.SaveChanges();
+            }
+
+        }
+
+        public void MarkManualSiteFlowProcessingComplete()
+        {
+            var orders = _contextChateau.tSiteFlowOrderPushManual.FirstOrDefault(p => p.Processed == null);
+            if (orders != null)
+            {
+                orders.Processed = true;
+                _contextChateau.SaveChanges();
+            }
+
+        }
+
+        public bool IsSentToSiteFlow(long orderId)
+        {
+            var chateauOrder = _contextChateau.tOrders.FirstOrDefault(o => o.ID == orderId);
+
+            if (chateauOrder != null)
+                return Convert.ToBoolean(chateauOrder.SentToSiteFlow);
+
+            return false;
+
+        }
+
+        public string GetOrderSourceOrderId(long orderId)
+        {
+            var chateauOrder = _contextChateau.tOrders.FirstOrDefault(o => o.ID == orderId);
+            if (chateauOrder != null) return chateauOrder.ReferenceNumber;
+
+            return null;
+        }
+
+        public long GetOrderIdFromReference(string orderReference)
+        {
+            var chateauOrder = _contextChateau.tOrders.FirstOrDefault(o => o.ReferenceNumber == orderReference);
+
+            if (chateauOrder != null) return chateauOrder.ID;
+
+            return 0;
+        }
+
+        public string GetModifiedSiteflowOrderJson(long orderId)
+        {
+            var chateauOrder = _contextChateau.tOrders.FirstOrDefault(o => o.ID == orderId);
+            if (chateauOrder != null) return chateauOrder.ModifiedSiteflowJson;
+
+            return null;
+        }
+
+        public void ProcessPostBacks(long orderId)
+        {
+            var order = _contextChateau.tOrders.FirstOrDefault(o => o.ID == orderId);
+
+            if (order != null)
+            {
+                var siteFlowOrder = _contextSiteFlowEntities.tSiteFlowInputDatas.FirstOrDefault(i => i.SourceOrderId == order.ReferenceNumber);
+
+                if (siteFlowOrder != null)
+                {
+                    var status = siteFlowOrder.OrderStatus;
+
+                    order.SiteflowOrderStatus = status;
+                    _contextChateau.SaveChanges();
+
+                }
+            }
+
+        }
+
+        public bool DoesOrderExists(string sourceOrderId)
+        {
+            var order = _contextChateau.tOrders.FirstOrDefault(o => o.ReferenceNumber == sourceOrderId && o.SentToSiteFlow == true);
+
+            if (order == null)
+            {
+                order = _contextChateau.tOrders.FirstOrDefault(o => o.ReferenceNumber == sourceOrderId && (o.SentToSiteFlow == null || o.SentToSiteFlow == false));
+
+                if (order != null)
+                {
+                    var id = order.ID;
+
+                    var orderDetails = _contextChateau.tOrderDetails.Where(od => od.OrderId == id).ToList();
+
+                    foreach (var details in orderDetails)
+                    {
+                        _contextChateau.tOrderDetails.Remove(details);
+                    }
+
+                    _contextChateau.tOrders.Remove(order);
+                    _contextChateau.SaveChanges();
+
+                }
+
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        public void AddKnife(ReportData model)
+        {
+            tChateauKnives knives = new tChateauKnives
+            {
+                OrderId = Convert.ToInt64(model.OrderId),
+                OrderReference = model.OrderReference,
+                OrderDetailsReference = model.OrderDetailsReference,
+                BarCode = model.BarCode,
+                Attribute = model.Attribute,
+                Quantity = Convert.ToInt32(model.Quantity),
+                ArtworkUrl = model.ArtworkUrl,
+                CustomerName = model.CustomerName,
+                CustomerAddress1 = model.CustomerAddress1,
+                CustomerAddress2 = model.CustomerAddress2,
+                CustomerAddress3 = model.CustomerAddress3,
+                CustomerTown = model.CustomerTown,
+                CustomerState = model.CustomerState,
+                CustomerPostcode = model.CustomerPostcode,
+                CustomerCountry = model.CustomerCountry,
+                CustomerEmail = model.CustomerEmail,
+                CustomerCompanyName = model.CustomerCompanyName,
+                CustomerPhone = model.CustomerPhone,
+                EmailSentToProduction = false
+            };
+
+            _contextChateau.tChateauKnives.Add(knives);
+            _contextChateau.SaveChanges();
+        }
+
+
+        public List<ReportData> ExtractKnifeReportData()
+        {
+            var knives = _contextChateau.tChateauKnives.Where(k => k.EmailSentToProduction == false).ToList();
+
+            return knives.Select(knife => new ReportData
+            {
+                Id = knife.Id,
+                OrderId = Convert.ToString(knife.OrderId),
+                OrderReference = knife.OrderReference,
+                OrderDetailsReference = knife.OrderDetailsReference,
+                BarCode = knife.BarCode,
+                Attribute = knife.Attribute,
+                Quantity = Convert.ToString(knife.Quantity),
+                ArtworkUrl = knife.ArtworkUrl,
+                CustomerName = knife.CustomerName,
+                CustomerAddress1 = knife.CustomerAddress1,
+                CustomerAddress2 = knife.CustomerAddress2,
+                CustomerAddress3 = knife.CustomerAddress3,
+                CustomerTown = knife.CustomerTown,
+                CustomerState = knife.CustomerState,
+                CustomerPostcode = knife.CustomerPostcode,
+                CustomerCountry = knife.CustomerCountry,
+                CustomerEmail = knife.CustomerEmail,
+                CustomerCompanyName = knife.CustomerCompanyName,
+                CustomerPhone = knife.CustomerPhone
+            })
+                .ToList();
+        }
+
+        public void MarkKnifeSentToProduction(long id)
+        {
+            var knife = _contextChateau.tChateauKnives.FirstOrDefault(k => k.Id == id);
+
+            if (knife != null)
+            {
+                knife.EmailSentToProduction = true;
+                knife.EmailSentDatetime = DateTime.Now;
+                _contextChateau.SaveChanges();
+            }
+        }
+    }
+}

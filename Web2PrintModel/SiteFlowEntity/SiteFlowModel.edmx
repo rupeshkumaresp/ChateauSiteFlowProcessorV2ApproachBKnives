@@ -1,0 +1,228 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="SiteFlowModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="tPostbackData">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PostBackData" Type="nvarchar(max)" />
+          <Property Name="CreatedAt" Type="datetime" />
+          <Property Name="PostBackProcessed" Type="bit" />
+          <Property Name="ProcessedDateTime" Type="datetime" />
+        </EntityType>
+        <EntityType Name="tSiteFlowInputData">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SourceOrderId" Type="nvarchar(max)" />
+          <Property Name="SKU" Type="nvarchar(max)" />
+          <Property Name="ComponentsBarcode" Type="nvarchar(max)" />
+          <Property Name="Quantity" Type="int" />
+          <Property Name="Components0Substrate" Type="nvarchar(max)" />
+          <Property Name="Components1Substrate" Type="nvarchar(max)" />
+          <Property Name="Components0SizeForImpo" Type="nvarchar(max)" />
+          <Property Name="Components1SizeForImpo" Type="nvarchar(max)" />
+          <Property Name="Components0ProductFinishedPageSize" Type="nvarchar(max)" />
+          <Property Name="Components1ProductFinishedPageSize" Type="nvarchar(max)" />
+          <Property Name="Components0Pages" Type="int" />
+          <Property Name="Components1Pages" Type="int" />
+          <Property Name="Components0CoverType" Type="nvarchar(max)" />
+          <Property Name="Components1CoverType" Type="nvarchar(max)" />
+          <Property Name="Components0StockCoverType" Type="nvarchar(max)" />
+          <Property Name="Components1StockCoverType" Type="nvarchar(max)" />
+          <Property Name="Components0Extra" Type="nvarchar(max)" />
+          <Property Name="Components1Extra" Type="nvarchar(max)" />
+          <Property Name="ComponentsColour" Type="nvarchar(max)" />
+          <Property Name="ComponentsRibbon" Type="nvarchar(max)" />
+          <Property Name="Components0Country" Type="nvarchar(max)" />
+          <Property Name="Components1Country" Type="nvarchar(max)" />
+          <Property Name="Components0ArtworkUrl" Type="nvarchar(max)" />
+          <Property Name="Components1ArtworkUrl" Type="nvarchar(max)" />
+          <Property Name="Account" Type="nvarchar(max)" />
+          <Property Name="OrderStatus" Type="nvarchar(max)" />
+          <Property Name="OrderDateTime" Type="datetime" />
+          <Property Name="EmailProcessedDateTime" Type="datetime" />
+          <Property Name="ShippedDate" Type="datetime" />
+          <Property Name="PDFDownloaded" Type="bit" />
+          <Property Name="IsValidArtwork" Type="bit" />
+          <Property Name="DiscardDownload" Type="bit" />
+          <Property Name="InvalidUrlTryCount" Type="int" />
+          <Property Name="PDFMerged" Type="bit" />
+          <Property Name="MergeProcessingDateTime" Type="datetime" />
+          <Property Name="CalculatedPDFSize" Type="nvarchar(max)" />
+          <Property Name="PDFPageCount" Type="int" />
+          <Property Name="DownloadedArtworkPDF" Type="nvarchar(max)" />
+          <Property Name="JsonData" Type="nvarchar(max)" />
+          <Property Name="InvalidEmailSent" Type="bit" />
+          <Property Name="RUSH" Type="nvarchar(max)" />
+          <Property Name="SLADate" Type="datetime" />
+          <Property Name="PrintReadyDate" Type="datetime" />
+        </EntityType>
+        <EntityContainer Name="SiteFlowModelStoreContainer">
+          <EntitySet Name="tPostbackData" EntityType="Self.tPostbackData" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tSiteFlowInputData" EntityType="Self.tSiteFlowInputData" Schema="dbo" store:Type="Tables" />
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="SiteFlowModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="tPostbackData">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PostBackData" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+          <Property Name="PostBackProcessed" Type="Boolean" />
+          <Property Name="ProcessedDateTime" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityContainer Name="SiteFlowEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="tPostbackDatas" EntityType="Self.tPostbackData" />
+          <EntitySet Name="tSiteFlowInputDatas" EntityType="SiteFlowModel.tSiteFlowInputData" />
+        </EntityContainer>
+        <EntityType Name="tSiteFlowInputData">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SourceOrderId" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="SKU" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ComponentsBarcode" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Quantity" Type="Int32" />
+          <Property Name="Components0Substrate" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Components1Substrate" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Components0SizeForImpo" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Components1SizeForImpo" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Components0ProductFinishedPageSize" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Components1ProductFinishedPageSize" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Components0Pages" Type="Int32" />
+          <Property Name="Components1Pages" Type="Int32" />
+          <Property Name="Components0CoverType" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Components1CoverType" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Components0StockCoverType" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Components1StockCoverType" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Components0Extra" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Components1Extra" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ComponentsColour" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ComponentsRibbon" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Components0Country" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Components1Country" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Components0ArtworkUrl" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Components1ArtworkUrl" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Account" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="OrderStatus" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="OrderDateTime" Type="DateTime" Precision="3" />
+          <Property Name="EmailProcessedDateTime" Type="DateTime" Precision="3" />
+          <Property Name="ShippedDate" Type="DateTime" Precision="3" />
+          <Property Name="PDFDownloaded" Type="Boolean" />
+          <Property Name="IsValidArtwork" Type="Boolean" />
+          <Property Name="DiscardDownload" Type="Boolean" />
+          <Property Name="InvalidUrlTryCount" Type="Int32" />
+          <Property Name="PDFMerged" Type="Boolean" />
+          <Property Name="MergeProcessingDateTime" Type="DateTime" Precision="3" />
+          <Property Name="CalculatedPDFSize" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PDFPageCount" Type="Int32" />
+          <Property Name="DownloadedArtworkPDF" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="JsonData" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="InvalidEmailSent" Type="Boolean" />
+          <Property Name="RUSH" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="SLADate" Type="DateTime" Precision="3" />
+          <Property Name="PrintReadyDate" Type="DateTime" Precision="3" />
+        </EntityType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="SiteFlowModelStoreContainer" CdmEntityContainer="SiteFlowEntities">
+          <EntitySetMapping Name="tPostbackDatas">
+            <EntityTypeMapping TypeName="SiteFlowModel.tPostbackData">
+              <MappingFragment StoreEntitySet="tPostbackData">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="PostBackData" ColumnName="PostBackData" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="PostBackProcessed" ColumnName="PostBackProcessed" />
+                <ScalarProperty Name="ProcessedDateTime" ColumnName="ProcessedDateTime" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tSiteFlowInputDatas">
+            <EntityTypeMapping TypeName="SiteFlowModel.tSiteFlowInputData">
+              <MappingFragment StoreEntitySet="tSiteFlowInputData">
+                <ScalarProperty Name="PrintReadyDate" ColumnName="PrintReadyDate" />
+                <ScalarProperty Name="SLADate" ColumnName="SLADate" />
+                <ScalarProperty Name="RUSH" ColumnName="RUSH" />
+                <ScalarProperty Name="InvalidEmailSent" ColumnName="InvalidEmailSent" />
+                <ScalarProperty Name="JsonData" ColumnName="JsonData" />
+                <ScalarProperty Name="DownloadedArtworkPDF" ColumnName="DownloadedArtworkPDF" />
+                <ScalarProperty Name="PDFPageCount" ColumnName="PDFPageCount" />
+                <ScalarProperty Name="CalculatedPDFSize" ColumnName="CalculatedPDFSize" />
+                <ScalarProperty Name="MergeProcessingDateTime" ColumnName="MergeProcessingDateTime" />
+                <ScalarProperty Name="PDFMerged" ColumnName="PDFMerged" />
+                <ScalarProperty Name="InvalidUrlTryCount" ColumnName="InvalidUrlTryCount" />
+                <ScalarProperty Name="DiscardDownload" ColumnName="DiscardDownload" />
+                <ScalarProperty Name="IsValidArtwork" ColumnName="IsValidArtwork" />
+                <ScalarProperty Name="PDFDownloaded" ColumnName="PDFDownloaded" />
+                <ScalarProperty Name="ShippedDate" ColumnName="ShippedDate" />
+                <ScalarProperty Name="EmailProcessedDateTime" ColumnName="EmailProcessedDateTime" />
+                <ScalarProperty Name="OrderDateTime" ColumnName="OrderDateTime" />
+                <ScalarProperty Name="OrderStatus" ColumnName="OrderStatus" />
+                <ScalarProperty Name="Account" ColumnName="Account" />
+                <ScalarProperty Name="Components1ArtworkUrl" ColumnName="Components1ArtworkUrl" />
+                <ScalarProperty Name="Components0ArtworkUrl" ColumnName="Components0ArtworkUrl" />
+                <ScalarProperty Name="Components1Country" ColumnName="Components1Country" />
+                <ScalarProperty Name="Components0Country" ColumnName="Components0Country" />
+                <ScalarProperty Name="ComponentsRibbon" ColumnName="ComponentsRibbon" />
+                <ScalarProperty Name="ComponentsColour" ColumnName="ComponentsColour" />
+                <ScalarProperty Name="Components1Extra" ColumnName="Components1Extra" />
+                <ScalarProperty Name="Components0Extra" ColumnName="Components0Extra" />
+                <ScalarProperty Name="Components1StockCoverType" ColumnName="Components1StockCoverType" />
+                <ScalarProperty Name="Components0StockCoverType" ColumnName="Components0StockCoverType" />
+                <ScalarProperty Name="Components1CoverType" ColumnName="Components1CoverType" />
+                <ScalarProperty Name="Components0CoverType" ColumnName="Components0CoverType" />
+                <ScalarProperty Name="Components1Pages" ColumnName="Components1Pages" />
+                <ScalarProperty Name="Components0Pages" ColumnName="Components0Pages" />
+                <ScalarProperty Name="Components1ProductFinishedPageSize" ColumnName="Components1ProductFinishedPageSize" />
+                <ScalarProperty Name="Components0ProductFinishedPageSize" ColumnName="Components0ProductFinishedPageSize" />
+                <ScalarProperty Name="Components1SizeForImpo" ColumnName="Components1SizeForImpo" />
+                <ScalarProperty Name="Components0SizeForImpo" ColumnName="Components0SizeForImpo" />
+                <ScalarProperty Name="Components1Substrate" ColumnName="Components1Substrate" />
+                <ScalarProperty Name="Components0Substrate" ColumnName="Components0Substrate" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="ComponentsBarcode" ColumnName="ComponentsBarcode" />
+                <ScalarProperty Name="SKU" ColumnName="SKU" />
+                <ScalarProperty Name="SourceOrderId" ColumnName="SourceOrderId" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

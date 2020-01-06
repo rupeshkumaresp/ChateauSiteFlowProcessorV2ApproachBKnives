@@ -1,0 +1,573 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ComponentPro.NetworkSecure</name>
+    </assembly>
+    <members>
+        <member name="T:ComponentPro.Security.Certificates.HashAlgorithmType">
+            <summary>
+            Specifies the hash algorithm used to compute the hash for hash signing and verification methods.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.HashAlgorithmType.Unsupported">
+            <summary>
+            Unsupported hash algorithm.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.HashAlgorithmType.MD5">
+            <summary>
+            MD5.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.HashAlgorithmType.SHA1">
+            <summary>
+            SHA1.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.HashAlgorithmType.MD5SHA1">
+            <summary>
+            MD5SHA1.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.HashAlgorithmType.GOST_R3411_94">
+            <summary>
+            GOST R 34.11-94.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.HashAlgorithmType.SHA256">
+            <summary>
+            SHA-256.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.HashAlgorithmType.SHA384">
+            <summary>
+            SHA-384.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.HashAlgorithmType.SHA512">
+            <summary>
+            SHA-512.
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Security.Cryptography.BigInt.ExtendedGCD(ComponentPro.Security.Cryptography.BigInt,ComponentPro.Security.Cryptography.BigInt,ComponentPro.Security.Cryptography.BigInt@,ComponentPro.Security.Cryptography.BigInt@)">
+            <summary>
+            The extended Euclidean algorithm is an extension to the Euclidean algorithm
+            for finding the greatest common divisor (GCD) of integers a and b:
+            it also finds the integers x and y in Bezout's identity.
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Security.Cryptography.BigInt.MultiplyAdd(System.UInt32[],System.UInt64,System.UInt32[])">
+            <summary>
+            r += a * b
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Security.Cryptography.BigInt.MultiplyMonty(System.UInt32[],System.UInt32[],System.UInt32[],System.UInt32[],System.UInt64)">
+            <summary>
+            Montgomery multiplication:
+              a = x * y * R^(-1) mod m
+            (Handbook of Applied Cryptography, Algorithm 14.36)
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Security.Cryptography.BigInt.IsProbablePrime(System.Int32)">
+            <summary>
+            Primality test. 
+            </summary>
+            <param name="n">Number of iterations.</param>
+            <returns>true if the number is probably prime; false if not prime.</returns>
+            <remarks>
+            <p>Uses Algorithm from FIPS PUB 186.</p>
+            <p>It will produce a false prime with probability no greater than 1/4^n</p>
+            </remarks>
+        </member>
+        <member name="T:ComponentPro.Net.SecurityMode">
+            <summary>
+            Defines the connection security mode.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SecurityMode.None">
+            <summary>
+            Unsecured connection.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SecurityMode.Implicit">
+            <summary>
+            Implicitly secured connection.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SecurityMode.Explicit">
+            <summary>
+            Explicitly secured connection.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Net.SecurityMode.TumbleweedTunnel">
+            <summary>
+            Tumbleweed 'SSL tunnel'.
+            </summary>
+        </member>
+        <member name="T:ComponentPro.Security.Cryptography.Pkcs.ObjectIdentifierCollection">
+            <summary>
+            A collection of <see cref="T:ComponentPro.Security.Cryptography.Pkcs.ObjectIdentifierCollection"/> objects.
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Security.Cryptography.Pkcs.ObjectIdentifierCollection.Add(ComponentPro.Security.Cryptography.ObjectIdentifier)">
+            <summary>
+            Adds a <see cref="T:ComponentPro.Security.Cryptography.Pkcs.ObjectIdentifierCollection"/> to the collection.
+            </summary>
+            <param name="oid">An object identifier to add.</param>
+        </member>
+        <member name="P:ComponentPro.Security.Cryptography.Pkcs.ObjectIdentifierCollection.Item(System.Int32)">
+            <summary>
+            Gets or sets the <see cref="T:ComponentPro.Security.Cryptography.Pkcs.ObjectIdentifierCollection"/> at the specified index.
+            </summary>
+            <param name="index">The zero-based index of the <see cref="T:ComponentPro.Security.Cryptography.Pkcs.ObjectIdentifierCollection"/> to get or set.</param>
+            <value>An object identifier.</value>
+        </member>
+        <member name="T:ComponentPro.Security.Cryptography.Pkcs.PrivateKeyInfo">
+            <summary>
+            Represents an RSA or DSA private key.
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Security.Cryptography.Pkcs.PrivateKeyInfo.#ctor">
+            <summary>
+            Creates a new instance of <see cref="T:ComponentPro.Security.Cryptography.Pkcs.PrivateKeyInfo"/>. Use the <see cref="M:ComponentPro.Security.Cryptography.Pkcs.PrivateKeyInfo.Load(System.IO.Stream,System.String)"/> method to load a private key.
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Security.Cryptography.Pkcs.PrivateKeyInfo.#ctor(System.Security.Cryptography.RSAParameters)">
+            <summary>
+            Creates a new instance of <see cref="T:ComponentPro.Security.Cryptography.Pkcs.PrivateKeyInfo"/> based on the specified RSA parameters.
+            </summary>
+            <param name="parameters">RSA parameters including private keys.</param>
+        </member>
+        <member name="M:ComponentPro.Security.Cryptography.Pkcs.PrivateKeyInfo.#ctor(System.Security.Cryptography.DSAParameters)">
+            <summary>
+            Creates a new instance of <see cref="T:ComponentPro.Security.Cryptography.Pkcs.PrivateKeyInfo"/> based on the specified DSA parameters.
+            </summary>
+            <param name="parameters">DSA parameters including private keys.</param>
+        </member>
+        <member name="M:ComponentPro.Security.Cryptography.Pkcs.PrivateKeyInfo.GetPrivateKey">
+            <summary>
+            Gets the raw form of the private key.
+            </summary>
+            <returns>Array of bytes.</returns>
+        </member>
+        <member name="M:ComponentPro.Security.Cryptography.Pkcs.PrivateKeyInfo.GetDSAParameters">
+            <summary>
+            Gets the DSA parameters for a DSA key. May only be used for DSA private keys.
+            </summary>
+            <returns>DSA paramaters.</returns>
+        </member>
+        <member name="M:ComponentPro.Security.Cryptography.Pkcs.PrivateKeyInfo.GetRSAParameters">
+            <summary>
+            Gets the RSA parameters for a RSA key. May only be used for RSA private keys.
+            </summary>
+            <returns>RSA paramaters.</returns>
+        </member>
+        <member name="M:ComponentPro.Security.Cryptography.Pkcs.PrivateKeyInfo.Save(System.IO.Stream,System.String,ComponentPro.Security.Cryptography.Pkcs.PrivateKeyFormat)">
+            <summary>
+            Saves the private key into the supplied stream in the specified format.
+            </summary>
+            <param name="output">A stream to which to save the private key.</param>
+            <param name="password">Password to encrypted the private key, or null if no encryption desired.</param>
+            <param name="format">Private key file format.</param>
+        </member>
+        <member name="M:ComponentPro.Security.Cryptography.Pkcs.PrivateKeyInfo.Save(System.IO.Stream,System.String,ComponentPro.Security.Cryptography.ObjectIdentifier)">
+            <summary>
+            Saves the private key into the supplied stream in Base64-encoded PKCS #8 format.
+            </summary>
+            <param name="output">A stream to which to save the private key.</param>
+            <param name="password">Password to encrypted the private key, or null if no encryption desired.</param>
+            <param name="encryptionAlgorithm">Encryption algorithm identifier. Ignored if password is null.</param>
+            <remarks>
+            Currently, 3DES ("1.2.840.113549.3.7"), DES ("1.3.14.3.2.7") and RC2 ("1.2.840.113549.3.2") algorithms are supported.
+            </remarks>
+        </member>
+        <member name="M:ComponentPro.Security.Cryptography.Pkcs.PrivateKeyInfo.GetPuttyPrivateKey">
+            <summary>
+            Gets the private key in PuTTY format.
+            </summary>
+            <returns>Array of bytes.</returns>
+        </member>
+        <member name="M:ComponentPro.Security.Cryptography.Pkcs.PrivateKeyInfo.GetPuttyPublicKey">
+            <summary>
+            Gets the public key in SSH format.
+            </summary>
+            <returns>Array of bytes.</returns>
+        </member>
+        <member name="M:ComponentPro.Security.Cryptography.Pkcs.PrivateKeyInfo.Load(System.IO.Stream,System.String)">
+            <summary>
+            Loads a PKCS #8, PuTTY or SSLeay (OpenSSL/OpenSSH) format private key from a stream.
+            Upon successful decoding, information can be retrieved using <see cref="T:ComponentPro.Security.Cryptography.Pkcs.PrivateKeyInfo"/>
+            methods and properties.
+            </summary>
+            <param name="input">A stream from which to load the private key.</param>
+            <param name="password">Password used to encrypted the private key, or null if no password needed.</param>
+        </member>
+        <member name="M:ComponentPro.Security.Cryptography.Pkcs.PrivateKeyInfo.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ComponentPro.Security.Cryptography.Pkcs.PrivateKeyInfo"/> class with serialized data.
+            </summary>
+            <param name="info">The object that holds the serialized object data.</param>
+            <param name="context">The contextual information about the source or destination.</param>
+        </member>
+        <member name="M:ComponentPro.Security.Cryptography.Pkcs.PrivateKeyInfo.System#Runtime#Serialization#ISerializable#GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Sets the <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with information about the <see cref="T:ComponentPro.Security.Cryptography.Pkcs.PrivateKeyInfo"/>.
+            </summary>
+            <param name="info">The object that holds the serialized object data.</param>
+            <param name="context">The contextual information about the source or destination.</param>
+        </member>
+        <member name="P:ComponentPro.Security.Cryptography.Pkcs.PrivateKeyInfo.KeyAlgorithmId">
+            <summary>
+            Gets the key algorithm identifier.
+            </summary>
+            <value>Key algorithm identifier.</value>
+        </member>
+        <member name="P:ComponentPro.Security.Cryptography.Pkcs.PrivateKeyInfo.Comment">
+            <summary>
+            Gets or ets the key comment. The comment is used while saving in some formats.
+            </summary>
+            <value>Key comment.</value>
+        </member>
+        <member name="M:ComponentPro.Security.Cryptography.Pkcs.SubjectPublicKeyInfo.Encode">
+            <summary>
+            Gets ASN.1 encoded form of this <see cref="T:ComponentPro.Security.Cryptography.Pkcs.SubjectPublicKeyInfo"/> object.
+            </summary>
+            <returns>Array of bytes.</returns>
+        </member>
+        <member name="T:ComponentPro.Security.Cryptography.Pkcs.SignatureValidationStatus">
+            <summary>
+            Signature validation status.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Cryptography.Pkcs.SignatureValidationStatus.CertificateNotValid">
+            <summary>Certificate is not valid.</summary>
+        </member>
+        <member name="F:ComponentPro.Security.Cryptography.Pkcs.SignatureValidationStatus.CertificateNotAvailable">
+            <summary>Certificate is not available.</summary>
+        </member>
+        <member name="F:ComponentPro.Security.Cryptography.Pkcs.SignatureValidationStatus.UnsupportedDigestAlgorithm">
+            <summary>A digest algorithm is not supported.</summary>
+        </member>
+        <member name="F:ComponentPro.Security.Cryptography.Pkcs.SignatureValidationStatus.UnsupportedSignatureAlgorithm">
+            <summary>A signature algorithm is not supported.</summary>
+        </member>
+        <member name="F:ComponentPro.Security.Cryptography.Pkcs.SignatureValidationStatus.InvalidSignature">
+            <summary>A signature is invalid.</summary>
+        </member>
+        <member name="F:ComponentPro.Security.Cryptography.Pkcs.SignatureValidationStatus.InvalidKeyUsage">
+            <summary>Invalid key usage. The certificate usage doesn't include message signing.</summary>
+        </member>
+        <member name="F:ComponentPro.Security.Cryptography.Pkcs.SignatureValidationStatus.ContentTypeMismatch">
+            <summary>Content type mismatch.</summary>
+        </member>
+        <member name="T:ComponentPro.Security.Cryptography.Pkcs.SecureMimeCapability">
+            <summary>
+            Represents an S/MIME capability.
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Security.Cryptography.Pkcs.SecureMimeCapability.#ctor(ComponentPro.Security.Cryptography.ObjectIdentifier)">
+            <summary>
+            Initializes an instance of a <see cref="T:ComponentPro.Security.Cryptography.Pkcs.SecureMimeCapability"/> with no parameters.
+            </summary>
+            <param name="oid">The object identifier that identifies the S//MIME capability.</param>
+        </member>
+        <member name="M:ComponentPro.Security.Cryptography.Pkcs.SecureMimeCapability.#ctor(ComponentPro.Security.Cryptography.ObjectIdentifier,System.Byte[])">
+            <summary>
+            Initializes an instance of a <see cref="T:ComponentPro.Security.Cryptography.Pkcs.SecureMimeCapability"/>.
+            </summary>
+            <param name="oid">The object identifier that identifies the S//MIME capability.</param>
+            <param name="parameters">Capability parameters in ASN.1 format.</param>
+        </member>
+        <member name="P:ComponentPro.Security.Cryptography.Pkcs.SecureMimeCapability.Oid">
+            <summary>
+            Gets the object identifier that identifies the S/MIME capability.
+            </summary>
+            <value>The object identifier.</value>
+        </member>
+        <member name="P:ComponentPro.Security.Cryptography.Pkcs.SecureMimeCapability.Parameters">
+            <summary>
+            Gets the S/MIME capability parameters.
+            </summary>
+            <value>An array of bytes in ASN.1 format.</value>
+        </member>
+        <member name="T:ComponentPro.Security.Cryptography.Ssl3Mac">
+            alg(K + pad_2 + alg(K + pad_1 + text))  // Record MAC
+        </member>
+        <member name="T:ComponentPro.Security.CertificateReceivedEventHandler">
+            <summary>Represents that method that will handle the <b>CertificateReceived</b> event.</summary>
+            <param name="sender">The object on which the method was called.</param>
+            <param name="e">A <see cref="T:ComponentPro.Security.CertificateReceivedEventArgs"/> that contains the event data.</param>
+        </member>
+        <member name="T:ComponentPro.Security.CertificateReceivedEventArgs">
+            <summary>
+            Provides information on the certificate that is received from the server.
+            </summary>
+        </member>
+        <member name="P:ComponentPro.Security.CertificateReceivedEventArgs.ServerCertificate">
+            <summary>
+            Gets the certificate received from the server.
+            </summary>
+        </member>
+        <member name="P:ComponentPro.Security.CertificateReceivedEventArgs.Status">
+            <summary>
+            Gets the verification status of the certificate received from the server.
+            </summary>
+        </member>
+        <member name="P:ComponentPro.Security.CertificateReceivedEventArgs.Accept">
+            <summary>
+            Gets or sets a boolean value indicating whether to accept <see cref="P:ComponentPro.Security.CertificateReceivedEventArgs.ServerCertificate">the certificated</see> received from the server.
+            </summary>
+        </member>
+        <member name="P:ComponentPro.Security.CertificateReceivedEventArgs.ErrorCode">
+            <summary>
+            Gets the verification error code.
+            </summary>
+        </member>
+        <member name="P:ComponentPro.Security.CertificateReceivedEventArgs.AddToTrustedRoot">
+            <summary>
+            Gets or sets a boolean value indicating whether to add this certificate to the trusted list.
+            </summary>
+        </member>
+        <member name="T:ComponentPro.Security.CertificateRequiredEventHandler">
+            <summary>Represents that method that will handle the <b>CertificateRequired</b> event.</summary>
+            <param name="sender">The object on which the method was called.</param>
+            <param name="e">A <see cref="T:ComponentPro.Security.CertificateRequiredEventArgs"/> that contains the event data.</param>
+        </member>
+        <member name="T:ComponentPro.Security.CertificateRequiredEventArgs">
+            <summary>
+            Provides information on the certificate that the server requires from the client.
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Security.CertificateRequiredEventArgs.#ctor(System.Security.Cryptography.X509Certificates.X509Certificate2)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ComponentPro.Security.CertificateRequiredEventArgs"/> class.
+            </summary>
+            <param name="cert">The certificate.</param>
+        </member>
+        <member name="P:ComponentPro.Security.CertificateRequiredEventArgs.Certificate">
+            <summary>
+            Gets or sets the client's certificate that is required by the server, or null to try to search for the certificate in the store.
+            </summary>
+        </member>
+        <member name="T:ComponentPro.Net.TlsSslException">
+            <summary>
+            The exception that is thrown when a TLS/SSL error occurs.
+            </summary>
+        </member>
+        <member name="M:ComponentPro.Net.TlsSslException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ComponentPro.Net.TlsSslException"/> class with serialized data.
+            </summary>
+            <param name="info">The object that holds the serialized object data.</param>
+            <param name="context">The contextual information about the source or destination.</param>
+        </member>
+        <member name="M:ComponentPro.Net.TlsSslException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Sets the <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with information about the <see cref="T:ComponentPro.Net.TlsSslException"/>.
+            </summary>
+            <param name="info">The object that holds the serialized object data.</param>
+            <param name="context">The contextual information about the source or destination.</param>
+        </member>
+        <member name="M:ComponentPro.Net.TlsSslException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ComponentPro.Net.TlsSslException"/> class with the specified error message.
+            </summary>
+            <param name="message">The message that describes the error.</param>
+        </member>
+        <member name="M:ComponentPro.Net.TlsSslException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ComponentPro.Net.TlsSslException"/> class with the specified error message
+            and a reference to the inner exception that is the cause of this exception.
+            </summary>
+            <param name="message">The message that describes the error.</param>
+            <param name="inner">The exception that is the cause of the current exception.</param>
+        </member>
+        <member name="M:ComponentPro.Net.TlsSslException.GetData(System.Object)">
+            <summary>
+            This method is only intended to be used internally by ComponentPro infrastructure.
+            </summary>
+            <param name="argument">Argument.</param>
+            <returns>Value.</returns>
+        </member>
+        <member name="T:ComponentPro.Security.Certificates.CertificateVerificationStatus">
+            <summary>
+            Certificate validation status.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.Expired">
+            <summary>
+            This certificate or one of the certificates in the certificate chain is not time valid.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.TimeNotNested">
+            <summary>
+            Certificates in the chain are not properly time nested.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.Revoked">
+            <summary>
+            Trust for this certificate or one of the certificates in the certificate chain has been revoked.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.SignatureNotValid">
+            <summary>
+            The certificate or one of the certificates in the certificate chain does not have a valid signature.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.WrongUsage">
+            <summary>
+            The certificate or certificate chain is not valid for its proposed usage.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.RootNotTrusted">
+            <summary>
+            The certificate or certificate chain is based on an untrusted root.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.UnknownRev">
+            <summary>
+            The revocation status of the certificate or one of the certificates in the certificate chain is unknown.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.CyclicChain">
+            <summary>
+            One of the certificates in the chain was issued by a certification authority that the original certificate had certified.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.InvalidExtension">
+            <summary>
+            One of the certificates has an invalid extension.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.InvalidPolicyConstraints">
+            <summary>
+            The certificate or one of the certificates in the certificate chain has
+            a policy constraints extension, and one of the issued certificates has
+            a disallowed policy mapping extension or does not have a required issuance
+            policies extension.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.InvalidBasicConstraints">
+            <summary>
+            The certificate or one of the certificates in the certificate chain has
+            a basic constraints extension and either the certificate cannot be used
+            to issue other certificates or the chain path length has been exceeded.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.InvalidNameConstraints">
+            <summary>
+            The certificate or one of the certificates in the certificate chain has
+            an invalid name constraints extension.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.UnsupportedNameConstraint">
+            <summary>
+            The certificate or one of the certificates in the certificate chain has a name constraints extension containing unsupported fields.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.NotDefinedNameConstraint">
+            <summary>
+            The certificate or one of the certificates in the certificate chain has a name constraints extension and a name constraint is missing for one of the name choices in the end certificate.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.NotPermittedNameConstraint">
+            <summary>
+            The certificate or one of the certificates in the certificate chain has a name constraints extension and there is not a permitted name constraint for one of the name choices in the end certificate.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.ExcludedNameConstraint">
+            <summary>
+            The certificate or one of the certificates in the certificate chain has a name constraints extension and one of the name choices in the end certificate is explicitly excluded.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.IncompleteChain">
+            <summary>
+            The certificate chain is not compete.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.CtlTimeNotValid">
+            <summary>
+            A CTL used to create this chain was not time valid.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.CtlSignatureNotValid">
+            <summary>
+            A CTL used to create this chain did not have a valid signature.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.CtlWrongUsage">
+            <summary>
+            A CTL used to create this chain is not valid for this usage.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.OfflineRev">
+            <summary>
+            The revocation status of the certificate or one of the certificates in the certificate chain is either off-line or stale.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.NoIssuanceChainPolicy">
+            <summary>
+            The end certificate does not have any resultant issuance policies, and one of the issuing CA certificates has a policy constraints extension requiring it.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.UnknownError">
+            <summary>
+            Unknown error.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.PathTooLong">
+            <summary>
+            A path length constraint in the certification chain has been violated.
+            </summary>
+            <remarks>Not supported in builds for .NET CF.</remarks>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.UnknownCriticalExtension">
+            <summary>
+            A certificate contains an unknown extension that is marked critical.
+            </summary>
+            <remarks>Not supported in builds for .NET CF.</remarks>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.InvalidChain">
+            <summary>
+            A parent of a given certificate in fact did not issue that child certificate.
+            </summary>
+            <remarks>Not supported in builds for .NET CF.</remarks>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.UnknownCA">
+            <summary>
+            A certificate chain could not be built to a trusted root authority.
+            </summary>
+            <remarks>Not supported in builds for .NET CF.</remarks>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.CNNotMatch">
+            <summary>
+            The certificate's CN name does not match the passed value.
+            </summary>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.CANotTrusted">
+            <summary>
+            A certification chain processed correctly, but one of the CA certificates
+            is not trusted by the policy provider.
+            </summary>
+            <remarks>Not supported in builds for .NET CF.</remarks>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.ExplicitDistrust">
+            <summary>
+            The certificate was explicitly marked as untrusted by the user.
+            </summary>
+            <remarks>Not supported in builds for .NET CF.</remarks>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.Malformed">
+            <summary>
+            A certificate is missing or has an empty value for an important field,
+            such as a subject or issuer name.
+            </summary>
+            <remarks>Not supported in builds for .NET CF.</remarks>
+        </member>
+        <member name="F:ComponentPro.Security.Certificates.CertificateVerificationStatus.MoreErrors">
+            <summary>
+            There might be more errors apart from those reported.
+            </summary>
+        </member>
+    </members>
+</doc>
