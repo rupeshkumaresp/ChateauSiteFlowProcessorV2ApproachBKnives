@@ -23,10 +23,8 @@ namespace ChateauSiteFlowApp
             var name = "Report_" + System.DateTime.Now.ToString("dd-MM-yyyy HH_mm_ss");
 
             if (knivesData.Count == 0)
-            {
                 return;
-            }
-
+            
             BuildKnivesDataSheet(name, knivesData);
 
             // Save file and return stream
