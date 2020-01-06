@@ -644,11 +644,14 @@ namespace ChateauSiteFlowApp
             //REMOVE THE KNIFE json order item so it doesn't get duplicate in siteflow
             if (orderContainsKnivesAndOtherProducts)
             {
+                List<SiteflowOrder.Item> modifiedItems = new List<SiteflowOrder.Item>();
+
                 foreach (var item in jsonObject.orderData.items)
                 {
-                    if (knifeJsonItems.Contains(item))
-                        jsonObject.orderData.items.Remove(item);
+                    if (!knifeJsonItems.Contains(item))
+                        modifiedItems.Add(item);
                 }
+                jsonObject.orderData.items = modifiedItems;
             }
         }
 
