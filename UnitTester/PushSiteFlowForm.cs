@@ -29,7 +29,8 @@ namespace ChateauSiteFlowApp
 
             var processHelper = new ProcessHelper();
             //DOWNLOAD ORDERS FROM SFTP
-            //ProcessHelper.DownloadOrders();
+            
+            ProcessHelper.DownloadOrders();
             //CREATE THESE ORDERS TO DATABASE            
 
             var processingResults = processHelper.CreateOrder();
