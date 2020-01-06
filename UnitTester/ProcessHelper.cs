@@ -652,7 +652,6 @@ namespace ChateauSiteFlowApp
             }
         }
 
-
         private static bool OrderContainsOnlyKnives(SiteflowOrder.RootObject jsonObject)
         {
             bool onlyKnives = true;
@@ -671,7 +670,6 @@ namespace ChateauSiteFlowApp
 
             return onlyKnives;
         }
-
 
         private static bool OrderContainsMixProductsWithKnives(SiteflowOrder.RootObject jsonObject)
         {
