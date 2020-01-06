@@ -658,7 +658,6 @@ namespace ChateauSiteFlowApp
 
             foreach (var item in jsonObject.orderData.items)
             {
-                var sourceItemId = item.sourceItemId;
                 var sku = item.sku;
 
                 if (sku != "ShenKnives-Chateau")
@@ -678,7 +677,6 @@ namespace ChateauSiteFlowApp
 
             foreach (var item in jsonObject.orderData.items)
             {
-                var sourceItemId = item.sourceItemId;
                 var sku = item.sku;
 
                 if (sku == "ShenKnives-Chateau")
