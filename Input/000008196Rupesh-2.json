@@ -1,0 +1,85 @@
+{
+    "orderData": {
+        "shipments": [{
+                "shipTo": {
+                    "name": "Mathew Wheeldon",
+                    "address1": "19 June Lewis Way",
+                    "address2": "Fairford",
+                    "address3": "",
+                    "town": "Fairford",
+                    "state": "",
+                    "postcode": "GL7 4GH",
+                    "isoCountry": "GB",
+                    "country": "United Kingdom",
+                    "email": "m.wheeldon@espcolour.co.uk",
+                    "companyName": "ESP Colour",
+                    "phone": "07977190459"
+                },
+                "carrier": {
+                    "alias": "chateau.uk.24"
+                },
+                "attachments": [],
+                "shipmentIndex": 0,
+                "pspBranding": true,
+                "canShipEarly": true
+            }
+        ],
+        "items": [{
+                "components": [{
+                        "fetch": true,
+                        "localFile": false,
+                        "attributes": {
+                            "ProductFinishedPageSize": "85 x 55 mm",
+                            "DesignCode": "JOY\/MUL\/04343PI"
+                        },
+                        "extraData": [],
+                        "code": "Cushion",
+                        "path": "https:\/\/thechateau.tv\/pub\/printzware_static\/ChateauCushion-001.pdf",
+                        "componentId": "000008196A0102",
+                        "barcode": "000008196A0102"
+                    }
+                ],
+                "shipmentIndex": 0,
+                "sourceItemId": "0000081960201",
+                "quantity": 1,
+                "extraData": [],
+                "sku": "Cushion-Chateau",
+                "barcode": "0000081960201",
+                "unitWeight": 500
+            }, {
+                "components": [{
+                        "fetch": true,
+                        "localFile": false,
+                        "attributes": {
+                            "ProductFinishedPageSize": "96 x 64 mm",
+                            "ProductCode": "4170 Suraisu Slicer"
+                        },
+                        "extraData": [],
+                        "code": "Engraved",
+                        "path": "ftp:\/\/ChateauFTP1:9Ha83aUF6p1@ftp.espsmile.co.uk\/array1\/FTPRoot\/000008196Rupesh-01.pdf",
+                        "componentId": "000008196A0202",
+                        "barcode": "000008196A0202"
+                    }
+                ],
+                "shipmentIndex": 0,
+                "sourceItemId": "0000081960202",
+                "quantity": 1,
+                "extraData": [],
+                "sku": "ShenKnives-Chateau",
+                "barcode": "0000081960202",
+                "unitWeight": 500
+            }
+        ],
+        "stockItems": [],
+        "error": [],
+        "extraData": [],
+        "printType": "digital",
+        "sourceOrderId": "000008196Rupesh",
+        "email": "",
+        "amount": 0,
+        "customerName": "Le Chateau"
+    },
+    "destination": {
+        "name": "hp.espcolour"
+    }
+}
