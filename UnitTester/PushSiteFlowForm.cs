@@ -38,8 +38,6 @@ namespace ChateauSiteFlowApp
             //PUsH ORDERS TO SITEFLOW
             processHelper.PushOrdersToSiteFlow(processingResults);
 
-            //processHelper.ManualPushOrdersProcessing();
-
             ProcessHelper.SendProcessingSummaryEmail(processingResults);
 
             //processHelper.ProcessPostBacks();

@@ -18,6 +18,7 @@ namespace ChateauOrderHelper.Model
         {
             public string ProductCode { get; set; }
             public string ProductFinishedPageSize { get; set; }
+            public string TourProduct { get; set; }
             public string DesignCode { get; set; }
             [JsonProperty(PropertyName = "Size For Impo")]
             public string SizeForImpo { get; set; }

@@ -389,7 +389,7 @@ namespace ChateauSiteFlowApp
                             break;
                         }
 
-                        CardsChateauQuantityCalculations(sku, item);
+                        ReviseChateauQuantityCalculations(sku, item);
 
                         var qty = item.quantity;
                         var pdfUri = item.components[0].path;
@@ -549,7 +549,7 @@ namespace ChateauSiteFlowApp
                             }
                             else
                             {
-                                if (ordersubstrateName == "Tote" || sku == "Cushion-Chateau" || sku == "StaticBag-Chateau")
+                                if (ordersubstrateName == "Tote" || sku == "Cushion-Chateau" || sku == "StaticBag-Chateau" || sku == "Tour-Chateau")
                                 {
                                     File.Copy(orderfileName, originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode + ".PDF",
                                         true);
@@ -577,7 +577,12 @@ namespace ChateauSiteFlowApp
                         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
                     if (!onlyKnives)
-                        _orderHelper.SubmitModifiedSiteflowJson(orderId, serializedResultJson);
+                    {
+                        var goodOrder = IsGoodOrder(processingSummary, sourceOrderId);
+
+                        if (goodOrder)
+                            _orderHelper.SubmitModifiedSiteflowJson(orderId, serializedResultJson);
+                    }
 
                     var fileName = Path.GetFileName(jsonFile.FullName);
 
@@ -599,6 +604,25 @@ namespace ChateauSiteFlowApp
             }
 
             return processingSummary;
+        }
+
+        private bool IsGoodOrder(Dictionary<string, string> processingSummary, string sourceOrderId)
+        {
+            var goodOrder = true;
+
+            try
+            {
+                if (processingSummary.ContainsKey(sourceOrderId))
+                {
+                    if (processingSummary[sourceOrderId].Contains("Order failed"))
+                        goodOrder = false;
+                }
+            }
+            catch (Exception e)
+            {
+            }
+
+            return goodOrder;
         }
 
         private void DumpKnivesToDatabase(string sku, bool orderContainsKnivesAndOtherProducts, List<SiteflowOrder.Item> knifeJsonItems, SiteflowOrder.Item item,
@@ -718,7 +742,7 @@ namespace ChateauSiteFlowApp
             return orderDatetime;
         }
 
-        private static void CardsChateauQuantityCalculations(string sku, SiteflowOrder.Item item)
+        private static void ReviseChateauQuantityCalculations(string sku, SiteflowOrder.Item item)
         {
             var count = Convert.ToInt32(item.quantity);
 
@@ -745,6 +769,16 @@ namespace ChateauSiteFlowApp
                         item.quantity = 12;
                 }
             }
+
+            try
+            {
+                if (item.components[0].attributes.Substrate == "Tour Coaster")
+                    item.quantity = 4 * Convert.ToInt32(item.quantity);
+            }
+            catch (Exception e)
+            {
+            }
+
         }
     }
 }
