@@ -20,6 +20,7 @@ namespace ChateauOrderHelper.Model
             public string ProductFinishedPageSize { get; set; }
             public string TourProduct { get; set; }
             public string DesignCode { get; set; }
+            public string Length { get; set; }
             [JsonProperty(PropertyName = "Size For Impo")]
             public string SizeForImpo { get; set; }
             public string Substrate { get; set; }
@@ -30,6 +31,10 @@ namespace ChateauOrderHelper.Model
             public string Country { get; set; }
             public string RUSH { get; set; }
             public string StockCoverType { get; set; }
+
+            public string StationeryStyle { get; set; }
+            public string StationeryType { get; set; }
+
 
         }
         [Serializable]

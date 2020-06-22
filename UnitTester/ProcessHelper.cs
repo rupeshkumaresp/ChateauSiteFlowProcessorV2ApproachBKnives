@@ -4,6 +4,7 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text.RegularExpressions;
 using ChateauOrderHelper;
 using ChateauOrderHelper.Model;
@@ -549,22 +550,99 @@ namespace ChateauSiteFlowApp
                             }
                             else
                             {
-                                if (ordersubstrateName == "Tote" || sku == "Cushion-Chateau" || sku == "StaticBag-Chateau" || sku == "Tour-Chateau")
+                                if (ordersubstrateName == "Tote" || sku == "Cushion-Chateau" || sku == "StaticBag-Chateau" || sku == "Tour-Chateau" || sku == "Belfield-Chateau" || sku == "BelfieldFabric-Chateau")
                                 {
                                     File.Copy(orderfileName, originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode + ".PDF",
                                         true);
                                 }
                                 else
                                 {
-                                    File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) + ".PDF",
-                                        finalPdfPath, true);
+                                    if (sku == "Chateau-Stationery")
+                                    {
+
+                                        var code = item.components[0].code;
+                                        var StationeryStyle = item.components[0].attributes.StationeryStyle;
+                                        var StationeryType = item.components[0].attributes.StationeryType;
+
+                                        if (code == "Stationery")
+                                        {
+                                            var newChateauStationeryPDFPath =
+                                                _pdfModificationHelper.ChateauStationeryPDFModifications(
+                                                    _localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) +
+                                                    ".PDF", code, StationeryStyle, StationeryType);
+
+                                            File.Copy(newChateauStationeryPDFPath, finalPdfPath, true);
+
+                                            item.components[0].path =
+                                                "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
+                                                "_" + orderbarcode + ".PDF";
+                                        }
+                                    }
+                                    else
+                                    {
+
+                                        if (sku == "Chateau-StationerySet")
+                                        {
+                                            int componentCount = 1;
+                                            foreach (var itemComponent in item.components)
+                                            {
+                                                var code = itemComponent.code;
+                                                var stationeryStyle = itemComponent.attributes.StationeryStyle;
+                                                var stationeryType = itemComponent.attributes.StationeryType;
+
+                                                if (code == "Stationery")
+                                                {
+                                                    var newChateauStationeryPDFPath =
+                                                        _pdfModificationHelper.ChateauStationeryPDFModifications(
+                                                            _localProcessingPath + "/PDFS/" + sourceOrderId + "-" +
+                                                            (pdfCount) +
+                                                            ".PDF", code, stationeryStyle, stationeryType);
+
+                                                    finalPdfPath = finalPdfPath.Replace(".pdf", "_" + componentCount + ".pdf");
+                                                    File.Copy(newChateauStationeryPDFPath, finalPdfPath, true);
+
+                                                    itemComponent.path =
+                                                        "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
+                                                        "_" + orderbarcode +"_" + componentCount + ".PDF";
+                                                }
+
+                                                if (code == "StationerySet")
+                                                {
+                                                    var newChateauStationerySetPDFPath =
+                                                        _pdfModificationHelper.ChateauStationerySetPDFModifications(
+                                                            _localProcessingPath + "/PDFS/" + sourceOrderId + "-" +
+                                                            (pdfCount) +
+                                                            ".PDF", code, stationeryStyle, stationeryType);
+                                                    finalPdfPath = finalPdfPath.Replace(".pdf", "_" + componentCount + ".pdf");
+                                                    File.Copy(newChateauStationerySetPDFPath, finalPdfPath, true);
+
+                                                    itemComponent.path =
+                                                        "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
+                                                        "_" + orderbarcode + "_" + componentCount + ".PDF";
+                                                }
+
+                                                componentCount++;
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            File.Copy(
+                                                _localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) +
+                                                ".PDF",
+                                                finalPdfPath, true);
+                                        }
+                                    }
                                 }
                             }
                         }
                         _orderHelper.AddOrderItem(orderId, sku, sourceItemId, qty, substrate, finalPdfPath);
 
-                        item.components[0].path = "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
-                                                  "_" + orderbarcode + ".PDF";
+                        bool chateauStationery = sku == "Chateau-Stationery" || sku == "Chateau-StationerySet";
+
+                        if (!chateauStationery)
+                            item.components[0].path = "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
+                                                      "_" + orderbarcode + ".PDF";
 
                         //If item is knife then add this to database Knife table
                         DumpKnivesToDatabase(sku, orderContainsKnivesAndOtherProducts, knifeJsonItems, item, orderId, sourceOrderId, sourceItemId, orderbarcode, jsonObject);

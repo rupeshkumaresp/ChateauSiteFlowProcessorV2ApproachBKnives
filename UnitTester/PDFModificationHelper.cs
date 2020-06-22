@@ -601,5 +601,15 @@ namespace ChateauSiteFlowApp
                 stamper.Close();
             }
         }
+
+        public string ChateauStationeryPDFModifications(string inputPDFPath, string code, string StationeryStyle, string StationeryType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string ChateauStationerySetPDFModifications(string inputPDFPath, string code, string StationeryStyle, string StationeryType)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -25,15 +25,17 @@ namespace ChateauSiteFlowApp
 
         private void ProcessJsonOrders()
         {
-            Cleanup();
+            //Cleanup();
 
             var processHelper = new ProcessHelper();
             //DOWNLOAD ORDERS FROM SFTP
             
-            ProcessHelper.DownloadOrders();
+            //ProcessHelper.DownloadOrders();
             //CREATE THESE ORDERS TO DATABASE            
 
             var processingResults = processHelper.CreateOrder();
+
+            return;
 
             //PUsH ORDERS TO SITEFLOW
             processHelper.PushOrdersToSiteFlow(processingResults);

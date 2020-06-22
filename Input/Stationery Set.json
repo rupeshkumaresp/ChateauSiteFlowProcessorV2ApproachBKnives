@@ -1,0 +1,80 @@
+{
+	"orderData": {
+		"shipments": [{
+				"shipTo": {
+					"name": "Mathew Wheeldon",
+					"address1": "19 June Lewis Way",
+					"address2": "",
+					"address3": "",
+					"town": "Fairford",
+					"state": "",
+					"postcode": "GL7 4GH",
+					"isoCountry": "GB",
+					"country": "United Kingdom",
+					"email": "m.wheeldon@espcolour.co.uk",
+					"companyName": "",
+					"phone": "07977190459"
+				},
+				"carrier": {
+					"alias": "chateau.uk.24"
+				},
+				"attachments": [],
+				"shipmentIndex": 0,
+				"pspBranding": true,
+				"canShipEarly": true
+			}
+		],
+		"items": [{
+				"components": [{
+						"fetch": true,
+						"localFile": false,
+						"attributes": {
+							"Substrate": "Olin Creme 150",
+							"ProductFinishedPageSize": "148 x 210 mm",
+							"StationeryStyle": "Potagerie",
+							"StationeryType": "Paper"
+						},
+						"extraData": [],
+						"code": "Stationery",
+						"path": "ftp:\/\/ChateauFTP1:9Ha83aUF6p1@ftp.espsmile.co.uk\/array1\/FTPRoot\/20062203.pdf",
+						"componentId": "20062203B0101",
+						"barcode": "20062203B0101"
+					},
+					{
+						"fetch": true,
+						"localFile": false,
+						"attributes": {
+							"Substrate": "Olin Creme 150",
+							"ProductFinishedPageSize": "210 x 148 mm",
+							"StationeryStyle": "Potagerie",
+							"StationeryType": "Card"
+						},
+						"extraData": [],
+						"code": "StationerySet",
+						"path": "ftp:\/\/ChateauFTP1:9Ha83aUF6p1@ftp.espsmile.co.uk\/array1\/FTPRoot\/20062203.pdf",
+						"componentId": "20062203A0101",
+						"barcode": "20062203A0101"
+					}
+				],
+				"shipmentIndex": 0,
+				"sourceItemId": "200622030101",
+				"quantity": 1,
+				"extraData": [],
+				"sku": "Chateau-StationerySet",
+				"barcode": "200622030101",
+				"unitWeight": 1200
+			}
+		],
+		"stockItems": [],
+		"error": [],
+		"extraData": [],
+		"printType": "digital",
+		"sourceOrderId": "20062203",
+		"email": "",
+		"amount": 0,
+		"customerName": "Le Chateau"
+	},
+	"destination": {
+		"name": "hp.espcolour"
+	}
+}
