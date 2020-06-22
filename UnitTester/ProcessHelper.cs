@@ -559,71 +559,14 @@ namespace ChateauSiteFlowApp
                                 {
                                     if (sku == "Chateau-Stationery")
                                     {
-
-                                        var code = item.components[0].code;
-                                        var StationeryStyle = item.components[0].attributes.StationeryStyle;
-                                        var StationeryType = item.components[0].attributes.StationeryType;
-
-                                        if (code == "Stationery")
-                                        {
-                                            var newChateauStationeryPDFPath =
-                                                _pdfModificationHelper.ChateauStationeryPDFModifications(
-                                                    _localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) +
-                                                    ".PDF", code, StationeryStyle, StationeryType);
-
-                                            File.Copy(newChateauStationeryPDFPath, finalPdfPath, true);
-
-                                            item.components[0].path =
-                                                "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
-                                                "_" + orderbarcode + ".PDF";
-                                        }
+                                        ChateauStationeryProcessing(item, sourceOrderId, pdfCount, finalPdfPath, orderorderId, orderbarcode);
                                     }
                                     else
                                     {
 
                                         if (sku == "Chateau-StationerySet")
                                         {
-                                            int componentCount = 1;
-                                            foreach (var itemComponent in item.components)
-                                            {
-                                                var code = itemComponent.code;
-                                                var stationeryStyle = itemComponent.attributes.StationeryStyle;
-                                                var stationeryType = itemComponent.attributes.StationeryType;
-                                                var pdfFileName = itemComponent.path.Split('/').Last();
-
-                                                if (code == "Stationery")
-                                                {
-
-
-                                                    var newChateauStationeryPDFPath =
-                                                        _pdfModificationHelper.ChateauStationeryPDFModifications(
-                                                            _localProcessingPath + "/PDFS/" + pdfFileName, code, stationeryStyle, stationeryType);
-
-                                                    finalPdfPath = finalPdfPath.Replace(".PDF", "_" + componentCount + ".PDF");
-                                                    File.Copy(newChateauStationeryPDFPath, finalPdfPath, true);
-
-                                                    itemComponent.path =
-                                                        "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
-                                                        "_" + orderbarcode + "_" + componentCount + ".PDF";
-                                                }
-
-                                                if (code == "StationerySet")
-                                                {
-                                                    var newChateauStationerySetPDFPath =
-                                                        _pdfModificationHelper.ChateauStationerySetPDFModifications(
-                                                            _localProcessingPath + "/PDFS/" + pdfFileName, code, stationeryStyle, stationeryType);
-
-                                                    finalPdfPath = finalPdfPath.Replace(".PDF", "_" + componentCount + ".PDF");
-                                                    File.Copy(newChateauStationerySetPDFPath, finalPdfPath, true);
-
-                                                    itemComponent.path =
-                                                        "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
-                                                        "_" + orderbarcode + "_" + componentCount + ".PDF";
-                                                }
-
-                                                componentCount++;
-                                            }
-
+                                            finalPdfPath = ChateauStationerySetProcessing(item, finalPdfPath, orderorderId, orderbarcode);
                                         }
                                         else
                                         {
@@ -683,6 +626,72 @@ namespace ChateauSiteFlowApp
             }
 
             return processingSummary;
+        }
+
+        private string ChateauStationerySetProcessing(SiteflowOrder.Item item, string finalPdfPath, string orderorderId, string orderbarcode)
+        {
+            int componentCount = 1;
+            foreach (var itemComponent in item.components)
+            {
+                var code = itemComponent.code;
+                var stationeryStyle = itemComponent.attributes.StationeryStyle;
+                var stationeryType = itemComponent.attributes.StationeryType;
+                var pdfFileName = itemComponent.path.Split('/').Last();
+
+                if (code == "Stationery")
+                {
+                    var newChateauStationeryPDFPath =
+                        _pdfModificationHelper.ChateauStationeryPDFModifications(
+                            _localProcessingPath + "/PDFS/" + pdfFileName, code, stationeryStyle, stationeryType);
+
+                    finalPdfPath = finalPdfPath.Replace(".PDF", "_" + componentCount + ".PDF");
+                    File.Copy(newChateauStationeryPDFPath, finalPdfPath, true);
+
+                    itemComponent.path =
+                        "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
+                        "_" + orderbarcode + "_" + componentCount + ".PDF";
+                }
+
+                if (code == "StationerySet")
+                {
+                    var newChateauStationerySetPDFPath =
+                        _pdfModificationHelper.ChateauStationerySetPDFModifications(
+                            _localProcessingPath + "/PDFS/" + pdfFileName, code, stationeryStyle, stationeryType);
+
+                    finalPdfPath = finalPdfPath.Replace(".PDF", "_" + componentCount + ".PDF");
+                    File.Copy(newChateauStationerySetPDFPath, finalPdfPath, true);
+
+                    itemComponent.path =
+                        "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
+                        "_" + orderbarcode + "_" + componentCount + ".PDF";
+                }
+
+                componentCount++;
+            }
+
+            return finalPdfPath;
+        }
+
+        private void ChateauStationeryProcessing(SiteflowOrder.Item item, string sourceOrderId, int pdfCount, string finalPdfPath,
+            string orderorderId, string orderbarcode)
+        {
+            var code = item.components[0].code;
+            var StationeryStyle = item.components[0].attributes.StationeryStyle;
+            var StationeryType = item.components[0].attributes.StationeryType;
+
+            if (code == "Stationery")
+            {
+                var newChateauStationeryPDFPath =
+                    _pdfModificationHelper.ChateauStationeryPDFModifications(
+                        _localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) +
+                        ".PDF", code, StationeryStyle, StationeryType);
+
+                File.Copy(newChateauStationeryPDFPath, finalPdfPath, true);
+
+                item.components[0].path =
+                    "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
+                    "_" + orderbarcode + ".PDF";
+            }
         }
 
         private bool IsGoodOrder(Dictionary<string, string> processingSummary, string sourceOrderId)
