@@ -589,31 +589,31 @@ namespace ChateauSiteFlowApp
                                                 var code = itemComponent.code;
                                                 var stationeryStyle = itemComponent.attributes.StationeryStyle;
                                                 var stationeryType = itemComponent.attributes.StationeryType;
+                                                var pdfFileName = itemComponent.path.Split('/').Last();
 
                                                 if (code == "Stationery")
                                                 {
+
+
                                                     var newChateauStationeryPDFPath =
                                                         _pdfModificationHelper.ChateauStationeryPDFModifications(
-                                                            _localProcessingPath + "/PDFS/" + sourceOrderId + "-" +
-                                                            (pdfCount) +
-                                                            ".PDF", code, stationeryStyle, stationeryType);
+                                                            _localProcessingPath + "/PDFS/" + pdfFileName, code, stationeryStyle, stationeryType);
 
-                                                    finalPdfPath = finalPdfPath.Replace(".pdf", "_" + componentCount + ".pdf");
+                                                    finalPdfPath = finalPdfPath.Replace(".PDF", "_" + componentCount + ".PDF");
                                                     File.Copy(newChateauStationeryPDFPath, finalPdfPath, true);
 
                                                     itemComponent.path =
                                                         "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
-                                                        "_" + orderbarcode +"_" + componentCount + ".PDF";
+                                                        "_" + orderbarcode + "_" + componentCount + ".PDF";
                                                 }
 
                                                 if (code == "StationerySet")
                                                 {
                                                     var newChateauStationerySetPDFPath =
                                                         _pdfModificationHelper.ChateauStationerySetPDFModifications(
-                                                            _localProcessingPath + "/PDFS/" + sourceOrderId + "-" +
-                                                            (pdfCount) +
-                                                            ".PDF", code, stationeryStyle, stationeryType);
-                                                    finalPdfPath = finalPdfPath.Replace(".pdf", "_" + componentCount + ".pdf");
+                                                            _localProcessingPath + "/PDFS/" + pdfFileName, code, stationeryStyle, stationeryType);
+
+                                                    finalPdfPath = finalPdfPath.Replace(".PDF", "_" + componentCount + ".PDF");
                                                     File.Copy(newChateauStationerySetPDFPath, finalPdfPath, true);
 
                                                     itemComponent.path =
@@ -636,9 +636,10 @@ namespace ChateauSiteFlowApp
                                 }
                             }
                         }
-                        _orderHelper.AddOrderItem(orderId, sku, sourceItemId, qty, substrate, finalPdfPath);
 
                         bool chateauStationery = sku == "Chateau-Stationery" || sku == "Chateau-StationerySet";
+
+                        _orderHelper.AddOrderItem(orderId, sku, sourceItemId, qty, substrate, finalPdfPath);
 
                         if (!chateauStationery)
                             item.components[0].path = "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +

@@ -36,7 +36,7 @@
 						},
 						"extraData": [],
 						"code": "Stationery",
-						"path": "ftp:\/\/ChateauFTP1:9Ha83aUF6p1@ftp.espsmile.co.uk\/array1\/FTPRoot\/20062203.pdf",
+						"path": "ftp:\/\/ChateauFTP1:9Ha83aUF6p1@ftp.espsmile.co.uk\/array1\/FTPRoot\/20062203-1.pdf",
 						"componentId": "20062203B0101",
 						"barcode": "20062203B0101"
 					},
@@ -51,7 +51,7 @@
 						},
 						"extraData": [],
 						"code": "StationerySet",
-						"path": "ftp:\/\/ChateauFTP1:9Ha83aUF6p1@ftp.espsmile.co.uk\/array1\/FTPRoot\/20062203.pdf",
+						"path": "ftp:\/\/ChateauFTP1:9Ha83aUF6p1@ftp.espsmile.co.uk\/array1\/FTPRoot\/20062203-2.pdf",
 						"componentId": "20062203A0101",
 						"barcode": "20062203A0101"
 					}

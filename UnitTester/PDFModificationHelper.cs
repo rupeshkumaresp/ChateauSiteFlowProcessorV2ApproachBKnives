@@ -604,12 +604,12 @@ namespace ChateauSiteFlowApp
 
         public string ChateauStationeryPDFModifications(string inputPDFPath, string code, string StationeryStyle, string StationeryType)
         {
-            throw new NotImplementedException();
+            return "test.PDF";
         }
 
         public string ChateauStationerySetPDFModifications(string inputPDFPath, string code, string StationeryStyle, string StationeryType)
         {
-            throw new NotImplementedException();
+            return "test.PDF";
         }
     }
 }
