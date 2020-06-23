@@ -25,6 +25,13 @@ namespace ChateauSiteFlowApp
 
         private void ProcessJsonOrders()
         {
+
+            PdfModificationHelper test = new PdfModificationHelper();
+
+            test.ChateauStationeryPDFModifications(@"C:\Development\MergeIt\ChateauSiteFlowProcessorV2ApproachBKnives\PDFs\Product 2 Potagerie.pdf", "Stationery", "Potagerie", "Paper");
+
+
+            return;
             //Cleanup();
 
             var processHelper = new ProcessHelper();

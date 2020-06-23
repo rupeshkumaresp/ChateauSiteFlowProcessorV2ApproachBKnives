@@ -8,6 +8,7 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Text.RegularExpressions;
 using ChateauOrderHelper;
 using ChateauOrderHelper.Model;
+using iTextSharp.text;
 using Newtonsoft.Json;
 using SiteFlowHelper;
 
@@ -641,7 +642,7 @@ namespace ChateauSiteFlowApp
                 if (code == "Stationery")
                 {
                     var newChateauStationeryPDFPath =
-                        _pdfModificationHelper.ChateauStationeryPDFModifications(
+                        _pdfModificationHelper.ChateauStationeryPDFModifications(orderorderId,
                             _localProcessingPath + "/PDFS/" + pdfFileName, code, stationeryStyle, stationeryType);
 
                     finalPdfPath = finalPdfPath.Replace(".PDF", "_" + componentCount + ".PDF");
@@ -655,7 +656,7 @@ namespace ChateauSiteFlowApp
                 if (code == "StationerySet")
                 {
                     var newChateauStationerySetPDFPath =
-                        _pdfModificationHelper.ChateauStationerySetPDFModifications(
+                        _pdfModificationHelper.ChateauStationerySetPDFModifications(orderorderId,
                             _localProcessingPath + "/PDFS/" + pdfFileName, code, stationeryStyle, stationeryType);
 
                     finalPdfPath = finalPdfPath.Replace(".PDF", "_" + componentCount + ".PDF");
@@ -679,12 +680,13 @@ namespace ChateauSiteFlowApp
             var StationeryStyle = item.components[0].attributes.StationeryStyle;
             var StationeryType = item.components[0].attributes.StationeryType;
 
+            var pdfFileName = item.components[0].path.Split('/').Last();
+
             if (code == "Stationery")
             {
                 var newChateauStationeryPDFPath =
                     _pdfModificationHelper.ChateauStationeryPDFModifications(
-                        _localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) +
-                        ".PDF", code, StationeryStyle, StationeryType);
+                        _localProcessingPath + "/PDFS/" + pdfFileName, code, StationeryStyle, StationeryType);
 
                 File.Copy(newChateauStationeryPDFPath, finalPdfPath, true);
 

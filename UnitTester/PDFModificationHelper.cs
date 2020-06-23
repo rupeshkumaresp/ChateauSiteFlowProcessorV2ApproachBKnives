@@ -448,7 +448,7 @@ namespace ChateauSiteFlowApp
 
 
             //code128.BarHeight = (code128.BarcodeSize.Height) * (float)(1.20);
-            
+
             var bm = new Bitmap(code128.CreateDrawingImage(Color.Black, Color.White));
 
 
@@ -462,7 +462,7 @@ namespace ChateauSiteFlowApp
             boxTable.DefaultCell.Border = 0;
             boxTable.WidthPercentage = 100;
 
-             widths = new float[] { 226f, 226f };
+            widths = new float[] { 226f, 226f };
             boxTable.SetWidths(widths);
 
 
@@ -595,21 +595,92 @@ namespace ChateauSiteFlowApp
                 int desiredRot = DEGREE; // 90 degrees clockwise from what it is now
                 iTextSharp.text.pdf.PdfNumber rotation = pageDict.GetAsNumber(iTextSharp.text.pdf.PdfName.ROTATE);
 
-            
+
                 pageDict.Put(iTextSharp.text.pdf.PdfName.ROTATE, new iTextSharp.text.pdf.PdfNumber(desiredRot));
 
                 stamper.Close();
             }
         }
 
-        public string ChateauStationeryPDFModifications(string inputPDFPath, string code, string StationeryStyle, string StationeryType)
+        public string ChateauStationeryPDFModifications(string orderorderId, string inputPDFPath, string code, string StationeryStyle, string StationeryType)
+        {
+
+            //50time file copy
+            var directory = Path.GetDirectoryName(inputPDFPath);
+            var fileName = Path.GetFileNameWithoutExtension(inputPDFPath);
+
+            List<string> clonedFiles = new List<string>();
+            for (int i = 1; i <= 50; i++)
+            {
+
+                var newFileName = fileName + "-" + i.ToString() + ".PDF";
+
+                File.Copy(inputPDFPath, Path.Combine(directory, newFileName), true);
+
+                clonedFiles.Add(Path.Combine(directory, newFileName));
+            }
+
+            var coverPdfFile = "";//Get based on stationery style and type
+                                  //Apply additional text to cover page from attribute
+
+            var staticPdfPath = ConfigurationManager.AppSettings["StaticPDFPath"];
+
+            if (code == "Stationery")
+            {
+                var ChateauStationeryBasePath = Path.Combine(staticPdfPath, "Chateau-Stationery");
+
+                ChateauStationeryBasePath = Path.Combine(ChateauStationeryBasePath, StationeryType);
+
+                coverPdfFile = ChateauStationeryBasePath + "//" + StationeryStyle + ".PDF";
+            }
+
+            //merge Files
+
+            clonedFiles.Insert(0, coverPdfFile);
+
+            var output = Path.Combine(directory, orderorderId + "-Stationery-Output.PDF");
+            Merge(clonedFiles, output);
+
+            for (int i = 1; i <= 50; i++)
+            {
+                var newFileName = fileName + "-" + i.ToString() + ".PDF";
+                File.Delete(Path.Combine(directory, newFileName));
+            }
+            return output;
+        }
+
+        public string ChateauStationerySetPDFModifications(string orderorderId, string inputPDFPath, string code, string StationeryStyle, string StationeryType)
         {
             return "test.PDF";
         }
 
-        public string ChateauStationerySetPDFModifications(string inputPDFPath, string code, string StationeryStyle, string StationeryType)
+        public static void Merge(List<String> InFiles, String OutFile)
         {
-            return "test.PDF";
+            using (FileStream stream = new FileStream(OutFile, FileMode.Create))
+            using (Document doc = new Document())
+            using (PdfCopy pdf = new PdfCopy(doc, stream))
+            {
+                doc.Open();
+
+                PdfReader reader = null;
+                PdfImportedPage page = null;
+
+                //fixed typo
+                InFiles.ForEach(file =>
+                {
+                    reader = new PdfReader(file);
+
+                    for (int i = 0; i < reader.NumberOfPages; i++)
+                    {
+                        page = pdf.GetImportedPage(reader, i + 1);
+                        pdf.AddPage(page);
+                    }
+
+                    pdf.FreeReader(reader);
+                    reader.Close();
+                });
+            }
         }
+
     }
 }
