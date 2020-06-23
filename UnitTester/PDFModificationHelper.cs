@@ -651,8 +651,62 @@ namespace ChateauSiteFlowApp
 
         public string ChateauStationerySetPDFModifications(string orderorderId, string inputPDFPath, string code, string StationeryStyle, string StationeryType)
         {
-            return "test.PDF";
+            //50time file copy
+            var directory = Path.GetDirectoryName(inputPDFPath);
+            var fileName = Path.GetFileNameWithoutExtension(inputPDFPath);
+
+            List<string> clonedFiles = new List<string>();
+            for (int i = 1; i <= 50; i++)
+            {
+                var newFileName = fileName + "-" + i.ToString() + ".PDF";
+
+                File.Copy(inputPDFPath, Path.Combine(directory, newFileName), true);
+
+                clonedFiles.Add(Path.Combine(directory, newFileName));
+            }
+
+            var coverPdfFile = "";//Get based on stationery style and type
+            //Apply additional text to cover page from attribute
+
+            var staticPdfPath = ConfigurationManager.AppSettings["StaticPDFPath"];
+
+            if (code == "StationerySet")
+            {
+                var ChateauStationerySetBasePath = Path.Combine(staticPdfPath, "Chateau-StationerySet");
+
+                ChateauStationerySetBasePath = Path.Combine(ChateauStationerySetBasePath, StationeryType);
+
+                coverPdfFile = ChateauStationerySetBasePath + "//" + StationeryStyle + ".PDF";
+            }
+
+            //merge Files
+
+            clonedFiles.Insert(0, coverPdfFile);
+
+            var output = Path.Combine(directory, orderorderId + "-StationerySet-Output.PDF");
+            Merge(clonedFiles, output);
+
+            for (int i = 1; i <= 50; i++)
+            {
+                var newFileName = fileName + "-" + i.ToString() + ".PDF";
+                File.Delete(Path.Combine(directory, newFileName));
+            }
+            return output;
         }
+
+        public void SelectPages(string inputPdf, string pageSelection, string outputPdf)
+        {
+            using (PdfReader reader = new PdfReader(inputPdf))
+            {
+                reader.SelectPages(pageSelection);
+
+                using (PdfStamper stamper = new PdfStamper(reader, File.Create(outputPdf)))
+                {
+                    stamper.Close();
+                }
+            }
+        }
+
 
         public static void Merge(List<String> InFiles, String OutFile)
         {
