@@ -640,10 +640,6 @@ namespace ChateauSiteFlowApp
                 var stationeryType = itemComponent.attributes.StationeryType;
                 var pdfFileName = itemComponent.path.Split('/').Last();
 
-
-
-                
-
                 if (code == "Stationery")
                 {
                     _pdfModificationHelper.SelectPages(_localProcessingPath + "/PDFS/" + pdfFileName, "1-2", _localProcessingPath + "/PDFS/" + orderorderId + "-Stationery-In.PDF");

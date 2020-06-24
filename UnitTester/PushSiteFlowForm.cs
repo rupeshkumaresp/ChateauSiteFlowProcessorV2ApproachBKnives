@@ -28,7 +28,9 @@ namespace ChateauSiteFlowApp
 
             PdfModificationHelper test = new PdfModificationHelper();
 
-            test.ChateauStationeryPDFModifications("235253563",@"C:\Development\MergeIt\ChateauSiteFlowProcessorV2ApproachBKnives\PDFs\Product 2 Potagerie.pdf", "Stationery", "Potagerie", "Paper");
+            test.SelectPages(@"C:\Development\MergeIt\ChateauSiteFlowProcessorV2ApproachBKnives\PDFs\Product 3 Potagerie.pdf", "3-4", @"C:\Development\MergeIt\ChateauSiteFlowProcessorV2ApproachBKnives\PDFs\Product 3 Potagerie_SS_In.pdf");
+
+            test.ChateauStationerySetPDFModifications("235253563", @"C:\Development\MergeIt\ChateauSiteFlowProcessorV2ApproachBKnives\PDFs\Product 3 Potagerie_SS_In.pdf", "StationerySet", "Potagerie", "Paper");
 
 
             return;
