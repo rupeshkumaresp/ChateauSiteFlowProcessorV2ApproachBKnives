@@ -10,6 +10,8 @@ using iTextSharp.text.pdf;
 using Image = iTextSharp.text.Image;
 using Rectangle = iTextSharp.text.Rectangle;
 
+
+
 namespace ChateauSiteFlowApp
 {
     /// <summary>
@@ -18,6 +20,8 @@ namespace ChateauSiteFlowApp
     public class PdfModificationHelper
     {
         static string _pdfPath = ConfigurationManager.AppSettings["WorkingDirectory"] + ConfigurationManager.AppSettings["ServiceFolderPath"] + @"PDFs/";
+
+        static string AsposeLicense = ConfigurationManager.AppSettings["WorkingDirectory"] + ConfigurationManager.AppSettings["ServiceFolderPath"] + @"License/Aspose.Pdf.lic";
 
         public void AddBarcodeImage(string path, string fileName, string substrateName, string barcode, string orderId, string quantity)
         {
@@ -621,7 +625,6 @@ namespace ChateauSiteFlowApp
             }
 
             var coverPdfFile = "";//Get based on stationery style and type
-                                  //Apply additional text to cover page from attribute
 
             var staticPdfPath = ConfigurationManager.AppSettings["StaticPDFPath"];
 
@@ -634,9 +637,15 @@ namespace ChateauSiteFlowApp
                 coverPdfFile = ChateauStationeryBasePath + "//" + StationeryStyle + ".PDF";
             }
 
+            //Apply additional text to cover page from attribute
+
+            var modifiedCoverPdfFile = Path.Combine(directory, orderorderId + "-StationeryCoverStyle.PDF");
+
+            ApplyAdditionalTextToCover(orderorderId, coverPdfFile, modifiedCoverPdfFile);
+
             //merge Files
 
-            clonedFiles.Insert(0, coverPdfFile);
+            clonedFiles.Insert(0, modifiedCoverPdfFile);
 
             var output = Path.Combine(directory, orderorderId + "-Stationery-Output.PDF");
             Merge(clonedFiles, output);
@@ -649,6 +658,55 @@ namespace ChateauSiteFlowApp
             return output;
         }
 
+        public void ApplyAdditionalTextToCover(string orderorderId, string coverPdfFile, string modifiedCoverPdfFile)
+        {
+            if (File.Exists(coverPdfFile))
+            {
+                File.Copy(coverPdfFile, modifiedCoverPdfFile, true);
+
+                var orderID = orderorderId;//.TrimStart('0');
+
+                if (!string.IsNullOrEmpty(orderID))
+                    ReplaceTextInPDF(coverPdfFile, modifiedCoverPdfFile, "#ORDER", "#" + orderID);
+            }
+        }
+
+
+        private void ReplaceTextInPDF(String input, String result, string FindText, String newText)
+        {
+            Aspose.Pdf.License license = new Aspose.Pdf.License();
+            license.SetLicense(AsposeLicense);
+
+            var shortName = Path.GetFileNameWithoutExtension(result);
+            var dir = Path.GetDirectoryName(result);
+
+            // Open document
+            Aspose.Pdf.Document pdfDocument = new Aspose.Pdf.Document(input);
+
+            // Create TextAbsorber object to find all instances of the input search phrase
+            Aspose.Pdf.Text.TextFragmentAbsorber textFragmentAbsorber = new Aspose.Pdf.Text.TextFragmentAbsorber(FindText);
+
+            // Accept the absorber for all the pages
+            pdfDocument.Pages.Accept(textFragmentAbsorber);
+
+            // Get the extracted text fragments
+            Aspose.Pdf.Text.TextFragmentCollection textFragmentCollection = textFragmentAbsorber.TextFragments;
+
+            // Loop through the fragments
+            foreach (Aspose.Pdf.Text.TextFragment textFragment in textFragmentCollection)
+            {
+                // Update text and other properties
+                textFragment.Text = newText;
+                //textFragment.TextState.Font = Aspose.Pdf.Text.FontRepository.FindFont("Helvetica-Bold");
+                //textFragment.TextState.FontSize = 12;
+            }
+
+            // Save resulting PDF document.
+            //pdfDocument.Pages[1].Rotate = Rotation.on90;
+
+            pdfDocument.Save(result);
+
+        }
         public string ChateauStationerySetPDFModifications(string orderorderId, string inputPDFPath, string code, string StationeryStyle, string StationeryType)
         {
             //50time file copy
