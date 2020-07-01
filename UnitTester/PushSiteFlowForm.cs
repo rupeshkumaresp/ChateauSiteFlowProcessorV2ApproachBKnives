@@ -47,7 +47,7 @@ namespace ChateauSiteFlowApp
 
             var processingResults = processHelper.CreateOrder();
 
-            return;
+            //return;
 
             //PUsH ORDERS TO SITEFLOW
             processHelper.PushOrdersToSiteFlow(processingResults);

@@ -569,14 +569,36 @@ namespace ChateauSiteFlowApp
                                 {
                                     if (sku == "Chateau-Stationery")
                                     {
-                                        ChateauStationeryProcessing(item, sourceOrderId, pdfCount, finalPdfPath, orderorderId, orderbarcode);
+                                        try
+                                        {
+                                            ChateauStationeryProcessing(item, sourceOrderId, pdfCount, finalPdfPath, orderorderId, orderbarcode);
+
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            if (processingSummary.ContainsKey(sourceOrderId))
+                                                processingSummary[sourceOrderId] += "Order failed";
+                                            else
+                                                processingSummary.Add(sourceOrderId, "Order failed");
+                                        }
                                     }
                                     else
                                     {
 
                                         if (sku == "Chateau-StationerySet")
                                         {
-                                            finalPdfPath = ChateauStationerySetProcessing(item, finalPdfPath, orderorderId, orderbarcode);
+                                            try
+                                            {
+                                                finalPdfPath = ChateauStationerySetProcessing(item, finalPdfPath, orderorderId, orderbarcode);
+                                            }
+                                            catch (Exception e)
+                                            {
+                                                if (processingSummary.ContainsKey(sourceOrderId))
+                                                    processingSummary[sourceOrderId] += "Order failed";
+                                                else
+                                                    processingSummary.Add(sourceOrderId, "Order failed");
+                                            }
+
                                         }
                                         else
                                         {
