@@ -446,24 +446,33 @@ namespace ChateauSiteFlowApp
                         }
                         else
                         {
-                            if (!File.Exists(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) +
-                                             ".PDF"))
+                            if (sku == "Chateau-Stationery" || sku == "Chateau-StationerySet")
                             {
-                                processingSummary.Add(sourceOrderId + "-" + sourceItemId, sourceOrderId + "-" + (pdfCount) + ".PDF" + " PDF not found");
-
-                                if (processingSummary.ContainsKey(sourceOrderId))
-                                {
-                                    processingSummary[sourceOrderId] += "Order failed";
-                                }
-                                else
-                                {
-                                    processingSummary.Add(sourceOrderId, "Order failed");
-                                }
-
-                                continue;
+                                //donot do anything
                             }
-                            File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) + ".PDF",
-                                pdfPath + sourceItemId + ".PDF", true);
+                            else
+                            {
+                                if (!File.Exists(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) +
+                                                 ".PDF"))
+                                {
+                                    processingSummary.Add(sourceOrderId + "-" + sourceItemId,
+                                        sourceOrderId + "-" + (pdfCount) + ".PDF" + " PDF not found");
+
+                                    if (processingSummary.ContainsKey(sourceOrderId))
+                                    {
+                                        processingSummary[sourceOrderId] += "Order failed";
+                                    }
+                                    else
+                                    {
+                                        processingSummary.Add(sourceOrderId, "Order failed");
+                                    }
+
+                                    continue;
+                                }
+
+                                File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) + ".PDF",
+                                    pdfPath + sourceItemId + ".PDF", true);
+                            }
                         }
 
                         //PDF modifications & update the json with new PDF path to database
@@ -632,6 +641,8 @@ namespace ChateauSiteFlowApp
 
         private string ChateauStationerySetProcessing(SiteflowOrder.Item item, string finalPdfPath, string orderorderId, string orderbarcode)
         {
+            var originalOrderInputPath = ConfigurationManager.AppSettings["OriginalOrderInputPath"];
+
             int componentCount = 1;
             foreach (var itemComponent in item.components)
             {
@@ -649,7 +660,7 @@ namespace ChateauSiteFlowApp
                             _localProcessingPath + "/PDFS/" + orderorderId + "-Stationery-In.PDF", code, stationeryStyle, stationeryType);
 
                     finalPdfPath = finalPdfPath.Replace(".PDF", "_" + componentCount + ".PDF");
-                    File.Copy(newChateauStationeryPDFPath, finalPdfPath, true);
+                    File.Copy(newChateauStationeryPDFPath, originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode + "_" + componentCount + ".PDF", true);
 
                     itemComponent.path =
                         "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
@@ -664,8 +675,10 @@ namespace ChateauSiteFlowApp
                         _pdfModificationHelper.ChateauStationerySetPDFModifications(orderorderId,
                             _localProcessingPath + "/PDFS/" + orderorderId + "-StationerySet-In.PDF", code, stationeryStyle, stationeryType);
 
+
+
                     finalPdfPath = finalPdfPath.Replace(".PDF", "_" + componentCount + ".PDF");
-                    File.Copy(newChateauStationerySetPDFPath, finalPdfPath, true);
+                    File.Copy(newChateauStationerySetPDFPath, originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode + "_" + componentCount + ".PDF", true);
 
                     itemComponent.path =
                         "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +

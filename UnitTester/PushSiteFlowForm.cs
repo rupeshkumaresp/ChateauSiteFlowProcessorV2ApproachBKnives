@@ -36,7 +36,7 @@ namespace ChateauSiteFlowApp
             //test.ChateauStationerySetPDFModifications("235253563", @"C:\Development\MergeIt\ChateauSiteFlowProcessorV2ApproachBKnives\PDFs\Product 3 Potagerie_SS_In.pdf", "StationerySet", "Potagerie", "Paper");
 
 
-            return;
+            //return;
             //Cleanup();
 
             var processHelper = new ProcessHelper();
