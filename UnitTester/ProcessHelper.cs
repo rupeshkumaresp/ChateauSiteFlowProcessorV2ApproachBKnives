@@ -411,7 +411,16 @@ namespace ChateauSiteFlowApp
                             if (partArray.Length == 2)
                             {
                                 partArray[1] = partArray[1].Replace(".pdf", "");
-                                pdfCount = Convert.ToInt32(partArray[1]);
+
+                                try
+                                {
+                                    pdfCount = Convert.ToInt32(partArray[1]);
+                                }
+                                catch (Exception e)
+                                {
+                                    pdfCount = 1;
+                                }
+
                             }
                         }
 
@@ -602,10 +611,18 @@ namespace ChateauSiteFlowApp
                                         }
                                         else
                                         {
-                                            File.Copy(
-                                                _localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) +
-                                                ".PDF",
-                                                finalPdfPath, true);
+                                            if (staticOrder)
+                                            {
+                                                File.Copy(
+                                                    pdfPath + sourceItemId + ".PDF", finalPdfPath, true);
+                                            }
+                                            else
+                                            {
+                                                File.Copy(
+                                                    _localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) +
+                                                    ".PDF",
+                                                    finalPdfPath, true);
+                                            }
                                         }
                                     }
                                 }
