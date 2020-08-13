@@ -606,7 +606,7 @@ namespace ChateauSiteFlowApp
             }
         }
 
-        public string ChateauStationeryPDFModifications(string orderorderId, string inputPDFPath, string code, string StationeryStyle, string StationeryType)
+        public string ChateauStationeryPDFModifications(string orderorderId, string inputPDFPath, string code, string StationeryStyle, string StationeryType, string customerName)
         {
 
             //50time file copy
@@ -641,7 +641,7 @@ namespace ChateauSiteFlowApp
 
             var modifiedCoverPdfFile = Path.Combine(directory, orderorderId + "-StationeryCoverStyle.PDF");
 
-            ApplyAdditionalTextToCover(orderorderId, coverPdfFile, modifiedCoverPdfFile);
+            ApplyAdditionalTextToCover(orderorderId, coverPdfFile, modifiedCoverPdfFile, customerName);
 
             //merge Files
 
@@ -657,7 +657,7 @@ namespace ChateauSiteFlowApp
             }
             return output;
         }
-        public string ChateauStationerySetPDFModifications(string orderorderId, string inputPDFPath, string code, string StationeryStyle, string StationeryType)
+        public string ChateauStationerySetPDFModifications(string orderorderId, string inputPDFPath, string code, string StationeryStyle, string StationeryType, string customerName)
         {
             //50time file copy
             var directory = Path.GetDirectoryName(inputPDFPath);
@@ -689,7 +689,7 @@ namespace ChateauSiteFlowApp
 
             var modifiedCoverPdfFile = Path.Combine(directory, orderorderId + "-StationeryCoverStyle.PDF");
 
-            ApplyAdditionalTextToCover(orderorderId, coverPdfFile, modifiedCoverPdfFile);
+            ApplyAdditionalTextToCover(orderorderId, coverPdfFile, modifiedCoverPdfFile, customerName);
 
             //merge Files
 
@@ -720,7 +720,7 @@ namespace ChateauSiteFlowApp
         }
 
 
-        public void ApplyAdditionalTextToCover(string orderorderId, string coverPdfFile, string modifiedCoverPdfFile)
+        public void ApplyAdditionalTextToCover(string orderorderId, string coverPdfFile, string modifiedCoverPdfFile, string customerName)
         {
             if (File.Exists(coverPdfFile))
             {
@@ -728,13 +728,13 @@ namespace ChateauSiteFlowApp
 
                 var orderID = orderorderId;//.TrimStart('0');
 
-                if (!string.IsNullOrEmpty(orderID))
-                    ReplaceTextInPDF(coverPdfFile, modifiedCoverPdfFile, "#ORDER", "#" + orderID);
+                ReplaceTextInPDF(coverPdfFile, modifiedCoverPdfFile, "#ORDER", orderID, "#name", customerName);
+
             }
         }
 
 
-        private void ReplaceTextInPDF(String input, String result, string FindText, String newText)
+        private void ReplaceTextInPDF(String input, String result, string FindText1, String newText1, string FindText2, String newText2)
         {
             Aspose.Pdf.License license = new Aspose.Pdf.License();
             license.SetLicense(AsposeLicense);
@@ -746,7 +746,7 @@ namespace ChateauSiteFlowApp
             Aspose.Pdf.Document pdfDocument = new Aspose.Pdf.Document(input);
 
             // Create TextAbsorber object to find all instances of the input search phrase
-            Aspose.Pdf.Text.TextFragmentAbsorber textFragmentAbsorber = new Aspose.Pdf.Text.TextFragmentAbsorber(FindText);
+            Aspose.Pdf.Text.TextFragmentAbsorber textFragmentAbsorber = new Aspose.Pdf.Text.TextFragmentAbsorber(FindText1);
 
             // Accept the absorber for all the pages
             pdfDocument.Pages.Accept(textFragmentAbsorber);
@@ -758,13 +758,24 @@ namespace ChateauSiteFlowApp
             foreach (Aspose.Pdf.Text.TextFragment textFragment in textFragmentCollection)
             {
                 // Update text and other properties
-                textFragment.Text = newText;
-                //textFragment.TextState.Font = Aspose.Pdf.Text.FontRepository.FindFont("Helvetica-Bold");
-                //textFragment.TextState.FontSize = 12;
+                textFragment.Text = newText1;
             }
 
-            // Save resulting PDF document.
-            //pdfDocument.Pages[1].Rotate = Rotation.on90;
+            // Create TextAbsorber object to find all instances of the input search phrase
+            textFragmentAbsorber = new Aspose.Pdf.Text.TextFragmentAbsorber(FindText2);
+
+            // Accept the absorber for all the pages
+            pdfDocument.Pages.Accept(textFragmentAbsorber);
+
+            // Get the extracted text fragments
+            textFragmentCollection = textFragmentAbsorber.TextFragments;
+
+            // Loop through the fragments
+            foreach (Aspose.Pdf.Text.TextFragment textFragment in textFragmentCollection)
+            {
+                // Update text and other properties
+                textFragment.Text = newText2;
+            }
 
             pdfDocument.Save(result);
 

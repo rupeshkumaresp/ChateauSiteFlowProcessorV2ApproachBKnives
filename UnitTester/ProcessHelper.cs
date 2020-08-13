@@ -314,6 +314,11 @@ namespace ChateauSiteFlowApp
 
                 SiteflowOrder.RootObject jsonObject = ProcessHelper.ReadJsonFile(jsonFile, ref json);
 
+                var customerName = "";
+
+                if (jsonObject.orderData.shipments.Count > 0)
+                    customerName = jsonObject.orderData.shipments[0].shipTo.name;
+
                 var sourceOrderId = "";
                 try
                 {
@@ -580,7 +585,7 @@ namespace ChateauSiteFlowApp
                                     {
                                         try
                                         {
-                                            ChateauStationeryProcessing(item, sourceOrderId, pdfCount, finalPdfPath, orderorderId, orderbarcode);
+                                            ChateauStationeryProcessing(item, sourceOrderId, pdfCount, finalPdfPath, orderorderId, orderbarcode, customerName);
 
                                         }
                                         catch (Exception e)
@@ -598,7 +603,7 @@ namespace ChateauSiteFlowApp
                                         {
                                             try
                                             {
-                                                finalPdfPath = ChateauStationerySetProcessing(item, finalPdfPath, orderorderId, orderbarcode);
+                                                finalPdfPath = ChateauStationerySetProcessing(item, finalPdfPath, orderorderId, orderbarcode, customerName);
                                             }
                                             catch (Exception e)
                                             {
@@ -678,7 +683,7 @@ namespace ChateauSiteFlowApp
         }
 
 
-        private string ChateauStationerySetProcessing(SiteflowOrder.Item item, string finalPdfPath, string orderorderId, string orderbarcode)
+        private string ChateauStationerySetProcessing(SiteflowOrder.Item item, string finalPdfPath, string orderorderId, string orderbarcode, string customerName)
         {
             var originalOrderInputPath = ConfigurationManager.AppSettings["OriginalOrderInputPath"];
 
@@ -696,7 +701,7 @@ namespace ChateauSiteFlowApp
 
                     var newChateauStationeryPDFPath =
                         _pdfModificationHelper.ChateauStationeryPDFModifications(orderorderId,
-                            _localProcessingPath + "/PDFS/" + orderorderId + "-Stationery-In.PDF", code, stationeryStyle, stationeryType);
+                            _localProcessingPath + "/PDFS/" + orderorderId + "-Stationery-In.PDF", code, stationeryStyle, stationeryType, customerName);
 
                     finalPdfPath = finalPdfPath.Replace(".PDF", "_" + componentCount + ".PDF");
                     File.Copy(newChateauStationeryPDFPath, originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode + "_" + componentCount + ".PDF", true);
@@ -712,7 +717,7 @@ namespace ChateauSiteFlowApp
 
                     var newChateauStationerySetPDFPath =
                         _pdfModificationHelper.ChateauStationerySetPDFModifications(orderorderId,
-                            _localProcessingPath + "/PDFS/" + orderorderId + "-StationerySet-In.PDF", code, stationeryStyle, stationeryType);
+                            _localProcessingPath + "/PDFS/" + orderorderId + "-StationerySet-In.PDF", code, stationeryStyle, stationeryType, customerName);
 
 
 
@@ -731,7 +736,7 @@ namespace ChateauSiteFlowApp
         }
 
         private void ChateauStationeryProcessing(SiteflowOrder.Item item, string sourceOrderId, int pdfCount, string finalPdfPath,
-            string orderorderId, string orderbarcode)
+            string orderorderId, string orderbarcode, string customerName)
         {
             var code = item.components[0].code;
             var StationeryStyle = item.components[0].attributes.StationeryStyle;
@@ -743,7 +748,7 @@ namespace ChateauSiteFlowApp
             {
                 var newChateauStationeryPDFPath =
                     _pdfModificationHelper.ChateauStationeryPDFModifications(orderorderId,
-                        _localProcessingPath + "/PDFS/" + pdfFileName, code, StationeryStyle, StationeryType);
+                        _localProcessingPath + "/PDFS/" + pdfFileName, code, StationeryStyle, StationeryType, customerName);
 
                 File.Copy(newChateauStationeryPDFPath, finalPdfPath, true);
 
