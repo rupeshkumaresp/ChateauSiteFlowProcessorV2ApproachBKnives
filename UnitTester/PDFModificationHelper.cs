@@ -4,9 +4,11 @@ using System.Configuration;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using Aspose.Pdf.Text;
 using Ghostscript.NET.Processor;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
+using Font = Aspose.Pdf.Text.Font;
 using Image = iTextSharp.text.Image;
 using Rectangle = iTextSharp.text.Rectangle;
 
@@ -22,6 +24,8 @@ namespace ChateauSiteFlowApp
         static string _pdfPath = ConfigurationManager.AppSettings["WorkingDirectory"] + ConfigurationManager.AppSettings["ServiceFolderPath"] + @"PDFs/";
 
         static string AsposeLicense = ConfigurationManager.AppSettings["WorkingDirectory"] + ConfigurationManager.AppSettings["ServiceFolderPath"] + @"License/Aspose.Pdf.lic";
+
+        static string ChateauFont = ConfigurationManager.AppSettings["WorkingDirectory"] + ConfigurationManager.AppSettings["ServiceFolderPath"] + @"License/ChateauTitles-Regular.ttf";
 
         public void AddBarcodeImage(string path, string fileName, string substrateName, string barcode, string orderId, string quantity)
         {
@@ -628,14 +632,12 @@ namespace ChateauSiteFlowApp
 
             var staticPdfPath = ConfigurationManager.AppSettings["StaticPDFPath"];
 
-            if (code == "Stationery")
-            {
-                var ChateauStationeryBasePath = Path.Combine(staticPdfPath, "Chateau-Stationery");
+            var ChateauStationeryBasePath = Path.Combine(staticPdfPath, "Chateau-Stationery");
 
-                ChateauStationeryBasePath = Path.Combine(ChateauStationeryBasePath, StationeryType);
+            ChateauStationeryBasePath = Path.Combine(ChateauStationeryBasePath, StationeryType);
 
-                coverPdfFile = ChateauStationeryBasePath + "//" + StationeryStyle + ".PDF";
-            }
+            coverPdfFile = ChateauStationeryBasePath + "//" + StationeryStyle + ".PDF";
+
 
             //Apply additional text to cover page from attribute
 
@@ -678,14 +680,12 @@ namespace ChateauSiteFlowApp
 
             var staticPdfPath = ConfigurationManager.AppSettings["StaticPDFPath"];
 
-            if (code == "StationerySet")
-            {
-                var ChateauStationerySetBasePath = Path.Combine(staticPdfPath, "Chateau-StationerySet");
+            var ChateauStationerySetBasePath = Path.Combine(staticPdfPath, "Chateau-Stationery");
 
-                ChateauStationerySetBasePath = Path.Combine(ChateauStationerySetBasePath, StationeryType);
+            ChateauStationerySetBasePath = Path.Combine(ChateauStationerySetBasePath, StationeryType);
 
-                coverPdfFile = ChateauStationerySetBasePath + "//" + StationeryStyle + ".PDF";
-            }
+            coverPdfFile = ChateauStationerySetBasePath + "//" + StationeryStyle + ".PDF";
+
 
             var modifiedCoverPdfFile = Path.Combine(directory, orderorderId + "-StationeryCoverStyle.PDF");
 
@@ -736,6 +736,8 @@ namespace ChateauSiteFlowApp
 
         private void ReplaceTextInPDF(String input, String result, string FindText1, String newText1, string FindText2, String newText2)
         {
+            Font font = FontRepository.OpenFont(ChateauFont);
+
             Aspose.Pdf.License license = new Aspose.Pdf.License();
             license.SetLicense(AsposeLicense);
 
@@ -759,6 +761,7 @@ namespace ChateauSiteFlowApp
             {
                 // Update text and other properties
                 textFragment.Text = newText1;
+                //textFragment.TextState.Font = font;
             }
 
             // Create TextAbsorber object to find all instances of the input search phrase
@@ -775,6 +778,11 @@ namespace ChateauSiteFlowApp
             {
                 // Update text and other properties
                 textFragment.Text = newText2;
+               textFragment.TextState.Font = Aspose.Pdf.Text.FontRepository.FindFont("Helvetica-Bold");
+                //textFragment.TextState.FontSize = 12;
+
+                textFragment.TextState.Font = font;
+
             }
 
             pdfDocument.Save(result);
