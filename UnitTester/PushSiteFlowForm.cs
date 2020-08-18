@@ -27,36 +27,25 @@ namespace ChateauSiteFlowApp
         {
 
             //PdfModificationHelper test = new PdfModificationHelper();
-
             //test.ApplyAdditionalTextToCover("000013904", @"\\nas3\TheChateauTV\STATIC\Chateau-Stationery\Card\Potagerie.PDF", @"C:\Development\MergeIt\ChateauSiteFlowProcessorV2ApproachBKnives\PDFs\Rupes.PDF");
-
-
             //test.SelectPages(@"C:\Development\MergeIt\ChateauSiteFlowProcessorV2ApproachBKnives\PDFs\Product 3 Potagerie.pdf", "3-4", @"C:\Development\MergeIt\ChateauSiteFlowProcessorV2ApproachBKnives\PDFs\Product 3 Potagerie_SS_In.pdf");
-
             //test.ChateauStationerySetPDFModifications("235253563", @"C:\Development\MergeIt\ChateauSiteFlowProcessorV2ApproachBKnives\PDFs\Product 3 Potagerie_SS_In.pdf", "StationerySet", "Potagerie", "Paper");
 
-
-            //return;
-            //Cleanup();
+            Cleanup();
 
             var processHelper = new ProcessHelper();
             //DOWNLOAD ORDERS FROM SFTP
-            
             //ProcessHelper.DownloadOrders();
+            
             //CREATE THESE ORDERS TO DATABASE            
-
             var processingResults = processHelper.CreateOrder();
-
-            //return;
 
             //PUsH ORDERS TO SITEFLOW
             processHelper.PushOrdersToSiteFlow(processingResults);
 
             ProcessHelper.SendProcessingSummaryEmail(processingResults);
 
-            //processHelper.ProcessPostBacks();
-
-            ChateauKnivesProcessing();
+            //ChateauKnivesProcessing();
         }
 
         private static void ChateauKnivesProcessing()
@@ -74,23 +63,31 @@ namespace ChateauSiteFlowApp
 
         private void Cleanup()
         {
-            var localpath = ConfigurationManager.AppSettings["WorkingDirectory"] + ConfigurationManager.AppSettings["ServiceFolderPath"] + @"PDFs/Modified/";
-
-            var pdfFiles = new DirectoryInfo(localpath).GetFiles("*.*", SearchOption.AllDirectories);
-
-            foreach (var fileInfo in pdfFiles)
+            try
             {
-                fileInfo.Delete();
+                var localpath = ConfigurationManager.AppSettings["WorkingDirectory"] + ConfigurationManager.AppSettings["ServiceFolderPath"] + @"PDFs/Modified/";
+
+                var pdfFiles = new DirectoryInfo(localpath).GetFiles("*.*", SearchOption.AllDirectories);
+
+                foreach (var fileInfo in pdfFiles)
+                {
+                    fileInfo.Delete();
+                }
+
+                localpath = ConfigurationManager.AppSettings["WorkingDirectory"] + ConfigurationManager.AppSettings["ServiceFolderPath"] + @"PDFs/original/";
+
+                pdfFiles = new DirectoryInfo(localpath).GetFiles("*.*", SearchOption.AllDirectories);
+
+                foreach (var fileInfo in pdfFiles)
+                {
+                    fileInfo.Delete();
+                }
+            }
+            catch (Exception e)
+            {
+
             }
 
-            localpath = ConfigurationManager.AppSettings["WorkingDirectory"] + ConfigurationManager.AppSettings["ServiceFolderPath"] + @"PDFs/original/";
-
-            pdfFiles = new DirectoryInfo(localpath).GetFiles("*.*", SearchOption.AllDirectories);
-
-            foreach (var fileInfo in pdfFiles)
-            {
-                fileInfo.Delete();
-            }
 
         }
     }

@@ -98,6 +98,9 @@
     <Compile Include="Entity\tAdminUsers.cs">
       <DependentUpon>ChateauV2Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Entity\tChateauBelfield.cs">
+      <DependentUpon>ChateauV2Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="Entity\tChateauKnives.cs">
       <DependentUpon>ChateauV2Model.tt</DependentUpon>
     </Compile>

@@ -6,6 +6,8 @@ using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
+using ChateauEntity.Entity;
 using ChateauOrderHelper;
 using ChateauOrderHelper.Model;
 using iTextSharp.text;
@@ -576,8 +578,27 @@ namespace ChateauSiteFlowApp
                             {
                                 if (ordersubstrateName == "Tote" || sku == "Cushion-Chateau" || sku == "StaticBag-Chateau" || sku == "Tour-Chateau" || sku == "Belfield-Chateau" || sku == "BelfieldFabric-Chateau")
                                 {
-                                    File.Copy(orderfileName, originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode + ".PDF",
-                                        true);
+
+                                    //Belfield needs processing
+                                    if (sku == "Belfield-Chateau" || sku == "BelfieldFabric-Chateau")
+                                    {
+                                        //dump to database for impostions and processing
+                                        DumpBelfieldToDatabase(sku,   item, orderId, sourceOrderId, sourceItemId, orderbarcode, jsonObject);
+
+                                        //modify the PDF
+
+                                        var modifiedBelfieldPDF = "";
+                                        _pdfModificationHelper.BelfieldPDFProcessing(orderfileName, modifiedBelfieldPDF);
+
+                                        File.Copy(modifiedBelfieldPDF, originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode + ".PDF",
+                                            true);
+                                    }
+                                    else
+                                    {
+                                        File.Copy(orderfileName, originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode + ".PDF",
+                                            true);
+                                    }
+                                    
                                 }
                                 else
                                 {
@@ -812,6 +833,29 @@ namespace ChateauSiteFlowApp
 
                 _orderHelper.AddKnife(model);
             }
+        }
+
+        private void DumpBelfieldToDatabase(string sku, SiteflowOrder.Item item,
+          long orderId, string sourceOrderId, string sourceItemId, string orderbarcode, SiteflowOrder.RootObject jsonObject)
+        {
+
+            BelfieldModel model = new BelfieldModel()
+                {
+                    OrderId = Convert.ToInt64(orderId),
+                    OrderReference = sourceOrderId,
+                    OrderDetailsReference = sourceItemId,
+                    BarCode = orderbarcode,
+                    AttributeDesignCode = item.components[0].attributes.ProductCode + " " +
+                                item.components[0].attributes.ProductFinishedPageSize,
+
+                    AttributeLength = item.components[0].attributes.ProductCode + " " +
+                                          item.components[0].attributes.ProductFinishedPageSize,
+                    Quantity = Convert.ToInt32(item.quantity),
+                    ArtworkUrl = item.components[0].path,
+                };
+
+                _orderHelper.AddBelfield(model);
+            
         }
 
         private static void RemoveKnivesOrderItem(bool orderContainsKnivesAndOtherProducts, SiteflowOrder.RootObject jsonObject,

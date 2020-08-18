@@ -13,6 +13,23 @@
           <Property Name="Email" Type="nvarchar(max)" Nullable="false" />
           <Property Name="Password" Type="nvarchar(max)" Nullable="false" />
         </EntityType>
+        <EntityType Name="tChateauBelfield">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="OrderId" Type="bigint" />
+          <Property Name="OrderReference" Type="nvarchar(max)" />
+          <Property Name="OrderDetailsReference" Type="nvarchar(max)" />
+          <Property Name="BarCode" Type="nvarchar(max)" />
+          <Property Name="AttributeDesignCode" Type="nvarchar(max)" />
+          <Property Name="AttributeLength" Type="nvarchar(max)" />
+          <Property Name="Quantity" Type="int" />
+          <Property Name="ArtworkUrl" Type="nvarchar(max)" />
+          <Property Name="EmailSentToProduction" Type="bit" />
+          <Property Name="EmailSentDatetime" Type="datetime" />
+          <Property Name="CreatedAt" Type="datetime" />
+        </EntityType>
         <EntityType Name="tChateauKnives">
           <Key>
             <PropertyRef Name="Id" />
@@ -99,6 +116,7 @@
         </Association>
         <EntityContainer Name="Chateau_V2ModelStoreContainer">
           <EntitySet Name="tAdminUsers" EntityType="Self.tAdminUsers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tChateauBelfield" EntityType="Self.tChateauBelfield" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tChateauKnives" EntityType="Self.tChateauKnives" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tOrderDetails" EntityType="Self.tOrderDetails" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tOrders" EntityType="Self.tOrders" Schema="dbo" store:Type="Tables" />
@@ -124,6 +142,7 @@
             <End Role="tOrders" EntitySet="tOrders" />
             <End Role="tOrderDetails" EntitySet="tOrderDetails" />
           </AssociationSet>
+          <EntitySet Name="tChateauBelfield" EntityType="Chateau_V2Model.tChateauBelfield" />
         </EntityContainer>
         <EntityType Name="tAdminUsers">
           <Key>
@@ -219,6 +238,23 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="tChateauBelfield">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="OrderId" Type="Int64" />
+          <Property Name="OrderReference" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="OrderDetailsReference" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="BarCode" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="AttributeDesignCode" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="AttributeLength" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Quantity" Type="Int32" />
+          <Property Name="ArtworkUrl" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="EmailSentToProduction" Type="Boolean" />
+          <Property Name="EmailSentDatetime" Type="DateTime" Precision="3" />
+          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -308,6 +344,24 @@
                 <ScalarProperty Name="Response" ColumnName="Response" />
                 <ScalarProperty Name="OrderId" ColumnName="OrderId" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tChateauBelfield">
+            <EntityTypeMapping TypeName="Chateau_V2Model.tChateauBelfield">
+              <MappingFragment StoreEntitySet="tChateauBelfield">
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="EmailSentDatetime" ColumnName="EmailSentDatetime" />
+                <ScalarProperty Name="EmailSentToProduction" ColumnName="EmailSentToProduction" />
+                <ScalarProperty Name="ArtworkUrl" ColumnName="ArtworkUrl" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="AttributeLength" ColumnName="AttributeLength" />
+                <ScalarProperty Name="AttributeDesignCode" ColumnName="AttributeDesignCode" />
+                <ScalarProperty Name="BarCode" ColumnName="BarCode" />
+                <ScalarProperty Name="OrderDetailsReference" ColumnName="OrderDetailsReference" />
+                <ScalarProperty Name="OrderReference" ColumnName="OrderReference" />
+                <ScalarProperty Name="OrderId" ColumnName="OrderId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

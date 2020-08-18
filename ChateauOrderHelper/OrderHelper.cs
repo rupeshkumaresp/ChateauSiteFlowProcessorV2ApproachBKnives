@@ -312,5 +312,25 @@ namespace ChateauOrderHelper
                 _contextChateau.SaveChanges();
             }
         }
+
+        public void AddBelfield(BelfieldModel model)
+        {
+            tChateauBelfield belfield = new tChateauBelfield
+            {
+                OrderId = Convert.ToInt64(model.OrderId),
+                OrderReference = model.OrderReference,
+                OrderDetailsReference = model.OrderDetailsReference,
+                BarCode = model.BarCode,
+                AttributeDesignCode = model.AttributeDesignCode,
+                AttributeLength = model.AttributeLength,
+                Quantity = Convert.ToInt32(model.Quantity),
+                ArtworkUrl = model.ArtworkUrl,
+                CreatedAt =  System.DateTime.Now,
+                EmailSentToProduction = false
+            };
+
+            _contextChateau.tChateauBelfield.Add(belfield);
+            _contextChateau.SaveChanges();
+        }
     }
 }
