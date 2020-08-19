@@ -11,7 +11,7 @@ using OfficeOpenXml.Style;
 
 namespace ChateauSiteFlowApp
 {
-    public class GenerateOutputSpreadsheet
+    public class GenerateReportOutputSpreadsheet
     {
         public ExcelPackage Package = new ExcelPackage();
         public ExcelWorksheet Worksheet;
@@ -49,47 +49,11 @@ namespace ChateauSiteFlowApp
 
             File.Copy(path, chateauBelfieldReportPath + @"\\" + name + ".xlsx");
 
-            EmailHelper.SendReportEmail(path);
+            EmailHelper.SendBelfieldReportEmail(path);
 
             MarkBelfieldExtractedOrders(belfieldData);
 
         }
-
-
-        public void CreateSpreadSheetKnives(List<ReportData> knivesData)
-        {
-            var name = "Report_" + System.DateTime.Now.ToString("dd-MM-yyyy HH_mm_ss");
-
-            if (knivesData.Count == 0)
-                return;
-
-            BuildKnivesDataSheet(name, knivesData);
-
-            // Save file and return stream
-            var fileName = Path.GetTempFileName();
-            Package.SaveAs(new FileInfo(fileName));
-
-            var currentDirectory = Environment.CurrentDirectory;
-            if (!Directory.Exists(currentDirectory + @"\" + "Reports"))
-            {
-                Directory.CreateDirectory(currentDirectory + @"\" + "Reports");
-            }
-
-            var path = currentDirectory + @"\" + @"Reports\" + name + ".xlsx";
-            SaveStreamToFile(path, new FileStream(fileName, FileMode.Open));
-
-            Package.Dispose();
-
-            var chateauKnivesReportPath = ConfigurationManager.AppSettings["ChateauKnivesReportPath"];
-
-            File.Copy(path, chateauKnivesReportPath + @"\\" + name + ".xlsx");
-
-            EmailHelper.SendReportEmail(path);
-
-            MarkExtractedOrders(knivesData);
-
-        }
-
 
         private void BuildBelfieldDataSheet(string name, List<BelfieldModel> reportData)
         {
@@ -193,7 +157,100 @@ namespace ChateauSiteFlowApp
 
         }
 
+        private void MarkBelfieldExtractedOrders(List<BelfieldModel> belfieldData)
+        {
+            //mark each report as extracted
 
+            foreach (var data in belfieldData)
+            {
+                _orderHelper.MarkBelfieldSentToProduction(data.Id);
+            }
+
+        }
+
+        private void AddMainHeaderRowelfield(int rowJump)
+        {
+            // Set up columns
+            var headerColumns = new Dictionary<string, int>();
+
+            int icount = 1;
+
+            headerColumns.Add("Order ID", icount);
+            icount++;
+
+            headerColumns.Add("Order Reference", icount);
+            icount++;
+
+            headerColumns.Add("Order Details Reference", icount);
+            icount++;
+
+            headerColumns.Add("BarCode", icount);
+            icount++;
+
+            headerColumns.Add("Attribute Design Code", icount);
+            icount++;
+
+            headerColumns.Add("Attribute Length", icount);
+            icount++;
+
+            headerColumns.Add("Quantity", icount);
+            icount++;
+
+            headerColumns.Add("ArtworkUrl", icount);
+            icount++;
+
+            // Write column headers
+            foreach (var colKvp in headerColumns)
+            {
+                if (colKvp.Value > 0)
+                {
+                    Worksheet.Cells[rowJump, colKvp.Value].Value = colKvp.Key;
+                    Worksheet.Cells[rowJump, colKvp.Value].Style.HorizontalAlignment =
+                        OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                    Worksheet.Cells[rowJump, colKvp.Value].Style.VerticalAlignment =
+                        OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+                    Worksheet.Cells[rowJump, colKvp.Value].Style.Font.Bold = true;
+                    Worksheet.Cells[rowJump, colKvp.Value].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    Worksheet.Cells[rowJump, colKvp.Value].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    Worksheet.Cells[rowJump, colKvp.Value].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    Worksheet.Cells[rowJump, colKvp.Value].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                }
+            }
+        }
+
+        public void CreateSpreadSheetKnives(List<ReportData> knivesData)
+        {
+            var name = "Report_" + System.DateTime.Now.ToString("dd-MM-yyyy HH_mm_ss");
+
+            if (knivesData.Count == 0)
+                return;
+
+            BuildKnivesDataSheet(name, knivesData);
+
+            // Save file and return stream
+            var fileName = Path.GetTempFileName();
+            Package.SaveAs(new FileInfo(fileName));
+
+            var currentDirectory = Environment.CurrentDirectory;
+            if (!Directory.Exists(currentDirectory + @"\" + "Reports"))
+            {
+                Directory.CreateDirectory(currentDirectory + @"\" + "Reports");
+            }
+
+            var path = currentDirectory + @"\" + @"Reports\" + name + ".xlsx";
+            SaveStreamToFile(path, new FileStream(fileName, FileMode.Open));
+
+            Package.Dispose();
+
+            var chateauKnivesReportPath = ConfigurationManager.AppSettings["ChateauKnivesReportPath"];
+
+            File.Copy(path, chateauKnivesReportPath + @"\\" + name + ".xlsx");
+
+            EmailHelper.SendKnivesReportEmail(path);
+
+            MarkExtractedKnivesOrders(knivesData);
+
+        }
 
         private void BuildKnivesDataSheet(string name, List<ReportData> reportData)
         {
@@ -398,20 +455,7 @@ namespace ChateauSiteFlowApp
             Worksheet.Column(18).Width = 20;
         }
 
-
-
-        private void MarkBelfieldExtractedOrders(List<BelfieldModel> belfieldData)
-        {
-            //mark each report as extracted
-
-            foreach (var data in belfieldData)
-            {
-                _orderHelper.MarkBelfieldSentToProduction(data.Id);
-            }
-
-        }
-
-        private void MarkExtractedOrders(List<ReportData> knivesData)
+        private void MarkExtractedKnivesOrders(List<ReportData> knivesData)
         {
             //mark each report as extracted
 
@@ -421,58 +465,6 @@ namespace ChateauSiteFlowApp
             }
 
         }
-
-
-        private void AddMainHeaderRowelfield(int rowJump)
-        {
-            // Set up columns
-            var headerColumns = new Dictionary<string, int>();
-
-            int icount = 1;
-
-            headerColumns.Add("Order ID", icount);
-            icount++;
-
-            headerColumns.Add("Order Reference", icount);
-            icount++;
-
-            headerColumns.Add("Order Details Reference", icount);
-            icount++;
-
-            headerColumns.Add("BarCode", icount);
-            icount++;
-
-            headerColumns.Add("Attribute Design Code", icount);
-            icount++;
-
-            headerColumns.Add("Attribute Length", icount);
-            icount++;
-
-            headerColumns.Add("Quantity", icount);
-            icount++;
-
-            headerColumns.Add("ArtworkUrl", icount);
-            icount++;
-
-            // Write column headers
-            foreach (var colKvp in headerColumns)
-            {
-                if (colKvp.Value > 0)
-                {
-                    Worksheet.Cells[rowJump, colKvp.Value].Value = colKvp.Key;
-                    Worksheet.Cells[rowJump, colKvp.Value].Style.HorizontalAlignment =
-                        OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                    Worksheet.Cells[rowJump, colKvp.Value].Style.VerticalAlignment =
-                        OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
-                    Worksheet.Cells[rowJump, colKvp.Value].Style.Font.Bold = true;
-                    Worksheet.Cells[rowJump, colKvp.Value].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                    Worksheet.Cells[rowJump, colKvp.Value].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                    Worksheet.Cells[rowJump, colKvp.Value].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                    Worksheet.Cells[rowJump, colKvp.Value].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                }
-            }
-        }
-
 
         private void AddMainHeaderRowKnives(int rowJump)
         {

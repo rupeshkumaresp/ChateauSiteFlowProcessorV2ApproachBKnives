@@ -98,7 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EmailHelper.cs" />
-    <Compile Include="GenerateOutputSpreadsheet.cs" />
+    <Compile Include="GenerateReportOutputSpreadsheet.cs" />
     <Compile Include="PDFModificationHelper.cs" />
     <Compile Include="ProcessHelper.cs" />
     <Compile Include="PushSiteFlowForm.cs">

@@ -12,12 +12,28 @@ namespace ChateauSiteFlowApp
 
         #region email Templates
 
-        public static string ReportEmailTemplate =
+        public static string ReportEmailTemplateKnives =
 
             @"<p>
     	Hi,</p>
         <p>
 	        Please find attached today's Chateau Knives order spreadsheet. </p>       
+        
+        <p>
+	        &nbsp;</p>
+        <p>
+	        Kind Regards,</p>
+        <p>
+	        ESP Team</p>
+        <p>
+	        <span style='color:#696969;'><em><span style='font-size: 12px;'>Please note this is an automated response email, please do not reply to this email address.</span></em></span><br /></em></span></p>";
+
+        public static string ReportEmailTemplateBelfield =
+
+            @"<p>
+    	Hi,</p>
+        <p>
+	        Please find attached today's Chateau Belfield order spreadsheet. </p>       
         
         <p>
 	        &nbsp;</p>
@@ -95,9 +111,9 @@ namespace ChateauSiteFlowApp
 
         }
 
-        public static void SendReportEmail(string path)
+        public static void SendKnivesReportEmail(string path)
         {
-            var defaultMessage = ReportEmailTemplate;
+            var defaultMessage = ReportEmailTemplateKnives;
 
             var emailTo = ConfigurationManager.AppSettings["NotificationEmailKnives"];
 
@@ -113,6 +129,23 @@ namespace ChateauSiteFlowApp
 
         }
 
+        public static void SendBelfieldReportEmail(string path)
+        {
+            var defaultMessage = ReportEmailTemplateBelfield;
+
+            var emailTo = ConfigurationManager.AppSettings["NotificationEmailBelfield"];
+
+            var emails = emailTo.Split(new char[] { ';' });
+
+            for (int i = 0; i < emails.Length; i++)
+            {
+                if (string.IsNullOrEmpty(emails[i]))
+                    continue;
+
+                SendMailWithAttachment(emails[i], "Chateau Belfield order Report - " + DateTime.Now.ToShortDateString(), defaultMessage, path);
+            }
+
+        }
 
         public static void SendMailWithAttachment(string eto, string subject, string message, string attachmentPath)
         {

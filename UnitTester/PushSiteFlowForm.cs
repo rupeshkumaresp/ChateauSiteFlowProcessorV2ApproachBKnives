@@ -55,7 +55,7 @@ namespace ChateauSiteFlowApp
 
         private void ChateauBelfieldProcessing()
         {
-            GenerateOutputSpreadsheet chateauBelfieldReportengine = new GenerateOutputSpreadsheet();
+            GenerateReportOutputSpreadsheet chateauBelfieldReportengine = new GenerateReportOutputSpreadsheet();
 
             var now = System.DateTime.Now;
 
@@ -68,7 +68,7 @@ namespace ChateauSiteFlowApp
 
         private static void ChateauKnivesProcessing()
         {
-            GenerateOutputSpreadsheet chateauKnivesReportengine = new GenerateOutputSpreadsheet();
+            GenerateReportOutputSpreadsheet chateauKnivesReportengine = new GenerateReportOutputSpreadsheet();
 
             var now = System.DateTime.Now;
 
