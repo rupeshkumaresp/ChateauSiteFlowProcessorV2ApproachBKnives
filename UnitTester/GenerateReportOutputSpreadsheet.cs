@@ -25,7 +25,7 @@ namespace ChateauSiteFlowApp
             if (belfieldData.Count == 0)
                 return;
 
-            //CREATE IMPOSTIONS PDFS
+            //CREATE IMPOSTIONS PDFS AND SAVE TO FOLDER AND MARK TO DATABASE THAT IMPOSTIONS DONE
 
             //GENERATE REPORT
             BuildBelfieldDataSheet(name, belfieldData);
