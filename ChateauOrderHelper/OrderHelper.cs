@@ -272,6 +272,27 @@ namespace ChateauOrderHelper
         }
 
 
+        
+
+        public List<BelfieldModel> ExtractBelfieldReportData()
+        {
+            var belfield = _contextChateau.tChateauBelfield.Where(k => k.EmailSentToProduction == false).ToList();
+
+            return belfield.Select(data => new BelfieldModel
+            {
+                    Id = data.Id,
+                    OrderId = Convert.ToInt64(data.OrderId),
+                    OrderReference = data.OrderReference,
+                    OrderDetailsReference = data.OrderDetailsReference,
+                    BarCode = data.BarCode,
+                    AttributeDesignCode = data.AttributeDesignCode,
+                    AttributeLength = data.AttributeLength,
+                    Quantity = Convert.ToInt32(data.Quantity),
+                    ArtworkUrl = data.ArtworkUrl
+                    
+                })
+                .ToList();
+        }
         public List<ReportData> ExtractKnifeReportData()
         {
             var knives = _contextChateau.tChateauKnives.Where(k => k.EmailSentToProduction == false).ToList();
@@ -301,6 +322,20 @@ namespace ChateauOrderHelper
                 .ToList();
         }
 
+        
+
+
+        public void MarkBelfieldSentToProduction(long id)
+        {
+            var belfield = _contextChateau.tChateauBelfield.FirstOrDefault(k => k.Id == id);
+
+            if (belfield != null)
+            {
+                belfield.EmailSentToProduction = true;
+                belfield.EmailSentDatetime = DateTime.Now;
+                _contextChateau.SaveChanges();
+            }
+        }
         public void MarkKnifeSentToProduction(long id)
         {
             var knife = _contextChateau.tChateauKnives.FirstOrDefault(k => k.Id == id);

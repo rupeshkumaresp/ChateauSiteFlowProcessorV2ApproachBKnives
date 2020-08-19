@@ -48,7 +48,22 @@ namespace ChateauSiteFlowApp
 
             ProcessHelper.SendProcessingSummaryEmail(processingResults);
 
-            //ChateauKnivesProcessing();
+            ChateauKnivesProcessing();
+
+            ChateauBelfieldProcessing();
+        }
+
+        private void ChateauBelfieldProcessing()
+        {
+            GenerateOutputSpreadsheet chateauBelfieldReportengine = new GenerateOutputSpreadsheet();
+
+            var now = System.DateTime.Now;
+
+            if (now.Hour == 15)
+            {
+                OrderHelper orderHelper = new OrderHelper();
+                chateauBelfieldReportengine.CreateSpreadSheetBelfield(orderHelper.ExtractBelfieldReportData());
+            }
         }
 
         private static void ChateauKnivesProcessing()
@@ -60,7 +75,7 @@ namespace ChateauSiteFlowApp
             if (now.Hour == 15)
             {
                 OrderHelper orderHelper = new OrderHelper();
-                chateauKnivesReportengine.CreateSpreadSheet(orderHelper.ExtractKnifeReportData());
+                chateauKnivesReportengine.CreateSpreadSheetKnives(orderHelper.ExtractKnifeReportData());
             }
         }
 

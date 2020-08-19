@@ -18,13 +18,51 @@ namespace ChateauSiteFlowApp
 
         readonly OrderHelper _orderHelper = new OrderHelper();
 
-        public void CreateSpreadSheet(List<ReportData> knivesData)
+        public void CreateSpreadSheetBelfield(List<BelfieldModel> belfieldData)
+        {
+            var name = "BelfieldReport_" + System.DateTime.Now.ToString("dd-MM-yyyy HH_mm_ss");
+
+            if (belfieldData.Count == 0)
+                return;
+
+            //CREATE IMPOSTIONS PDFS
+
+            //GENERATE REPORT
+            BuildBelfieldDataSheet(name, belfieldData);
+
+            // Save file and return stream
+            var fileName = Path.GetTempFileName();
+            Package.SaveAs(new FileInfo(fileName));
+
+            var currentDirectory = Environment.CurrentDirectory;
+            if (!Directory.Exists(currentDirectory + @"\" + "Reports"))
+            {
+                Directory.CreateDirectory(currentDirectory + @"\" + "Reports");
+            }
+
+            var path = currentDirectory + @"\" + @"Reports\" + name + ".xlsx";
+            SaveStreamToFile(path, new FileStream(fileName, FileMode.Open));
+
+            Package.Dispose();
+
+            var chateauBelfieldReportPath = ConfigurationManager.AppSettings["ChateauBelfieldReportPath"];
+
+            File.Copy(path, chateauBelfieldReportPath + @"\\" + name + ".xlsx");
+
+            EmailHelper.SendReportEmail(path);
+
+            MarkBelfieldExtractedOrders(belfieldData);
+
+        }
+
+
+        public void CreateSpreadSheetKnives(List<ReportData> knivesData)
         {
             var name = "Report_" + System.DateTime.Now.ToString("dd-MM-yyyy HH_mm_ss");
 
             if (knivesData.Count == 0)
                 return;
-            
+
             BuildKnivesDataSheet(name, knivesData);
 
             // Save file and return stream
@@ -52,12 +90,117 @@ namespace ChateauSiteFlowApp
 
         }
 
+
+        private void BuildBelfieldDataSheet(string name, List<BelfieldModel> reportData)
+        {
+            Worksheet = Package.Workbook.Worksheets.Add(name);
+            int rowJump = 1;
+
+            AddMainHeaderRowelfield(rowJump);
+            rowJump++;
+
+            foreach (var data in reportData)
+            {
+                int cell = 1;
+
+                Worksheet.Cells[rowJump, cell].Value = data.OrderId;
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+
+                Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+
+                cell++;
+
+                Worksheet.Cells[rowJump, cell].Value = data.OrderReference;
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                cell++;
+
+                Worksheet.Cells[rowJump, cell].Value = data.OrderDetailsReference;
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                cell++;
+
+                Worksheet.Cells[rowJump, cell].Value = data.BarCode;
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                cell++;
+
+                Worksheet.Cells[rowJump, cell].Value = data.AttributeDesignCode;
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                cell++;
+
+
+                Worksheet.Cells[rowJump, cell].Value = data.AttributeLength;
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                cell++;
+
+                Worksheet.Cells[rowJump, cell].Value = data.Quantity;
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                cell++;
+
+                Worksheet.Cells[rowJump, cell].Value = data.ArtworkUrl;
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                cell++;
+
+
+                rowJump++;
+            }
+
+            Worksheet.Column(1).Width = 15;
+            Worksheet.Column(2).Width = 20;
+            Worksheet.Column(3).Width = 25;
+            Worksheet.Column(4).Width = 15;
+            Worksheet.Column(5).Width = 25;
+            Worksheet.Column(6).Width = 25;
+            Worksheet.Column(7).Width = 15;
+            Worksheet.Column(8).Width = 55;
+
+        }
+
+
+
         private void BuildKnivesDataSheet(string name, List<ReportData> reportData)
         {
             Worksheet = Package.Workbook.Worksheets.Add(name);
             int rowJump = 1;
 
-            AddMainHeaderRow(rowJump);
+            AddMainHeaderRowKnives(rowJump);
             rowJump++;
 
             foreach (var data in reportData)
@@ -255,6 +398,19 @@ namespace ChateauSiteFlowApp
             Worksheet.Column(18).Width = 20;
         }
 
+
+
+        private void MarkBelfieldExtractedOrders(List<BelfieldModel> belfieldData)
+        {
+            //mark each report as extracted
+
+            foreach (var data in belfieldData)
+            {
+                _orderHelper.MarkBelfieldSentToProduction(data.Id);
+            }
+
+        }
+
         private void MarkExtractedOrders(List<ReportData> knivesData)
         {
             //mark each report as extracted
@@ -266,7 +422,59 @@ namespace ChateauSiteFlowApp
 
         }
 
-        private void AddMainHeaderRow(int rowJump)
+
+        private void AddMainHeaderRowelfield(int rowJump)
+        {
+            // Set up columns
+            var headerColumns = new Dictionary<string, int>();
+
+            int icount = 1;
+
+            headerColumns.Add("Order ID", icount);
+            icount++;
+
+            headerColumns.Add("Order Reference", icount);
+            icount++;
+
+            headerColumns.Add("Order Details Reference", icount);
+            icount++;
+
+            headerColumns.Add("BarCode", icount);
+            icount++;
+
+            headerColumns.Add("Attribute Design Code", icount);
+            icount++;
+
+            headerColumns.Add("Attribute Length", icount);
+            icount++;
+
+            headerColumns.Add("Quantity", icount);
+            icount++;
+
+            headerColumns.Add("ArtworkUrl", icount);
+            icount++;
+
+            // Write column headers
+            foreach (var colKvp in headerColumns)
+            {
+                if (colKvp.Value > 0)
+                {
+                    Worksheet.Cells[rowJump, colKvp.Value].Value = colKvp.Key;
+                    Worksheet.Cells[rowJump, colKvp.Value].Style.HorizontalAlignment =
+                        OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                    Worksheet.Cells[rowJump, colKvp.Value].Style.VerticalAlignment =
+                        OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+                    Worksheet.Cells[rowJump, colKvp.Value].Style.Font.Bold = true;
+                    Worksheet.Cells[rowJump, colKvp.Value].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    Worksheet.Cells[rowJump, colKvp.Value].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    Worksheet.Cells[rowJump, colKvp.Value].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    Worksheet.Cells[rowJump, colKvp.Value].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                }
+            }
+        }
+
+
+        private void AddMainHeaderRowKnives(int rowJump)
         {
             // Set up columns
             var headerColumns = new Dictionary<string, int>();
