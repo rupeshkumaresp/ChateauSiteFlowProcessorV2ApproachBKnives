@@ -158,36 +158,8 @@ namespace ChateauSiteFlowApp
                 int dataset = 1;
                 var nameVal = "";
                 var costVal = "";
-                foreach (var dataSetName in importer.GetDataSetNames())
-                {
-                    if (dataset > 1)
-                        break;
 
-                    var importedRows = importer.Import(dataSetName);
-
-                    foreach (var importedRow in importedRows)
-                    {
-
-                        var designCode = Convert.ToString(importedRow["Design Code".ToLower()]);
-                        var longname = importedRow["Name".ToLower()];
-                        var cost = importedRow["Cost".ToLower()];
-
-                        //TODO: add column from mapping spreadsheet
-
-                        designCode = designCode.Trim();
-
-                        var designCodeVal = data.AttributeDesignCode.Trim();
-
-                        if (designCode == designCodeVal)
-                        {
-                            nameVal = longname;
-                            costVal = cost;
-                            break;
-                        }
-                    }
-
-                    dataset++;
-                }
+                ReadFromMasterSpreadsheetBelfield(importer, dataset, data, ref nameVal, ref costVal);
 
                 Worksheet.Cells[rowJump, cell].Value = nameVal;
                 Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment =
@@ -222,6 +194,47 @@ namespace ChateauSiteFlowApp
             Worksheet.Column(6).Width = 25;
             Worksheet.Column(7).Width = 15;
             Worksheet.Column(8).Width = 65;
+
+        }
+
+        private static void ReadFromMasterSpreadsheetBelfield(ExcelRecordImporter importer, int dataset, BelfieldModel data,
+            ref string nameVal, ref string costVal)
+        {
+            try
+            {
+                foreach (var dataSetName in importer.GetDataSetNames())
+                {
+                    if (dataset > 1)
+                        break;
+
+                    var importedRows = importer.Import(dataSetName);
+
+                    foreach (var importedRow in importedRows)
+                    {
+                        var designCode = Convert.ToString(importedRow["Design Code".ToLower()]);
+                        var longname = importedRow["Name".ToLower()];
+                        var cost = importedRow["Cost".ToLower()];
+
+                        //TODO: add column from mapping spreadsheet
+
+                        designCode = designCode.Trim();
+
+                        var designCodeVal = data.AttributeDesignCode.Trim();
+
+                        if (designCode == designCodeVal)
+                        {
+                            nameVal = longname;
+                            costVal = cost;
+                            break;
+                        }
+                    }
+
+                    dataset++;
+                }
+            }
+            catch (Exception ex)
+            {
+            }
 
         }
 
