@@ -8,6 +8,7 @@ using Aspose.Pdf.Text;
 using Ghostscript.NET.Processor;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
+using Org.BouncyCastle.Bcpg.OpenPgp;
 using Font = Aspose.Pdf.Text.Font;
 using Image = iTextSharp.text.Image;
 using Rectangle = iTextSharp.text.Rectangle;
@@ -248,6 +249,134 @@ namespace ChateauSiteFlowApp
 
         }
 
+        public string CreateBarcodeMirrorImageBelfield(string barcode, string orderId)
+        {
+            var fixedHeight = 23;
+
+            BaseFont bf = BaseFont.CreateFont(BaseFont.HELVETICA_BOLD, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
+
+            iTextSharp.text.Font font = new iTextSharp.text.Font(bf, 10, iTextSharp.text.Font.NORMAL);
+
+            var width = Utilities.MillimetersToPoints(60);
+            var height = Utilities.MillimetersToPoints(20);
+
+            var doc = new Document(new Rectangle(width, height), 0, 0, 0, 0);
+
+            var output = new FileStream(_pdfPath + @"modified/" + orderId + "_barcode.pdf", FileMode.Create);
+
+            var writer = PdfWriter.GetInstance(doc, output);
+            PdfContentByte cb = new PdfContentByte(writer);
+
+            doc.Open();
+
+            PdfPTable boxTable = new PdfPTable(1);
+            boxTable.DefaultCell.Border = 0;
+            boxTable.WidthPercentage = 100;
+
+            float[] widths = new float[] { 170f };
+            boxTable.SetWidths(widths);
+
+
+            //New Row Added
+
+            PdfPCell cell21 = new PdfPCell();
+            cell21.BorderWidthTop = 0;
+            cell21.BorderWidthBottom = 0;
+            cell21.BorderWidthRight = 0;
+            cell21.BorderWidthLeft = 0;
+            cell21.FixedHeight = fixedHeight;
+
+            Barcode128 code128 = new Barcode128
+            {
+                CodeType = Barcode.CODE128,
+                ChecksumText = true,
+                GenerateChecksum = true,
+                StartStopText = true,
+                Code = barcode
+            };
+
+
+            var bm = new Bitmap(code128.CreateDrawingImage(Color.Black, Color.White));
+
+            cell21.AddElement(Image.GetInstance(bm, ImageFormat.Jpeg));
+
+            boxTable.AddCell(cell21);
+
+            boxTable.CompleteRow();
+
+            PdfPCell cell31 = new PdfPCell();
+            cell31.AddElement(new Paragraph(new Chunk(barcode, font)));
+            cell31.BorderWidthTop = 0;
+            cell31.BorderWidthBottom = 0;
+            cell31.BorderWidthLeft = 0;
+            cell31.BorderWidthRight = 0;
+            cell31.FixedHeight = fixedHeight;
+
+            boxTable.AddCell(cell31);
+
+            boxTable.CompleteRow();
+
+            doc.Add(boxTable);
+
+            doc.Close();
+
+            var outputTiff = _pdfPath + @"modified/" + barcode + "_barcode.tiff";
+
+            ExtractImageFromPdf(outputTiff, _pdfPath + @"modified/" + orderId + "_barcode.pdf");
+
+            GetNormalImage(outputTiff, Path.GetFileNameWithoutExtension(outputTiff));
+
+            return _pdfPath + @"modified\" + Path.GetFileNameWithoutExtension(outputTiff) + "_Normal.jpg";
+
+        }
+
+
+        public void AddBarcodeImageBelfield(string inputfileName, string barcodeImg)
+        {
+
+            //var barcodeImg = path + @"modified/" + barcode + "_barcode_Normal.jpg";
+
+            var parentDir = System.IO.Path.GetDirectoryName(inputfileName);
+            var destName = Path.Combine(parentDir, Path.GetFileNameWithoutExtension(inputfileName) + "_temp.pdf");
+
+            //File.Copy(inputfileName, )
+            using (Stream inputPdfStream =
+                new FileStream(inputfileName, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (Stream inputImageStream = new FileStream(barcodeImg, FileMode.Open,
+                FileAccess.Read, FileShare.Read))
+            using (Stream outputPdfStream = new FileStream(destName, FileMode.Create,
+                FileAccess.Write, FileShare.None))
+            {
+                var reader = new PdfReader(inputPdfStream);
+                var stamper = new PdfStamper(reader, outputPdfStream);
+                var pdfContentByte = stamper.GetOverContent(1);
+
+                Rectangle rect = reader.GetCropBox(1);
+
+                Image image = Image.GetInstance(inputImageStream);
+
+                var width = Utilities.MillimetersToPoints(60);
+                var height = Utilities.MillimetersToPoints(20);
+
+
+                image.ScaleToFit(Convert.ToInt32(width),
+                    Convert.ToInt32(height));
+
+                image.SetAbsolutePosition(rect.Width - width - 20, 12);
+
+                image.Rotation = 0f;
+
+                image.RotationDegrees = 0f;
+
+                pdfContentByte.AddImage(image);
+
+                stamper.Close();
+            }
+
+            File.Delete(inputfileName);
+            File.Copy(destName, inputfileName, true);
+            //FlattenPdfFile(path, fileName, orderId);
+        }
         public void ExtendPdfJuteShopper(string path, string fileName)
         {
             string src = path + @"original\" + fileName;
@@ -778,7 +907,7 @@ namespace ChateauSiteFlowApp
             {
                 // Update text and other properties
                 textFragment.Text = newText2;
-               textFragment.TextState.Font = Aspose.Pdf.Text.FontRepository.FindFont("Helvetica-Bold");
+                textFragment.TextState.Font = Aspose.Pdf.Text.FontRepository.FindFont("Helvetica-Bold");
                 //textFragment.TextState.FontSize = 12;
 
                 textFragment.TextState.Font = font;
@@ -818,9 +947,10 @@ namespace ChateauSiteFlowApp
             }
         }
 
-        public void BelfieldPDFProcessing(string orderfileName, string modifiedBelfieldPdf)
+        public void BelfieldPDFProcessing(string input, string barcode, string orderid)
         {
-            throw new NotImplementedException();
+            var barcodeFilename = CreateBarcodeMirrorImageBelfield(barcode, orderid);
+            AddBarcodeImageBelfield(input, barcodeFilename);
         }
     }
 }

@@ -27,6 +27,9 @@ namespace ChateauSiteFlowApp
         {
 
             //PdfModificationHelper test = new PdfModificationHelper();
+
+            //test.CreateBarcodeMirrorImageBelfield("0000169940202", "000016994");
+            //test.AddBarcodeImageBelfield(@"C:\Development\MergeIt\ChateauSiteFlowProcessorV2ApproachBKnives\PDFs\modified\000016994_0000169940201.pdf", @"C:\Development\MergeIt\ChateauSiteFlowProcessorV2ApproachBKnives\PDFs\modified\0000169940202_barcode_Normal.jpg");
             //test.ApplyAdditionalTextToCover("000013904", @"\\nas3\TheChateauTV\STATIC\Chateau-Stationery\Card\Potagerie.PDF", @"C:\Development\MergeIt\ChateauSiteFlowProcessorV2ApproachBKnives\PDFs\Rupes.PDF");
             //test.SelectPages(@"C:\Development\MergeIt\ChateauSiteFlowProcessorV2ApproachBKnives\PDFs\Product 3 Potagerie.pdf", "3-4", @"C:\Development\MergeIt\ChateauSiteFlowProcessorV2ApproachBKnives\PDFs\Product 3 Potagerie_SS_In.pdf");
             //test.ChateauStationerySetPDFModifications("235253563", @"C:\Development\MergeIt\ChateauSiteFlowProcessorV2ApproachBKnives\PDFs\Product 3 Potagerie_SS_In.pdf", "StationerySet", "Potagerie", "Paper");

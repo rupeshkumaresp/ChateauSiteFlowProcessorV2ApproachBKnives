@@ -582,23 +582,31 @@ namespace ChateauSiteFlowApp
                                     //Belfield needs processing
                                     if (sku == "Belfield-Chateau" || sku == "BelfieldFabric-Chateau")
                                     {
+                                        var artworkPathBelfield = "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
+                                                                  "_" + orderbarcode + ".PDF";
+
                                         //dump to database for impostions and processing
-                                        DumpBelfieldToDatabase(sku,   item, orderId, sourceOrderId, sourceItemId, orderbarcode, jsonObject);
+                                        DumpBelfieldToDatabase(sku, item, orderId, sourceOrderId, sourceItemId, orderbarcode, artworkPathBelfield);
 
                                         //modify the PDF
+                                        _pdfModificationHelper.BelfieldPDFProcessing(orderfileName, orderbarcode, orderorderId);
 
-                                        var modifiedBelfieldPDF = "";
-                                        _pdfModificationHelper.BelfieldPDFProcessing(orderfileName, modifiedBelfieldPDF);
+                                        //copy to holiding folder based on quantity for impositions
 
-                                        File.Copy(modifiedBelfieldPDF, originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode + ".PDF",
-                                            true);
+                                        var holdingFolderDir = ConfigurationManager.AppSettings["BelfieldHolidingFolderPath"];
+
+                                        if (!Directory.Exists(holdingFolderDir))
+                                            Directory.CreateDirectory(holdingFolderDir);
+
+                                        for (int i = 1; i <= qty; i++)
+                                        {
+                                            File.Copy(orderfileName, holdingFolderDir + orderorderId + "_" + orderbarcode + "_" + i + ".PDF", true);
+                                        }
+
                                     }
-                                    else
-                                    {
-                                        File.Copy(orderfileName, originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode + ".PDF",
+                                    File.Copy(orderfileName, originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode + ".PDF",
                                             true);
-                                    }
-                                    
+
                                 }
                                 else
                                 {
@@ -702,7 +710,6 @@ namespace ChateauSiteFlowApp
 
             return processingSummary;
         }
-
 
         private string ChateauStationerySetProcessing(SiteflowOrder.Item item, string finalPdfPath, string orderorderId, string orderbarcode, string customerName)
         {
@@ -836,26 +843,23 @@ namespace ChateauSiteFlowApp
         }
 
         private void DumpBelfieldToDatabase(string sku, SiteflowOrder.Item item,
-          long orderId, string sourceOrderId, string sourceItemId, string orderbarcode, SiteflowOrder.RootObject jsonObject)
+          long orderId, string sourceOrderId, string sourceItemId, string orderbarcode, string artworkPathBelfield)
         {
 
             BelfieldModel model = new BelfieldModel()
-                {
-                    OrderId = Convert.ToInt64(orderId),
-                    OrderReference = sourceOrderId,
-                    OrderDetailsReference = sourceItemId,
-                    BarCode = orderbarcode,
-                    AttributeDesignCode = item.components[0].attributes.ProductCode + " " +
-                                item.components[0].attributes.ProductFinishedPageSize,
+            {
+                OrderId = Convert.ToInt64(orderId),
+                OrderReference = sourceOrderId,
+                OrderDetailsReference = sourceItemId,
+                BarCode = orderbarcode,
+                AttributeDesignCode = item.components[0].attributes.DesignCode,
+                AttributeLength = item.components[0].attributes.Length,
+                Quantity = Convert.ToInt32(item.quantity),
+                ArtworkUrl = artworkPathBelfield,
+            };
 
-                    AttributeLength = item.components[0].attributes.ProductCode + " " +
-                                          item.components[0].attributes.ProductFinishedPageSize,
-                    Quantity = Convert.ToInt32(item.quantity),
-                    ArtworkUrl = item.components[0].path,
-                };
+            _orderHelper.AddBelfield(model);
 
-                _orderHelper.AddBelfield(model);
-            
         }
 
         private static void RemoveKnivesOrderItem(bool orderContainsKnivesAndOtherProducts, SiteflowOrder.RootObject jsonObject,
