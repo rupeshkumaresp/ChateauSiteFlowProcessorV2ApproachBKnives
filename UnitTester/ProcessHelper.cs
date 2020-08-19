@@ -815,7 +815,7 @@ namespace ChateauSiteFlowApp
                     knifeJsonItems.Add(item);
                 }
 
-                ReportData model = new ReportData
+                ChateauKnivesReportData model = new ChateauKnivesReportData
                 {
                     OrderId = Convert.ToString(orderId),
                     OrderReference = sourceOrderId,

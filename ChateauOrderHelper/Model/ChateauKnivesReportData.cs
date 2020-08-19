@@ -3,7 +3,7 @@
     /// <summary>
     /// Chateau Knives daily report email data
     /// </summary>
-    public class ReportData
+    public class ChateauKnivesReportData
     {
         public long Id { get; set; }
         public string OrderId { get; set; }

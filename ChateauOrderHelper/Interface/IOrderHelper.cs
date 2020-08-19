@@ -26,7 +26,7 @@ namespace ChateauOrderHelper.Interface
         void ProcessPostBacks(long orderId);
         bool DoesOrderExists(string sourceOrderId);
 
-        void AddKnife(ReportData model);
+        void AddKnife(ChateauKnivesReportData model);
 
         void MarkKnifeSentToProduction(long id);
     }

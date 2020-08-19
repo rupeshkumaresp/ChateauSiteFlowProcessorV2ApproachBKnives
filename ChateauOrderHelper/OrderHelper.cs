@@ -242,7 +242,7 @@ namespace ChateauOrderHelper
             }
         }
 
-        public void AddKnife(ReportData model)
+        public void AddKnife(ChateauKnivesReportData model)
         {
             tChateauKnives knives = new tChateauKnives
             {
@@ -293,11 +293,11 @@ namespace ChateauOrderHelper
                 })
                 .ToList();
         }
-        public List<ReportData> ExtractKnifeReportData()
+        public List<ChateauKnivesReportData> ExtractKnifeReportData()
         {
             var knives = _contextChateau.tChateauKnives.Where(k => k.EmailSentToProduction == false).ToList();
 
-            return knives.Select(knife => new ReportData
+            return knives.Select(knife => new ChateauKnivesReportData
             {
                 Id = knife.Id,
                 OrderId = Convert.ToString(knife.OrderId),

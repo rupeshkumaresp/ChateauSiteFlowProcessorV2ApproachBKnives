@@ -218,7 +218,7 @@ namespace ChateauSiteFlowApp
             }
         }
 
-        public void CreateSpreadSheetKnives(List<ReportData> knivesData)
+        public void CreateSpreadSheetKnives(List<ChateauKnivesReportData> knivesData)
         {
             var name = "Report_" + System.DateTime.Now.ToString("dd-MM-yyyy HH_mm_ss");
 
@@ -252,7 +252,7 @@ namespace ChateauSiteFlowApp
 
         }
 
-        private void BuildKnivesDataSheet(string name, List<ReportData> reportData)
+        private void BuildKnivesDataSheet(string name, List<ChateauKnivesReportData> reportData)
         {
             Worksheet = Package.Workbook.Worksheets.Add(name);
             int rowJump = 1;
@@ -455,7 +455,7 @@ namespace ChateauSiteFlowApp
             Worksheet.Column(18).Width = 20;
         }
 
-        private void MarkExtractedKnivesOrders(List<ReportData> knivesData)
+        private void MarkExtractedKnivesOrders(List<ChateauKnivesReportData> knivesData)
         {
             //mark each report as extracted
 

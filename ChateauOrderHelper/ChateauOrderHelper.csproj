@@ -81,7 +81,7 @@
   <ItemGroup>
     <Compile Include="Interface\IOrderHelper.cs" />
     <Compile Include="Model\BelfieldModel.cs" />
-    <Compile Include="Model\ReportData.cs" />
+    <Compile Include="Model\ChateauKnivesReportData.cs" />
     <Compile Include="Model\SiteFlowOrder.cs" />
     <Compile Include="OrderHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
