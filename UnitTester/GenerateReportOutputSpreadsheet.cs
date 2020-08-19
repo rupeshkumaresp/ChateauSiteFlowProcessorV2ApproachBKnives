@@ -8,6 +8,7 @@ using ChateauOrderHelper;
 using ChateauOrderHelper.Model;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
+using SpreadsheetReaderLibrary;
 
 namespace ChateauSiteFlowApp
 {
@@ -24,7 +25,6 @@ namespace ChateauSiteFlowApp
 
             if (belfieldData.Count == 0)
                 return;
-
             //CREATE IMPOSTIONS PDFS AND SAVE TO FOLDER AND MARK TO DATABASE THAT IMPOSTIONS DONE
 
             //GENERATE REPORT
@@ -63,12 +63,17 @@ namespace ChateauSiteFlowApp
             AddMainHeaderRowelfield(rowJump);
             rowJump++;
 
+            var chateauBelfieldMasterPricingPath = ConfigurationManager.AppSettings["ChateauBelfieldMasterPricingPath"];
+
+            ExcelRecordImporter importer = new ExcelRecordImporter(chateauBelfieldMasterPricingPath);
+
             foreach (var data in reportData)
             {
                 int cell = 1;
 
                 Worksheet.Cells[rowJump, cell].Value = data.OrderId;
-                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment =
+                    ExcelHorizontalAlignment.Center; // Alignment is center
 
                 Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
                 Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
@@ -79,7 +84,8 @@ namespace ChateauSiteFlowApp
                 cell++;
 
                 Worksheet.Cells[rowJump, cell].Value = data.OrderReference;
-                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment =
+                    ExcelHorizontalAlignment.Center; // Alignment is center
                 Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
                 Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                 Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
@@ -88,7 +94,8 @@ namespace ChateauSiteFlowApp
                 cell++;
 
                 Worksheet.Cells[rowJump, cell].Value = data.OrderDetailsReference;
-                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment =
+                    ExcelHorizontalAlignment.Center; // Alignment is center
                 Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
                 Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                 Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
@@ -97,7 +104,8 @@ namespace ChateauSiteFlowApp
                 cell++;
 
                 Worksheet.Cells[rowJump, cell].Value = data.BarCode;
-                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment =
+                    ExcelHorizontalAlignment.Center; // Alignment is center
                 Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
                 Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                 Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
@@ -106,7 +114,8 @@ namespace ChateauSiteFlowApp
                 cell++;
 
                 Worksheet.Cells[rowJump, cell].Value = data.AttributeDesignCode;
-                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment =
+                    ExcelHorizontalAlignment.Center; // Alignment is center
                 Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
                 Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                 Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
@@ -116,7 +125,8 @@ namespace ChateauSiteFlowApp
 
 
                 Worksheet.Cells[rowJump, cell].Value = data.AttributeLength;
-                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment =
+                    ExcelHorizontalAlignment.Center; // Alignment is center
                 Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
                 Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                 Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
@@ -125,7 +135,8 @@ namespace ChateauSiteFlowApp
                 cell++;
 
                 Worksheet.Cells[rowJump, cell].Value = data.Quantity;
-                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment =
+                    ExcelHorizontalAlignment.Center; // Alignment is center
                 Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
                 Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                 Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
@@ -134,7 +145,8 @@ namespace ChateauSiteFlowApp
                 cell++;
 
                 Worksheet.Cells[rowJump, cell].Value = data.ArtworkUrl;
-                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment =
+                    ExcelHorizontalAlignment.Center; // Alignment is center
                 Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
                 Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                 Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
@@ -143,17 +155,73 @@ namespace ChateauSiteFlowApp
                 cell++;
 
 
+                int dataset = 1;
+                var nameVal = "";
+                var costVal = "";
+                foreach (var dataSetName in importer.GetDataSetNames())
+                {
+                    if (dataset > 1)
+                        break;
+
+                    var importedRows = importer.Import(dataSetName);
+
+                    foreach (var importedRow in importedRows)
+                    {
+
+                        var designCode = Convert.ToString(importedRow["Design Code".ToLower()]);
+                        var longname = importedRow["Name".ToLower()];
+                        var cost = importedRow["Cost".ToLower()];
+
+                        //TODO: add column from mapping spreadsheet
+
+                        designCode = designCode.Trim();
+
+                        var designCodeVal = data.AttributeDesignCode.Trim();
+
+                        if (designCode == designCodeVal)
+                        {
+                            nameVal = longname;
+                            costVal = cost;
+                            break;
+                        }
+                    }
+
+                    dataset++;
+                }
+
+                Worksheet.Cells[rowJump, cell].Value = nameVal;
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment =
+                    ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                cell++;
+
+                Worksheet.Cells[rowJump, cell].Value = costVal;
+                Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment =
+                    ExcelHorizontalAlignment.Center; // Alignment is center
+                Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                Worksheet.Cells[rowJump, cell].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                cell++;
+
+
+
                 rowJump++;
             }
 
-            Worksheet.Column(1).Width = 15;
-            Worksheet.Column(2).Width = 20;
+            Worksheet.Column(1).Width = 20;
+            Worksheet.Column(2).Width = 25;
             Worksheet.Column(3).Width = 25;
-            Worksheet.Column(4).Width = 15;
+            Worksheet.Column(4).Width = 25;
             Worksheet.Column(5).Width = 25;
             Worksheet.Column(6).Width = 25;
             Worksheet.Column(7).Width = 15;
-            Worksheet.Column(8).Width = 55;
+            Worksheet.Column(8).Width = 65;
 
         }
 
