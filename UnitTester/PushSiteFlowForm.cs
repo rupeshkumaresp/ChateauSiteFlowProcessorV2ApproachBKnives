@@ -28,6 +28,8 @@ namespace ChateauSiteFlowApp
 
         private void ProcessJsonOrders()
         {
+            return;
+
             //PdfModificationHelper test = new PdfModificationHelper();
 
             //test.CreateBarcodeMirrorImageBelfield("0000169940202", "000016994");
@@ -50,12 +52,11 @@ namespace ChateauSiteFlowApp
 
             ProcessHelper.SendProcessingSummaryEmail(processingResults);
 
-            return;
-
             ChateauKnivesProcessing();
 
             ChateauBelfieldProcessing();
 
+            //ChateauPreOrderProcessing();
         }
 
         private void ChateauBelfieldProcessing()
@@ -110,7 +111,7 @@ namespace ChateauSiteFlowApp
                     }
                     else
                     {
-                        if (p == pdfLabelFiles.Length-1)
+                        if (p == pdfLabelFiles.Length - 1)
                         {
                             var nowDateTime = System.DateTime.Now;
                             var mergeFileName = baseHoldingFolder + "//Merged//" + "Belfield_" + nowDateTime.ToString("ddMMyyyy") + "_" + fileCount + ".pdf";
@@ -273,6 +274,21 @@ namespace ChateauSiteFlowApp
 
             System.IO.File.WriteAllBytes(mergeFileName, PdfMerger.MergeFiles(filesByte));
 
+        }
+
+
+
+        private static void ChateauPreOrderProcessing()
+        {
+            GenerateReportOutputSpreadsheet chateaupreOrderReportengine = new GenerateReportOutputSpreadsheet();
+
+            var now = System.DateTime.Now;
+
+            if (now.Hour == 15)
+            {
+                OrderHelper orderHelper = new OrderHelper();
+                chateaupreOrderReportengine.CreateSpreadSheetPreOrder(orderHelper.ExtractPreOrderReportData());
+            }
         }
 
         private static void ChateauKnivesProcessing()

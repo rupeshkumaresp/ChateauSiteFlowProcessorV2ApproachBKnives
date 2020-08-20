@@ -29,8 +29,38 @@
           <Property Name="EmailSentToProduction" Type="bit" />
           <Property Name="EmailSentDatetime" Type="datetime" />
           <Property Name="CreatedAt" Type="datetime" />
+          <Property Name="PDFSentToPrinergy" Type="bit" />
+          <Property Name="DateSentToPrinergy" Type="datetime" />
+          <Property Name="PDFPrinergyOutputProcessed" Type="bit" />
+          <Property Name="PrinergyOutputProcessedDatetime" Type="datetime" />
         </EntityType>
         <EntityType Name="tChateauKnives">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="OrderId" Type="bigint" />
+          <Property Name="OrderReference" Type="nvarchar(max)" />
+          <Property Name="OrderDetailsReference" Type="nvarchar(max)" />
+          <Property Name="BarCode" Type="nvarchar(max)" />
+          <Property Name="Attribute" Type="nvarchar(max)" />
+          <Property Name="Quantity" Type="int" />
+          <Property Name="ArtworkUrl" Type="nvarchar(max)" />
+          <Property Name="CustomerName" Type="nvarchar(max)" />
+          <Property Name="CustomerAddress1" Type="nvarchar(max)" />
+          <Property Name="CustomerAddress2" Type="nvarchar(max)" />
+          <Property Name="CustomerAddress3" Type="nvarchar(max)" />
+          <Property Name="CustomerTown" Type="nvarchar(max)" />
+          <Property Name="CustomerState" Type="nvarchar(max)" />
+          <Property Name="CustomerPostcode" Type="nvarchar(max)" />
+          <Property Name="CustomerCountry" Type="nvarchar(max)" />
+          <Property Name="CustomerEmail" Type="nvarchar(max)" />
+          <Property Name="CustomerCompanyName" Type="nvarchar(max)" />
+          <Property Name="CustomerPhone" Type="nvarchar(max)" />
+          <Property Name="EmailSentToProduction" Type="bit" />
+          <Property Name="EmailSentDatetime" Type="datetime" />
+        </EntityType>
+        <EntityType Name="tChateauPreOrder">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
@@ -118,6 +148,7 @@
           <EntitySet Name="tAdminUsers" EntityType="Self.tAdminUsers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tChateauBelfield" EntityType="Self.tChateauBelfield" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tChateauKnives" EntityType="Self.tChateauKnives" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tChateauPreOrder" EntityType="Self.tChateauPreOrder" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tOrderDetails" EntityType="Self.tOrderDetails" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tOrders" EntityType="Self.tOrders" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tSiteFlowOrderPushManual" EntityType="Self.tSiteFlowOrderPushManual" Schema="dbo" store:Type="Tables" />
@@ -143,6 +174,7 @@
             <End Role="tOrderDetails" EntitySet="tOrderDetails" />
           </AssociationSet>
           <EntitySet Name="tChateauBelfield" EntityType="Chateau_V2Model.tChateauBelfield" />
+          <EntitySet Name="tChateauPreOrder" EntityType="Chateau_V2Model.tChateauPreOrder" />
         </EntityContainer>
         <EntityType Name="tAdminUsers">
           <Key>
@@ -254,6 +286,36 @@
           <Property Name="EmailSentToProduction" Type="Boolean" />
           <Property Name="EmailSentDatetime" Type="DateTime" Precision="3" />
           <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+          <Property Name="PDFSentToPrinergy" Type="Boolean" />
+          <Property Name="DateSentToPrinergy" Type="DateTime" Precision="3" />
+          <Property Name="PDFPrinergyOutputProcessed" Type="Boolean" />
+          <Property Name="PrinergyOutputProcessedDatetime" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="tChateauPreOrder">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="OrderId" Type="Int64" />
+          <Property Name="OrderReference" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="OrderDetailsReference" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="BarCode" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Attribute" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Quantity" Type="Int32" />
+          <Property Name="ArtworkUrl" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerAddress1" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerAddress2" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerAddress3" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerTown" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerState" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerPostcode" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerCountry" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerEmail" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerCompanyName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerPhone" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="EmailSentToProduction" Type="Boolean" />
+          <Property Name="EmailSentDatetime" Type="DateTime" Precision="3" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -350,6 +412,10 @@
           <EntitySetMapping Name="tChateauBelfield">
             <EntityTypeMapping TypeName="Chateau_V2Model.tChateauBelfield">
               <MappingFragment StoreEntitySet="tChateauBelfield">
+                <ScalarProperty Name="PrinergyOutputProcessedDatetime" ColumnName="PrinergyOutputProcessedDatetime" />
+                <ScalarProperty Name="PDFPrinergyOutputProcessed" ColumnName="PDFPrinergyOutputProcessed" />
+                <ScalarProperty Name="DateSentToPrinergy" ColumnName="DateSentToPrinergy" />
+                <ScalarProperty Name="PDFSentToPrinergy" ColumnName="PDFSentToPrinergy" />
                 <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
                 <ScalarProperty Name="EmailSentDatetime" ColumnName="EmailSentDatetime" />
                 <ScalarProperty Name="EmailSentToProduction" ColumnName="EmailSentToProduction" />
@@ -357,6 +423,33 @@
                 <ScalarProperty Name="Quantity" ColumnName="Quantity" />
                 <ScalarProperty Name="AttributeLength" ColumnName="AttributeLength" />
                 <ScalarProperty Name="AttributeDesignCode" ColumnName="AttributeDesignCode" />
+                <ScalarProperty Name="BarCode" ColumnName="BarCode" />
+                <ScalarProperty Name="OrderDetailsReference" ColumnName="OrderDetailsReference" />
+                <ScalarProperty Name="OrderReference" ColumnName="OrderReference" />
+                <ScalarProperty Name="OrderId" ColumnName="OrderId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tChateauPreOrder">
+            <EntityTypeMapping TypeName="Chateau_V2Model.tChateauPreOrder">
+              <MappingFragment StoreEntitySet="tChateauPreOrder">
+                <ScalarProperty Name="EmailSentDatetime" ColumnName="EmailSentDatetime" />
+                <ScalarProperty Name="EmailSentToProduction" ColumnName="EmailSentToProduction" />
+                <ScalarProperty Name="CustomerPhone" ColumnName="CustomerPhone" />
+                <ScalarProperty Name="CustomerCompanyName" ColumnName="CustomerCompanyName" />
+                <ScalarProperty Name="CustomerEmail" ColumnName="CustomerEmail" />
+                <ScalarProperty Name="CustomerCountry" ColumnName="CustomerCountry" />
+                <ScalarProperty Name="CustomerPostcode" ColumnName="CustomerPostcode" />
+                <ScalarProperty Name="CustomerState" ColumnName="CustomerState" />
+                <ScalarProperty Name="CustomerTown" ColumnName="CustomerTown" />
+                <ScalarProperty Name="CustomerAddress3" ColumnName="CustomerAddress3" />
+                <ScalarProperty Name="CustomerAddress2" ColumnName="CustomerAddress2" />
+                <ScalarProperty Name="CustomerAddress1" ColumnName="CustomerAddress1" />
+                <ScalarProperty Name="CustomerName" ColumnName="CustomerName" />
+                <ScalarProperty Name="ArtworkUrl" ColumnName="ArtworkUrl" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="Attribute" ColumnName="Attribute" />
                 <ScalarProperty Name="BarCode" ColumnName="BarCode" />
                 <ScalarProperty Name="OrderDetailsReference" ColumnName="OrderDetailsReference" />
                 <ScalarProperty Name="OrderReference" ColumnName="OrderReference" />

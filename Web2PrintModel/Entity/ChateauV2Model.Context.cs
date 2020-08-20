@@ -32,5 +32,6 @@ namespace ChateauEntity.Entity
         public virtual DbSet<tSiteFlowOrderPushManual> tSiteFlowOrderPushManual { get; set; }
         public virtual DbSet<tSiteFlowResponse> tSiteFlowResponse { get; set; }
         public virtual DbSet<tChateauBelfield> tChateauBelfield { get; set; }
+        public virtual DbSet<tChateauPreOrder> tChateauPreOrder { get; set; }
     }
 }

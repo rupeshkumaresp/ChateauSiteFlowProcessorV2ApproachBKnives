@@ -104,6 +104,9 @@
     <Compile Include="Entity\tChateauKnives.cs">
       <DependentUpon>ChateauV2Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Entity\tChateauPreOrder.cs">
+      <DependentUpon>ChateauV2Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="Entity\tOrderDetails.cs">
       <DependentUpon>ChateauV2Model.tt</DependentUpon>
     </Compile>

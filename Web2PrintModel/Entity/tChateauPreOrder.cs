@@ -12,23 +12,28 @@ namespace ChateauEntity.Entity
     using System;
     using System.Collections.Generic;
     
-    public partial class tChateauBelfield
+    public partial class tChateauPreOrder
     {
         public long Id { get; set; }
         public Nullable<long> OrderId { get; set; }
         public string OrderReference { get; set; }
         public string OrderDetailsReference { get; set; }
         public string BarCode { get; set; }
-        public string AttributeDesignCode { get; set; }
-        public string AttributeLength { get; set; }
+        public string Attribute { get; set; }
         public Nullable<int> Quantity { get; set; }
         public string ArtworkUrl { get; set; }
+        public string CustomerName { get; set; }
+        public string CustomerAddress1 { get; set; }
+        public string CustomerAddress2 { get; set; }
+        public string CustomerAddress3 { get; set; }
+        public string CustomerTown { get; set; }
+        public string CustomerState { get; set; }
+        public string CustomerPostcode { get; set; }
+        public string CustomerCountry { get; set; }
+        public string CustomerEmail { get; set; }
+        public string CustomerCompanyName { get; set; }
+        public string CustomerPhone { get; set; }
         public Nullable<bool> EmailSentToProduction { get; set; }
         public Nullable<System.DateTime> EmailSentDatetime { get; set; }
-        public Nullable<System.DateTime> CreatedAt { get; set; }
-        public Nullable<bool> PDFSentToPrinergy { get; set; }
-        public Nullable<System.DateTime> DateSentToPrinergy { get; set; }
-        public Nullable<bool> PDFPrinergyOutputProcessed { get; set; }
-        public Nullable<System.DateTime> PrinergyOutputProcessedDatetime { get; set; }
     }
 }

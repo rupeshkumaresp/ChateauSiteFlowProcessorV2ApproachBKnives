@@ -293,6 +293,39 @@ namespace ChateauOrderHelper
                 })
                 .ToList();
         }
+
+        
+
+        public List<ChateauPreOrder> ExtractPreOrderReportData()
+        {
+            var preOrder = _contextChateau.tChateauPreOrder.Where(k => k.EmailSentToProduction == false).ToList();
+
+            return preOrder.Select(preo => new ChateauPreOrder
+            {
+                    Id = preo.Id,
+                    OrderId = Convert.ToString(preo.OrderId),
+                    OrderReference = preo.OrderReference,
+                    OrderDetailsReference = preo.OrderDetailsReference,
+                    BarCode = preo.BarCode,
+                    Attribute = preo.Attribute,
+                    Quantity = Convert.ToString(preo.Quantity),
+                    ArtworkUrl = preo.ArtworkUrl,
+                    CustomerName = preo.CustomerName,
+                    CustomerAddress1 = preo.CustomerAddress1,
+                    CustomerAddress2 = preo.CustomerAddress2,
+                    CustomerAddress3 = preo.CustomerAddress3,
+                    CustomerTown = preo.CustomerTown,
+                    CustomerState = preo.CustomerState,
+                    CustomerPostcode = preo.CustomerPostcode,
+                    CustomerCountry = preo.CustomerCountry,
+                    CustomerEmail = preo.CustomerEmail,
+                    CustomerCompanyName = preo.CustomerCompanyName,
+                    CustomerPhone = preo.CustomerPhone
+                })
+                .ToList();
+        }
+
+
         public List<ChateauKnivesReportData> ExtractKnifeReportData()
         {
             var knives = _contextChateau.tChateauKnives.Where(k => k.EmailSentToProduction == false).ToList();
@@ -333,6 +366,19 @@ namespace ChateauOrderHelper
             {
                 belfield.EmailSentToProduction = true;
                 belfield.EmailSentDatetime = DateTime.Now;
+                _contextChateau.SaveChanges();
+            }
+        }
+        
+
+        public void MarkPreOrderSentToProduction(long id)
+        {
+            var preorder = _contextChateau.tChateauPreOrder.FirstOrDefault(k => k.Id == id);
+
+            if (preorder != null)
+            {
+                preorder.EmailSentToProduction = true;
+                preorder.EmailSentDatetime = DateTime.Now;
                 _contextChateau.SaveChanges();
             }
         }
