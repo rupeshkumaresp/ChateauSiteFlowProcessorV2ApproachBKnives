@@ -99,6 +99,8 @@
   <ItemGroup>
     <Compile Include="EmailHelper.cs" />
     <Compile Include="GenerateReportOutputSpreadsheet.cs" />
+    <Compile Include="NetworkConnection.cs" />
+    <Compile Include="PDfMerger.cs" />
     <Compile Include="PDFModificationHelper.cs" />
     <Compile Include="ProcessHelper.cs" />
     <Compile Include="PushSiteFlowForm.cs">

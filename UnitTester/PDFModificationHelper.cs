@@ -739,7 +739,7 @@ namespace ChateauSiteFlowApp
             }
         }
 
-        public string ChateauStationeryPDFModifications(string orderorderId, string inputPDFPath, string code, string StationeryStyle, string StationeryType, string customerName)
+        public string ChateauStationeryPDFModifications(string orderorderId, string inputPDFPath, string code, string StationeryStyle, string StationeryType, string customerName, int qtyPDF)
         {
 
             //50time file copy
@@ -747,7 +747,7 @@ namespace ChateauSiteFlowApp
             var fileName = Path.GetFileNameWithoutExtension(inputPDFPath);
 
             List<string> clonedFiles = new List<string>();
-            for (int i = 1; i <= 50; i++)
+            for (int i = 1; i <= qtyPDF; i++)
             {
 
                 var newFileName = fileName + "-" + i.ToString() + ".PDF";
@@ -781,21 +781,21 @@ namespace ChateauSiteFlowApp
             var output = Path.Combine(directory, orderorderId + "-Stationery-Output.PDF");
             Merge(clonedFiles, output);
 
-            for (int i = 1; i <= 50; i++)
+            for (int i = 1; i <= qtyPDF; i++)
             {
                 var newFileName = fileName + "-" + i.ToString() + ".PDF";
                 File.Delete(Path.Combine(directory, newFileName));
             }
             return output;
         }
-        public string ChateauStationerySetPDFModifications(string orderorderId, string inputPDFPath, string code, string StationeryStyle, string StationeryType, string customerName)
+        public string ChateauStationerySetPDFModifications(string orderorderId, string inputPDFPath, string code, string StationeryStyle, string StationeryType, string customerName, int qtyPDF)
         {
             //50time file copy
             var directory = Path.GetDirectoryName(inputPDFPath);
             var fileName = Path.GetFileNameWithoutExtension(inputPDFPath);
 
             List<string> clonedFiles = new List<string>();
-            for (int i = 1; i <= 50; i++)
+            for (int i = 1; i <= qtyPDF; i++)
             {
                 var newFileName = fileName + "-" + i.ToString() + ".PDF";
 
@@ -827,7 +827,7 @@ namespace ChateauSiteFlowApp
             var output = Path.Combine(directory, orderorderId + "-StationerySet-Output.PDF");
             Merge(clonedFiles, output);
 
-            for (int i = 1; i <= 50; i++)
+            for (int i = 1; i <= qtyPDF; i++)
             {
                 var newFileName = fileName + "-" + i.ToString() + ".PDF";
                 File.Delete(Path.Combine(directory, newFileName));

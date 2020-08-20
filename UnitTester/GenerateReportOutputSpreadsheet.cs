@@ -19,14 +19,13 @@ namespace ChateauSiteFlowApp
 
         readonly OrderHelper _orderHelper = new OrderHelper();
 
-        public void CreateSpreadSheetBelfield(List<BelfieldModel> belfieldData)
+        public string CreateSpreadSheetBelfield(List<BelfieldModel> belfieldData)
         {
             var name = "BelfieldReport_" + System.DateTime.Now.ToString("dd-MM-yyyy HH_mm_ss");
 
             if (belfieldData.Count == 0)
-                return;
-            //CREATE IMPOSTIONS PDFS AND SAVE TO FOLDER AND MARK TO DATABASE THAT IMPOSTIONS DONE
-
+                return ""; 
+            
             //GENERATE REPORT
             BuildBelfieldDataSheet(name, belfieldData);
 
@@ -49,9 +48,11 @@ namespace ChateauSiteFlowApp
 
             File.Copy(path, chateauBelfieldReportPath + @"\\" + name + ".xlsx");
 
-            EmailHelper.SendBelfieldReportEmail(path);
+          
 
             MarkBelfieldExtractedOrders(belfieldData);
+
+            return path;
 
         }
 

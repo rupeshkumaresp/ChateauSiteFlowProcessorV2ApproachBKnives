@@ -725,11 +725,19 @@ namespace ChateauSiteFlowApp
 
                 if (code == "Stationery")
                 {
+                    var qtyPDF = 50;
+
+                    if (stationeryType == "Card")
+                        qtyPDF = 31;
+
+                    if (stationeryType == "Paper")
+                        qtyPDF = 31;
+
                     _pdfModificationHelper.SelectPages(_localProcessingPath + "/PDFS/" + pdfFileName, "1-2", _localProcessingPath + "/PDFS/" + orderorderId + "-Stationery-In.PDF");
 
                     var newChateauStationeryPDFPath =
                         _pdfModificationHelper.ChateauStationeryPDFModifications(orderorderId,
-                            _localProcessingPath + "/PDFS/" + orderorderId + "-Stationery-In.PDF", code, stationeryStyle, stationeryType, customerName);
+                            _localProcessingPath + "/PDFS/" + orderorderId + "-Stationery-In.PDF", code, stationeryStyle, stationeryType, customerName, qtyPDF);
 
                     finalPdfPath = finalPdfPath.Replace(".PDF", "_" + componentCount + ".PDF");
                     File.Copy(newChateauStationeryPDFPath, originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode + "_" + componentCount + ".PDF", true);
@@ -741,11 +749,26 @@ namespace ChateauSiteFlowApp
 
                 if (code == "StationerySet")
                 {
+                    /*
+                     SKU: Chateau-StationerySet
+                        Stationery Type:
+                        Card- 31
+                        Paper- 31
+                     */
+
+                    var qtyPDF = 50;
+
+                    if (stationeryType == "Card")
+                        qtyPDF = 31;
+
+                    if (stationeryType == "Paper")
+                        qtyPDF = 31;
+
                     _pdfModificationHelper.SelectPages(_localProcessingPath + "/PDFS/" + pdfFileName, "3-4", _localProcessingPath + "/PDFS/" + orderorderId + "-StationerySet-In.PDF");
 
                     var newChateauStationerySetPDFPath =
                         _pdfModificationHelper.ChateauStationerySetPDFModifications(orderorderId,
-                            _localProcessingPath + "/PDFS/" + orderorderId + "-StationerySet-In.PDF", code, stationeryStyle, stationeryType, customerName);
+                            _localProcessingPath + "/PDFS/" + orderorderId + "-StationerySet-In.PDF", code, stationeryStyle, stationeryType, customerName, qtyPDF);
 
 
 
@@ -774,9 +797,23 @@ namespace ChateauSiteFlowApp
 
             if (code == "Stationery")
             {
+                /*
+                 SKU: Chateau-Stationery
+                    Stationery Type:
+                    Card- 31
+                    Paper- 51
+                 */
+
+                var qtyPDF = 50;
+                if (StationeryType == "Card")
+                    qtyPDF = 31;
+
+                if (StationeryType == "Paper")
+                    qtyPDF = 51;
+
                 var newChateauStationeryPDFPath =
                     _pdfModificationHelper.ChateauStationeryPDFModifications(orderorderId,
-                        _localProcessingPath + "/PDFS/" + pdfFileName, code, StationeryStyle, StationeryType, customerName);
+                        _localProcessingPath + "/PDFS/" + pdfFileName, code, StationeryStyle, StationeryType, customerName, qtyPDF);
 
                 File.Copy(newChateauStationeryPDFPath, finalPdfPath, true);
 
