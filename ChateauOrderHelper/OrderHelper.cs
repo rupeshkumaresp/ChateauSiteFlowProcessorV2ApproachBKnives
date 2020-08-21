@@ -242,6 +242,36 @@ namespace ChateauOrderHelper
             }
         }
 
+        public void AddPreOrder(ChateauPreOrder model)
+        {
+            tChateauPreOrder preOrder = new tChateauPreOrder
+            {
+                OrderId = Convert.ToInt64(model.OrderId),
+                OrderReference = model.OrderReference,
+                OrderDetailsReference = model.OrderDetailsReference,
+                BarCode = model.BarCode,
+                Attribute = model.Attribute,
+                Quantity = Convert.ToInt32(model.Quantity),
+                ArtworkUrl = model.ArtworkUrl,
+                CustomerName = model.CustomerName,
+                CustomerAddress1 = model.CustomerAddress1,
+                CustomerAddress2 = model.CustomerAddress2,
+                CustomerAddress3 = model.CustomerAddress3,
+                CustomerTown = model.CustomerTown,
+                CustomerState = model.CustomerState,
+                CustomerPostcode = model.CustomerPostcode,
+                CustomerCountry = model.CustomerCountry,
+                CustomerEmail = model.CustomerEmail,
+                CustomerCompanyName = model.CustomerCompanyName,
+                CustomerPhone = model.CustomerPhone,
+                EmailSentToProduction = false
+            };
+
+            _contextChateau.tChateauPreOrder.Add(preOrder);
+            _contextChateau.SaveChanges();
+        }
+
+
         public void AddKnife(ChateauKnivesReportData model)
         {
             tChateauKnives knives = new tChateauKnives

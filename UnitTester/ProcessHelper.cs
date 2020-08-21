@@ -375,9 +375,14 @@ namespace ChateauSiteFlowApp
 
                     bool onlyKnives = OrderContainsOnlyKnives(jsonObject);
 
+                    bool onlyPreOrderItems = OrderContainsOnlyPreOrder(jsonObject);
+
                     bool orderContainsKnivesAndOtherProducts = OrderContainsMixProductsWithKnives(jsonObject);
 
+                    bool orderContainsPreOrderAndOtherProducts = OrderContainsMixProductsWithPreOrder(jsonObject);
+
                     List<SiteflowOrder.Item> knifeJsonItems = new List<SiteflowOrder.Item>();
+                    List<SiteflowOrder.Item> preOrderJsonItems = new List<SiteflowOrder.Item>();
 
                     foreach (var item in jsonObject.orderData.items)
                     {
@@ -673,15 +678,17 @@ namespace ChateauSiteFlowApp
 
                         //If item is knife then add this to database Knife table
                         DumpKnivesToDatabase(sku, orderContainsKnivesAndOtherProducts, knifeJsonItems, item, orderId, sourceOrderId, sourceItemId, orderbarcode, jsonObject);
+                        DumpPreOrderToDatabase(sku, orderContainsPreOrderAndOtherProducts, preOrderJsonItems, item, orderId, sourceOrderId, sourceItemId, orderbarcode, jsonObject);
                     }
 
                     RemoveKnivesOrderItem(orderContainsKnivesAndOtherProducts, jsonObject, knifeJsonItems);
+                    RemovePreOrderItem(orderContainsPreOrderAndOtherProducts, jsonObject, preOrderJsonItems);
 
                     var serializedResultJson = JsonConvert.SerializeObject(
                         jsonObject,
                         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
-                    if (!onlyKnives)
+                    if (!onlyKnives && !onlyPreOrderItems)
                     {
                         var goodOrder = IsGoodOrder(processingSummary, sourceOrderId);
 
@@ -842,6 +849,46 @@ namespace ChateauSiteFlowApp
             return goodOrder;
         }
 
+
+
+        private void DumpPreOrderToDatabase(string sku, bool orderContainsPreOrderAndOtherProducts, List<SiteflowOrder.Item> preOrderJsonItems, SiteflowOrder.Item item,
+  long orderId, string sourceOrderId, string sourceItemId, string orderbarcode, SiteflowOrder.RootObject jsonObject)
+        {
+            if (sku == "Chateau-PreOrder")
+            {
+                if (orderContainsPreOrderAndOtherProducts)
+                {
+                    preOrderJsonItems.Add(item);
+                }
+
+                ChateauPreOrder model = new ChateauPreOrder
+                {
+                    OrderId = Convert.ToString(orderId),
+                    OrderReference = sourceOrderId,
+                    OrderDetailsReference = sourceItemId,
+                    BarCode = orderbarcode,
+                    Attribute = item.components[0].attributes.ProductCode + " " +
+                                item.components[0].attributes.ProductFinishedPageSize,
+                    Quantity = Convert.ToString(item.quantity),
+                    ArtworkUrl = item.components[0].path,
+                    CustomerName = jsonObject.orderData.shipments[0].shipTo.name,
+                    CustomerAddress1 = jsonObject.orderData.shipments[0].shipTo.address1,
+                    CustomerAddress2 = jsonObject.orderData.shipments[0].shipTo.address2,
+                    CustomerAddress3 = jsonObject.orderData.shipments[0].shipTo.address3,
+                    CustomerTown = jsonObject.orderData.shipments[0].shipTo.town,
+                    CustomerState = jsonObject.orderData.shipments[0].shipTo.state,
+                    CustomerPostcode = jsonObject.orderData.shipments[0].shipTo.postcode,
+                    CustomerCountry = jsonObject.orderData.shipments[0].shipTo.country,
+                    CustomerEmail = jsonObject.orderData.shipments[0].shipTo.email,
+                    CustomerCompanyName = jsonObject.orderData.shipments[0].shipTo.companyName,
+                    CustomerPhone = jsonObject.orderData.shipments[0].shipTo.phone
+                };
+
+                _orderHelper.AddPreOrder(model);
+            }
+        }
+
+
         private void DumpKnivesToDatabase(string sku, bool orderContainsKnivesAndOtherProducts, List<SiteflowOrder.Item> knifeJsonItems, SiteflowOrder.Item item,
             long orderId, string sourceOrderId, string sourceItemId, string orderbarcode, SiteflowOrder.RootObject jsonObject)
         {
@@ -916,6 +963,42 @@ namespace ChateauSiteFlowApp
             }
         }
 
+
+        private static void RemovePreOrderItem(bool orderContainsPreOrderAndOtherProducts, SiteflowOrder.RootObject jsonObject,
+            List<SiteflowOrder.Item> preOrderJsonItems)
+        {
+            //REMOVE THE PREORDER json order item so it doesn't get duplicate in siteflow
+            if (orderContainsPreOrderAndOtherProducts)
+            {
+                List<SiteflowOrder.Item> modifiedItems = new List<SiteflowOrder.Item>();
+
+                foreach (var item in jsonObject.orderData.items)
+                {
+                    if (!preOrderJsonItems.Contains(item))
+                        modifiedItems.Add(item);
+                }
+                jsonObject.orderData.items = modifiedItems;
+            }
+        }
+
+
+        private static bool OrderContainsOnlyPreOrder(SiteflowOrder.RootObject jsonObject)
+        {
+            bool onlyPreOrder = true;
+
+            foreach (var item in jsonObject.orderData.items)
+            {
+                var sku = item.sku;
+
+                if (sku != "Chateau-PreOrder")
+                {
+                    onlyPreOrder = false;
+                    break;
+                }
+            }
+
+            return onlyPreOrder;
+        }
         private static bool OrderContainsOnlyKnives(SiteflowOrder.RootObject jsonObject)
         {
             bool onlyKnives = true;
@@ -932,6 +1015,35 @@ namespace ChateauSiteFlowApp
             }
 
             return onlyKnives;
+        }
+
+
+
+        private static bool OrderContainsMixProductsWithPreOrder(SiteflowOrder.RootObject jsonObject)
+        {
+            bool preOrderFound = false;
+            bool otherProductFound = false;
+
+            foreach (var item in jsonObject.orderData.items)
+            {
+                var sku = item.sku;
+
+                if (sku == "Chateau-PreOrder")
+                {
+                    preOrderFound = true;
+                }
+
+                if (sku != "Chateau-PreOrder")
+                {
+                    otherProductFound = true;
+                }
+
+            }
+
+            if (preOrderFound && otherProductFound)
+                return true;
+
+            return false;
         }
 
         private static bool OrderContainsMixProductsWithKnives(SiteflowOrder.RootObject jsonObject)
