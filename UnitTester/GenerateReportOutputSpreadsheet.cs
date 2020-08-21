@@ -324,11 +324,11 @@ namespace ChateauSiteFlowApp
 
             Package.Dispose();
 
-            var chateauKnivesReportPath = ConfigurationManager.AppSettings["ChateauPreOrderReportPath"];
+            var chateauPreOrderReportPath = ConfigurationManager.AppSettings["ChateauPreOrderReportPath"];
 
-            File.Copy(path, chateauKnivesReportPath + @"\\" + name + ".xlsx");
+            File.Copy(path, chateauPreOrderReportPath + @"\\" + name + ".xlsx");
 
-            EmailHelper.SendKnivesReportEmail(path);
+            EmailHelper.SendPreOrderReportEmail(path);
 
             MarkExtractedPreOrders(preorderData);
 

@@ -12,12 +12,13 @@ namespace ChateauSiteFlowApp
 
         #region email Templates
 
-        public static string ReportEmailTemplateKnives =
+
+        public static string ReportEmailTemplatePreOrder =
 
             @"<p>
     	Hi,</p>
         <p>
-	        Please find attached today's Chateau Knives order spreadsheet. </p>       
+	        Please find attached today's Pre-Orders spreadsheet. </p>       
         
         <p>
 	        &nbsp;</p>
@@ -44,6 +45,22 @@ namespace ChateauSiteFlowApp
         <p>
 	        <span style='color:#696969;'><em><span style='font-size: 12px;'>Please note this is an automated response email, please do not reply to this email address.</span></em></span><br /></em></span></p>";
 
+
+        public static string ReportEmailTemplateKnives =
+
+            @"<p>
+    	Hi,</p>
+        <p>
+	        Please find attached today's Chateau Knives order spreadsheet. </p>       
+        
+        <p>
+	        &nbsp;</p>
+        <p>
+	        Kind Regards,</p>
+        <p>
+	        ESP Team</p>
+        <p>
+	        <span style='color:#696969;'><em><span style='font-size: 12px;'>Please note this is an automated response email, please do not reply to this email address.</span></em></span><br /></em></span></p>";
 
         public static string ProcessingStatusSummaryEmailTemplate =
 
@@ -110,6 +127,25 @@ namespace ChateauSiteFlowApp
             }
 
         }
+
+        public static void SendPreOrderReportEmail(string path)
+        {
+            var defaultMessage = ReportEmailTemplatePreOrder;
+
+            var emailTo = ConfigurationManager.AppSettings["NotificationEmailPreOrder"];
+
+            var emails = emailTo.Split(new char[] { ';' });
+
+            for (int i = 0; i < emails.Length; i++)
+            {
+                if (string.IsNullOrEmpty(emails[i]))
+                    continue;
+
+                SendMailWithAttachment(emails[i], "Chateau Pre-Order Report - " + DateTime.Now.ToShortDateString(), defaultMessage, path);
+            }
+
+        }
+
 
         public static void SendKnivesReportEmail(string path)
         {

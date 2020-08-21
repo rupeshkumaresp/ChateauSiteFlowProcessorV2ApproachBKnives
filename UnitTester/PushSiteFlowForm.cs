@@ -28,8 +28,6 @@ namespace ChateauSiteFlowApp
 
         private void ProcessJsonOrders()
         {
-            return;
-
             //PdfModificationHelper test = new PdfModificationHelper();
 
             //test.CreateBarcodeMirrorImageBelfield("0000169940202", "000016994");
@@ -54,9 +52,10 @@ namespace ChateauSiteFlowApp
 
             ChateauKnivesProcessing();
 
+            ChateauPreOrderProcessing();
+
             ChateauBelfieldProcessing();
 
-            //ChateauPreOrderProcessing();
         }
 
         private void ChateauBelfieldProcessing()
@@ -275,7 +274,6 @@ namespace ChateauSiteFlowApp
             System.IO.File.WriteAllBytes(mergeFileName, PdfMerger.MergeFiles(filesByte));
 
         }
-
 
 
         private static void ChateauPreOrderProcessing()
