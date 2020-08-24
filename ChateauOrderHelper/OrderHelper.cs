@@ -443,5 +443,26 @@ namespace ChateauOrderHelper
             _contextChateau.tChateauBelfield.Add(belfield);
             _contextChateau.SaveChanges();
         }
+
+        public void MarkOrdersProcessed(List<string> distinctOrderIdsBelfield)
+        {
+
+            foreach (var orderId in distinctOrderIdsBelfield)
+            {
+                var oid = Convert.ToInt64(orderId);
+
+                var belfield = _contextChateau.tChateauBelfield.FirstOrDefault(o => o.OrderId == oid);
+
+                if (belfield != null)
+                {
+                    belfield.PDFSentToPrinergy = true;
+                    belfield.PDFPrinergyOutputProcessed = true;
+                    belfield.DateSentToPrinergy = System.DateTime.Now;
+                    belfield.PrinergyOutputProcessedDatetime = System.DateTime.Now;
+                    _contextChateau.SaveChanges();
+                }
+
+            }
+        }
     }
 }

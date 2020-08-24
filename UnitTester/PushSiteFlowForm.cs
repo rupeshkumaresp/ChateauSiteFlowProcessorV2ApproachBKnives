@@ -80,6 +80,22 @@ namespace ChateauSiteFlowApp
 
                 var pdfLabelFiles = new DirectoryInfo(baseHoldingFolder).GetFiles("*.PDF", SearchOption.TopDirectoryOnly);
 
+                List<string> DistinctOrderIdsBelfield = new List<string>();
+
+                for (int p = 0; p < pdfLabelFiles.Length; p++)
+                {
+                    var fileShortName = Path.GetFileNameWithoutExtension(pdfLabelFiles[p].FullName);
+
+                    var orderDetailsArray = fileShortName.Split('_');
+
+                    if (orderDetailsArray.Length > 1)
+                    {
+                        if (!DistinctOrderIdsBelfield.Contains(orderDetailsArray[0]))
+                            DistinctOrderIdsBelfield.Add(orderDetailsArray[0]);
+                    }
+
+                }
+
                 List<string> mergedPDFList = new List<string>();
 
                 List<string> pagesToMeMerged = new List<string>();
@@ -170,11 +186,17 @@ namespace ChateauSiteFlowApp
                 for (int p = 0; p < PrinergyOutputImposedLabelFiles.Count; p++)
                 {
                     File.Delete(PrinergyOutputImposedLabelFiles[p]);
-
                 }
 
                 if (!string.IsNullOrEmpty(path))
                     EmailHelper.SendBelfieldReportEmail(path);
+
+
+                if (DistinctOrderIdsBelfield.Count > 0)
+                {
+                    orderHelper.MarkOrdersProcessed(DistinctOrderIdsBelfield);
+                }
+
             }
         }
 
