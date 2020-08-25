@@ -447,11 +447,10 @@ namespace ChateauOrderHelper
         public void MarkOrdersProcessed(List<string> distinctOrderIdsBelfield)
         {
 
-            foreach (var orderId in distinctOrderIdsBelfield)
+            foreach (var reference in distinctOrderIdsBelfield)
             {
-                var oid = Convert.ToInt64(orderId);
 
-                var belfield = _contextChateau.tChateauBelfield.FirstOrDefault(o => o.OrderId == oid);
+                var belfield = _contextChateau.tChateauBelfield.FirstOrDefault(o => o.OrderReference == reference);
 
                 if (belfield != null)
                 {
