@@ -69,6 +69,7 @@
           <Property Name="OrderReference" Type="nvarchar(max)" />
           <Property Name="OrderDetailsReference" Type="nvarchar(max)" />
           <Property Name="BarCode" Type="nvarchar(max)" />
+          <Property Name="Substrate" Type="nvarchar(max)" />
           <Property Name="Attribute" Type="nvarchar(max)" />
           <Property Name="Quantity" Type="int" />
           <Property Name="ArtworkUrl" Type="nvarchar(max)" />
@@ -300,6 +301,7 @@
           <Property Name="OrderReference" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="OrderDetailsReference" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="BarCode" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Substrate" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Attribute" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Quantity" Type="Int32" />
           <Property Name="ArtworkUrl" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
@@ -450,6 +452,7 @@
                 <ScalarProperty Name="ArtworkUrl" ColumnName="ArtworkUrl" />
                 <ScalarProperty Name="Quantity" ColumnName="Quantity" />
                 <ScalarProperty Name="Attribute" ColumnName="Attribute" />
+                <ScalarProperty Name="Substrate" ColumnName="Substrate" />
                 <ScalarProperty Name="BarCode" ColumnName="BarCode" />
                 <ScalarProperty Name="OrderDetailsReference" ColumnName="OrderDetailsReference" />
                 <ScalarProperty Name="OrderReference" ColumnName="OrderReference" />

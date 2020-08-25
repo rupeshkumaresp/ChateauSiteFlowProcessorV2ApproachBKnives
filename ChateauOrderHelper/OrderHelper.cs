@@ -338,6 +338,7 @@ namespace ChateauOrderHelper
                     OrderDetailsReference = preo.OrderDetailsReference,
                     BarCode = preo.BarCode,
                     Attribute = preo.Attribute,
+                    Substrate = preo.Substrate,
                     Quantity = Convert.ToString(preo.Quantity),
                     ArtworkUrl = preo.ArtworkUrl,
                     CustomerName = preo.CustomerName,

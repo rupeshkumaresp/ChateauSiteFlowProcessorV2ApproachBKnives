@@ -15,6 +15,7 @@ namespace ChateauOrderHelper.Model
         public string OrderDetailsReference { get; set; }
         public string BarCode { get; set; }
         public string Attribute { get; set; }
+        public string Substrate { get; set; }
         public string Quantity { get; set; }
         public string ArtworkUrl { get; set; }
         public string CustomerName { get; set; }

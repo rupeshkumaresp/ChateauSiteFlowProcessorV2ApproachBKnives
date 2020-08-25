@@ -19,6 +19,7 @@ namespace ChateauEntity.Entity
         public string OrderReference { get; set; }
         public string OrderDetailsReference { get; set; }
         public string BarCode { get; set; }
+        public string Substrate { get; set; }
         public string Attribute { get; set; }
         public Nullable<int> Quantity { get; set; }
         public string ArtworkUrl { get; set; }

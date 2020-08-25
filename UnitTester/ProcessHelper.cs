@@ -869,6 +869,7 @@ namespace ChateauSiteFlowApp
                     BarCode = orderbarcode,
                     Attribute = item.components[0].attributes.ProductCode + " " +
                                 item.components[0].attributes.ProductFinishedPageSize,
+                    Substrate = item.components[0].attributes.Substrate,
                     Quantity = Convert.ToString(item.quantity),
                     ArtworkUrl = item.components[0].path,
                     CustomerName = jsonObject.orderData.shipments[0].shipTo.name,

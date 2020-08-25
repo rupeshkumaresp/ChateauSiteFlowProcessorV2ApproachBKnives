@@ -420,7 +420,7 @@ namespace ChateauSiteFlowApp
 
                 cell++;
 
-                Worksheet.Cells[rowJump, cell].Value = data.Attribute;
+                Worksheet.Cells[rowJump, cell].Value = data.Substrate;
                 Worksheet.Cells[rowJump, cell].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center; // Alignment is center
                 Worksheet.Cells[rowJump, cell].Style.Border.Top.Style = ExcelBorderStyle.Thin;
                 Worksheet.Cells[rowJump, cell].Style.Border.Left.Style = ExcelBorderStyle.Thin;
@@ -821,7 +821,7 @@ namespace ChateauSiteFlowApp
             headerColumns.Add("BarCode", icount);
             icount++;
 
-            headerColumns.Add("Attribute", icount);
+            headerColumns.Add("Substrate", icount);
             icount++;
 
             headerColumns.Add("Quantity", icount);
