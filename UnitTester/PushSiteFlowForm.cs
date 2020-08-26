@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Runtime.CompilerServices;
@@ -66,136 +67,168 @@ namespace ChateauSiteFlowApp
 
             if (now.Hour == 15)
             {
-                OrderHelper orderHelper = new OrderHelper();
-                var path = chateauBelfieldReportengine.CreateSpreadSheetBelfield(
-                    orderHelper.ExtractBelfieldReportData());
-
-                //CREATE IMPOSTIONS PDFS AND SAVE TO FOLDER AND MARK TO DATABASE THAT IMPOSTIONS DONE
-                //GEt all the files from holiding folder
-
-                var baseHoldingFolder = ConfigurationManager.AppSettings["BelfieldHolidingFolderPath"];
-
-                if (!Directory.Exists(baseHoldingFolder))
-                    Directory.CreateDirectory(baseHoldingFolder);
-
-                var pdfLabelFiles = new DirectoryInfo(baseHoldingFolder).GetFiles("*.PDF", SearchOption.TopDirectoryOnly);
-
-                List<string> DistinctOrderIdsBelfield = new List<string>();
-
-                for (int p = 0; p < pdfLabelFiles.Length; p++)
+                string path = "";
+                try
                 {
-                    var fileShortName = Path.GetFileNameWithoutExtension(pdfLabelFiles[p].FullName);
 
-                    var orderDetailsArray = fileShortName.Split('_');
+                    OrderHelper orderHelper = new OrderHelper();
+                    path = chateauBelfieldReportengine.CreateSpreadSheetBelfield(
+                        orderHelper.ExtractBelfieldReportData());
 
-                    if (orderDetailsArray.Length > 1)
+                    //CREATE IMPOSTIONS PDFS AND SAVE TO FOLDER AND MARK TO DATABASE THAT IMPOSTIONS DONE
+                    //GEt all the files from holiding folder
+
+                    var baseHoldingFolder = ConfigurationManager.AppSettings["BelfieldHolidingFolderPath"];
+
+                    if (!Directory.Exists(baseHoldingFolder))
+                        Directory.CreateDirectory(baseHoldingFolder);
+
+                    var pdfLabelFiles = new DirectoryInfo(baseHoldingFolder).GetFiles("*.PDF", SearchOption.TopDirectoryOnly);
+
+                    List<string> DistinctOrderIdsBelfield = new List<string>();
+
+                    for (int p = 0; p < pdfLabelFiles.Length; p++)
                     {
-                        if (!DistinctOrderIdsBelfield.Contains(orderDetailsArray[0]))
-                            DistinctOrderIdsBelfield.Add(orderDetailsArray[0]);
-                    }
+                        var fileShortName = Path.GetFileNameWithoutExtension(pdfLabelFiles[p].FullName);
 
-                }
+                        var orderDetailsArray = fileShortName.Split('_');
 
-                List<string> mergedPDFList = new List<string>();
-
-                List<string> pagesToMeMerged = new List<string>();
-
-                var pdfStacks = GetNearestMultipleQuantity(pdfLabelFiles.Length, 8);
-
-                var count = 1;
-
-                var fileCount = 1;
-
-                //merge them 8 at a times and save to Merged folder
-
-                for (int p = 0; p < pdfLabelFiles.Length; p++)
-                {
-                    pagesToMeMerged.Add(pdfLabelFiles[p].FullName);
-
-                    count++;
-
-                    if (count == 9)
-                    {
-                        count = 1;
-                        var nowDateTime = System.DateTime.Now;
-                        var mergeFileName = baseHoldingFolder + "//Merged//" + "Belfield_" + nowDateTime.ToString("ddMMyyyy") + "_" + fileCount + ".pdf";
-                        MergeFiles(mergeFileName, pagesToMeMerged);
-                        mergedPDFList.Add(mergeFileName);
-                        pagesToMeMerged.Clear();
-                        fileCount++;
-                    }
-                    else
-                    {
-                        if (p == pdfLabelFiles.Length - 1)
+                        if (orderDetailsArray.Length > 1)
                         {
+                            if (!DistinctOrderIdsBelfield.Contains(orderDetailsArray[0]))
+                                DistinctOrderIdsBelfield.Add(orderDetailsArray[0]);
+                        }
+
+                    }
+
+                    List<string> mergedPDFList = new List<string>();
+
+                    List<string> pagesToMeMerged = new List<string>();
+
+                    var pdfStacks = GetNearestMultipleQuantity(pdfLabelFiles.Length, 8);
+
+                    var count = 1;
+
+                    var fileCount = 1;
+
+                    //merge them 8 at a times and save to Merged folder
+
+                    for (int p = 0; p < pdfLabelFiles.Length; p++)
+                    {
+                        pagesToMeMerged.Add(pdfLabelFiles[p].FullName);
+
+                        count++;
+
+                        if (count == 9)
+                        {
+                            count = 1;
                             var nowDateTime = System.DateTime.Now;
                             var mergeFileName = baseHoldingFolder + "//Merged//" + "Belfield_" + nowDateTime.ToString("ddMMyyyy") + "_" + fileCount + ".pdf";
                             MergeFiles(mergeFileName, pagesToMeMerged);
                             mergedPDFList.Add(mergeFileName);
+                            pagesToMeMerged.Clear();
                             fileCount++;
                         }
+                        else
+                        {
+                            if (p == pdfLabelFiles.Length - 1)
+                            {
+                                var nowDateTime = System.DateTime.Now;
+                                var mergeFileName = baseHoldingFolder + "//Merged//" + "Belfield_" + nowDateTime.ToString("ddMMyyyy") + "_" + fileCount + ".pdf";
+                                MergeFiles(mergeFileName, pagesToMeMerged);
+                                mergedPDFList.Add(mergeFileName);
+                                fileCount++;
+                            }
+                        }
                     }
+
+                    //push to Prinergy
+
+                    ProcessPrinergyInput(mergedPDFList);
+
+                    //wait till all Prinergy output has been generated - check merge file count and prinergy output count shuould match
+
+
+                    var startTime = System.DateTime.Now;
+
+                    var imposedOutputNoFound = false;
+                    do
+                    {
+                        Thread.Sleep(60000);
+
+                        var timeAfterImpostions = System.DateTime.Now;
+
+                        if (timeAfterImpostions.Subtract(startTime).TotalMinutes > 59)
+                        {
+                            if (CheckBelfieldPrinergyOutputGenerated(mergedPDFList))
+                                imposedOutputNoFound = true;
+                            break;
+                        }
+
+                    } while (CheckBelfieldPrinergyOutputGenerated(mergedPDFList));
+
+
+                    if (imposedOutputNoFound)
+                    {
+                        EmailHelper.SendBelfieldNoImpositionsErrorEmail(path);
+                        return;
+                    }
+
+                    //all good, get all the Prinergy output
+
+                    //Merge them and save to final path in BelfieldLabels folder - PrinergyOutputMergedFinalLabelsPath
+
+                    List<string> PrinergyOutputImposedLabelFiles = new List<string>();
+
+                    var PrinergyOutputPath = ConfigurationManager.AppSettings["PrinergyOutputPath"];
+
+                    foreach (var file in mergedPDFList)
+                    {
+                        var shortFileName = Path.GetFileNameWithoutExtension(file);
+                        var PDFFileName = shortFileName + " Imposed.pdf";
+
+                        PrinergyOutputImposedLabelFiles.Add(PrinergyOutputPath + PDFFileName);
+                    }
+
+
+                    var mergedImposedSingleLabelFile = ConfigurationManager.AppSettings["PrinergyOutputMergedFinalLabelsPath"] + "Belfield_" + System.DateTime.Now.ToString("ddMMyyyy") + ".pdf";
+
+                    MergeFiles(mergedImposedSingleLabelFile, PrinergyOutputImposedLabelFiles);
+
+                    //move holiding folder single pdfs to Processed folder
+
+                    //clean up the merged folder
+                    for (int p = 0; p < pdfLabelFiles.Length; p++)
+                    {
+                        pdfLabelFiles[p]
+                            .CopyTo(
+                                baseHoldingFolder + "//Processed//" + Path.GetFileNameWithoutExtension(pdfLabelFiles[p].FullName) + ".pdf", true);
+
+                        pdfLabelFiles[p].Delete();
+
+                    }
+
+                    for (int p = 0; p < PrinergyOutputImposedLabelFiles.Count; p++)
+                    {
+                        File.Delete(PrinergyOutputImposedLabelFiles[p]);
+                    }
+
+                    if (!string.IsNullOrEmpty(path))
+                        EmailHelper.SendBelfieldReportEmail(path);
+
+
+                    if (DistinctOrderIdsBelfield.Count > 0)
+                    {
+                        orderHelper.MarkOrdersProcessed(DistinctOrderIdsBelfield);
+                    }
+
+                }
+                catch (Exception e)
+                {
+                    EmailHelper.SendBelfieldErrorEmail(path, e.Message + "-" + e.InnerException);
                 }
 
-                //push to Prinergy
 
-                ProcessPrinergyInput(mergedPDFList);
-
-                //wait till all Prinergy output has been generated - check merge file count and prinergy output count shuould match
-
-                do
-                {
-                    Thread.Sleep(60000);
-
-                } while (CheckBelfieldPrinergyOutputGenerated(mergedPDFList));
-
-                //all good, get all the Prinergy output
-
-                //Merge them and save to final path in BelfieldLabels folder - PrinergyOutputMergedFinalLabelsPath
-
-                List<string> PrinergyOutputImposedLabelFiles = new List<string>();
-
-                var PrinergyOutputPath = ConfigurationManager.AppSettings["PrinergyOutputPath"];
-
-                foreach (var file in mergedPDFList)
-                {
-                    var shortFileName = Path.GetFileNameWithoutExtension(file);
-                    var PDFFileName = shortFileName + " Imposed.pdf";
-
-                    PrinergyOutputImposedLabelFiles.Add(PrinergyOutputPath + PDFFileName);
-                }
-
-
-                var mergedImposedSingleLabelFile = ConfigurationManager.AppSettings["PrinergyOutputMergedFinalLabelsPath"] + "Belfield_" + System.DateTime.Now.ToString("ddMMyyyy") + ".pdf";
-
-                MergeFiles(mergedImposedSingleLabelFile, PrinergyOutputImposedLabelFiles);
-
-                //move holiding folder single pdfs to Processed folder
-
-                //clean up the merged folder
-                for (int p = 0; p < pdfLabelFiles.Length; p++)
-                {
-                    pdfLabelFiles[p]
-                        .CopyTo(
-                            baseHoldingFolder + "//Processed//" + Path.GetFileNameWithoutExtension(pdfLabelFiles[p].FullName) + ".pdf", true);
-
-                    pdfLabelFiles[p].Delete();
-
-                }
-
-                for (int p = 0; p < PrinergyOutputImposedLabelFiles.Count; p++)
-                {
-                    File.Delete(PrinergyOutputImposedLabelFiles[p]);
-                }
-
-                if (!string.IsNullOrEmpty(path))
-                    EmailHelper.SendBelfieldReportEmail(path);
-
-
-                if (DistinctOrderIdsBelfield.Count > 0)
-                {
-                    orderHelper.MarkOrdersProcessed(DistinctOrderIdsBelfield);
-                }
 
             }
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using System.Net.Mail;
+using System.Text.RegularExpressions;
 
 namespace ChateauSiteFlowApp
 {
@@ -35,6 +36,40 @@ namespace ChateauSiteFlowApp
     	Hi,</p>
         <p>
 	        Please find attached today's Chateau Belfield order spreadsheet. </p>       
+        
+        <p>
+	        &nbsp;</p>
+        <p>
+	        Kind Regards,</p>
+        <p>
+	        ESP Team</p>
+        <p>
+	        <span style='color:#696969;'><em><span style='font-size: 12px;'>Please note this is an automated response email, please do not reply to this email address.</span></em></span><br /></em></span></p>";
+
+        public static string ErrorEmailTemplateBelfieldNoImpositions =
+
+            @"<p>
+    	Hi,</p>
+        <p>
+	        Please note we have not got output from Prinergy for Belfield orders. The service waited around an hour and still no impostions got generated.</p>       
+        
+        <p>
+	        &nbsp;</p>
+        <p>
+	        Kind Regards,</p>
+        <p>
+	        ESP Team</p>
+        <p>
+	        <span style='color:#696969;'><em><span style='font-size: 12px;'>Please note this is an automated response email, please do not reply to this email address.</span></em></span><br /></em></span></p>";
+
+        public static string ErrorEmailTemplateBelfield =
+
+            @"<p>
+    	Hi,</p>
+        <p>
+	        An error occured processing the Belfield order input:</p>       
+        <p>
+	        [ERRORSTATUS]</p>
         
         <p>
 	        &nbsp;</p>
@@ -183,6 +218,44 @@ namespace ChateauSiteFlowApp
 
         }
 
+        public static void SendBelfieldErrorEmail(string path, string innerException)
+        {
+            var defaultMessage = ErrorEmailTemplateBelfield;
+
+            defaultMessage= Regex.Replace(defaultMessage, "\\[ERRORSTATUS\\]", innerException);
+
+            var emailTo = ConfigurationManager.AppSettings["NotificationEmailBelfield"];
+
+            var emails = emailTo.Split(new char[] { ';' });
+
+            for (int i = 0; i < emails.Length; i++)
+            {
+                if (string.IsNullOrEmpty(emails[i]))
+                    continue;
+
+                SendMailWithAttachment(emails[i], "Chateau Belfield Error - Action needed " + DateTime.Now.ToShortDateString(), defaultMessage, path);
+            }
+        }
+
+        public static void SendBelfieldNoImpositionsErrorEmail(string path)
+        {
+            var defaultMessage = ErrorEmailTemplateBelfieldNoImpositions;
+
+            var emailTo = ConfigurationManager.AppSettings["NotificationEmailBelfield"];
+
+            var emails = emailTo.Split(new char[] { ';' });
+
+            for (int i = 0; i < emails.Length; i++)
+            {
+                if (string.IsNullOrEmpty(emails[i]))
+                    continue;
+
+                SendMailWithAttachment(emails[i], "Chateau Belfield Error - No Prinergy Impostions- " + DateTime.Now.ToShortDateString(), defaultMessage, path);
+            }
+
+        }
+
+
         public static void SendMailWithAttachment(string eto, string subject, string message, string attachmentPath)
         {
             try
@@ -193,7 +266,8 @@ namespace ChateauSiteFlowApp
 
                 MailMessage mailer = new MailMessage("info@espweb2print.co.uk", eto, subject, message);
 
-                mailer.Attachments.Add(new Attachment(attachmentPath));
+                if (!string.IsNullOrEmpty(attachmentPath))
+                    mailer.Attachments.Add(new Attachment(attachmentPath));
 
                 SmtpClient smtp = new SmtpClient("espcolour-co-uk.mail.protection.outlook.com");
                 mailer.IsBodyHtml = true;
