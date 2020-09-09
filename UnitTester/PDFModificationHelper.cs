@@ -739,7 +739,7 @@ namespace ChateauSiteFlowApp
             }
         }
 
-        public string ChateauStationeryPDFModifications(string orderorderId, string inputPDFPath, string code, string StationeryStyle, string StationeryType, string customerName, int qtyPDF)
+        public string ChateauStationeryPDFModifications(string orderorderId, string inputPDFPath, string code, string StationeryStyle, string StationeryType, string customerName, int qtyPDF, Dictionary<string, string> processingSummary)
         {
 
             //50time file copy
@@ -775,6 +775,15 @@ namespace ChateauSiteFlowApp
 
             coverPdfFile = ChateauStationeryBasePath + "//" + StationeryStyle + ".PDF";
 
+            if (!File.Exists(coverPdfFile))
+            {
+                if (processingSummary.ContainsKey(orderorderId))
+                    processingSummary[orderorderId] += "Order failed - PDF Not Found - " + coverPdfFile;
+                else
+                    processingSummary.Add(orderorderId, "Order failed - PDF Not Found - " + coverPdfFile);
+
+                return "";
+            }
 
             //Apply additional text to cover page from attribute
 
@@ -796,7 +805,7 @@ namespace ChateauSiteFlowApp
             }
             return output;
         }
-        public string ChateauStationerySetPDFModifications(string orderorderId, string inputPDFPath, string code, string StationeryStyle, string StationeryType, string customerName, int qtyPDF)
+        public string ChateauStationerySetPDFModifications(string orderorderId, string inputPDFPath, string code, string StationeryStyle, string StationeryType, string customerName, int qtyPDF, Dictionary<string,string> processingSummary)
         {
             //50time file copy
             var directory = Path.GetDirectoryName(inputPDFPath);
@@ -833,6 +842,15 @@ namespace ChateauSiteFlowApp
 
             coverPdfFile = ChateauStationerySetBasePath + "//" + StationeryStyle + ".PDF";
 
+            if (!File.Exists(coverPdfFile))
+            {
+                if (processingSummary.ContainsKey(orderorderId))
+                    processingSummary[orderorderId] += "Order failed - PDF Not Found - " + coverPdfFile;
+                else
+                    processingSummary.Add(orderorderId, "Order failed - PDF Not Found - " + coverPdfFile);
+
+                return "";
+            }
 
             var modifiedCoverPdfFile = Path.Combine(directory, orderorderId + "-StationeryCoverStyle.PDF");
 
