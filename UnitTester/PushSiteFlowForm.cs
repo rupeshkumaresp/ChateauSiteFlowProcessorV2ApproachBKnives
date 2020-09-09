@@ -51,6 +51,8 @@ namespace ChateauSiteFlowApp
 
             ProcessHelper.SendProcessingSummaryEmail(processingResults);
 
+            return;
+
             ChateauKnivesProcessing();
 
             ChateauPreOrderProcessing();
@@ -85,7 +87,7 @@ namespace ChateauSiteFlowApp
 
                     var pdfLabelFiles = new DirectoryInfo(baseHoldingFolder).GetFiles("*.PDF", SearchOption.TopDirectoryOnly);
 
-                    List<string> DistinctOrderIdsBelfield = new List<string>();
+                    List<string> distinctOrderDetailsReferenceBelfield = new List<string>();
 
                     for (int p = 0; p < pdfLabelFiles.Length; p++)
                     {
@@ -93,10 +95,10 @@ namespace ChateauSiteFlowApp
 
                         var orderDetailsArray = fileShortName.Split('_');
 
-                        if (orderDetailsArray.Length > 1)
+                        if (orderDetailsArray.Length >= 2)
                         {
-                            if (!DistinctOrderIdsBelfield.Contains(orderDetailsArray[0]))
-                                DistinctOrderIdsBelfield.Add(orderDetailsArray[0]);
+                            if (!distinctOrderDetailsReferenceBelfield.Contains(orderDetailsArray[1]))
+                                distinctOrderDetailsReferenceBelfield.Add(orderDetailsArray[1]);
                         }
 
                     }
@@ -191,7 +193,9 @@ namespace ChateauSiteFlowApp
                     }
 
 
-                    var mergedImposedSingleLabelFile = ConfigurationManager.AppSettings["PrinergyOutputMergedFinalLabelsPath"] + "Belfield_" + System.DateTime.Now.ToString("ddMMyyyy") + ".pdf";
+                    var tempName = "Belfield_" + System.DateTime.Now.ToString("ddMMyyyy") + ".pdf";
+                    var mergedImposedSingleLabelFile =
+                        ConfigurationManager.AppSettings["PrinergyOutputMergedFinalLabelsPath"] + tempName;
 
                     MergeFiles(mergedImposedSingleLabelFile, PrinergyOutputImposedLabelFiles);
 
@@ -213,13 +217,18 @@ namespace ChateauSiteFlowApp
                         File.Delete(PrinergyOutputImposedLabelFiles[p]);
                     }
 
+                    var sftpFinalLabelsPath = ConfigurationManager.AppSettings["SFTPFinalLabelsPath"];
+
+                    var finalLabelAtFtp = sftpFinalLabelsPath + tempName;
+
+                    File.Copy(mergedImposedSingleLabelFile, finalLabelAtFtp, true);
+
                     if (!string.IsNullOrEmpty(path))
-                        EmailHelper.SendBelfieldReportEmail(path);
+                        EmailHelper.SendBelfieldReportEmail(path, "");
 
-
-                    if (DistinctOrderIdsBelfield.Count > 0)
+                    if (distinctOrderDetailsReferenceBelfield.Count > 0)
                     {
-                        orderHelper.MarkOrdersProcessed(DistinctOrderIdsBelfield);
+                        orderHelper.MarkOrdersProcessed(distinctOrderDetailsReferenceBelfield);
                     }
 
                 }

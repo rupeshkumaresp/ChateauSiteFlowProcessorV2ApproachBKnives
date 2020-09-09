@@ -445,13 +445,13 @@ namespace ChateauOrderHelper
             _contextChateau.SaveChanges();
         }
 
-        public void MarkOrdersProcessed(List<string> distinctOrderIdsBelfield)
+        public void MarkOrdersProcessed(List<string> distinctOrderDetailsReferenceBelfield)
         {
 
-            foreach (var reference in distinctOrderIdsBelfield)
+            foreach (var reference in distinctOrderDetailsReferenceBelfield)
             {
 
-                var belfield = _contextChateau.tChateauBelfield.FirstOrDefault(o => o.OrderReference == reference);
+                var belfield = _contextChateau.tChateauBelfield.FirstOrDefault(o => o.OrderDetailsReference == reference);
 
                 if (belfield != null)
                 {

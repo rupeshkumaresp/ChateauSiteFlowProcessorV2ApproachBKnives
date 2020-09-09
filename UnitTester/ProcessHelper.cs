@@ -728,17 +728,27 @@ namespace ChateauSiteFlowApp
                 var code = itemComponent.code;
                 var stationeryStyle = itemComponent.attributes.StationeryStyle;
                 var stationeryType = itemComponent.attributes.StationeryType;
+
+                if (!string.IsNullOrEmpty(stationeryStyle))
+                    stationeryStyle = stationeryStyle.Trim();
+
+                if (!string.IsNullOrEmpty(stationeryType))
+                    stationeryType = stationeryType.Trim();
+
+
                 var pdfFileName = itemComponent.path.Split('/').Last();
+
+                if (pdfFileName.Contains("-0"))
+                    pdfFileName = pdfFileName.Replace("-0", "-");
+
+                var SheetQuantity = Convert.ToInt32(itemComponent.attributes.SheetQuantity);
 
                 if (code == "Stationery")
                 {
-                    var qtyPDF = 50;
+                    var qtyPDF = SheetQuantity;
 
-                    if (stationeryType == "Card")
-                        qtyPDF = 31;
-
-                    if (stationeryType == "Paper")
-                        qtyPDF = 31;
+                    if (qtyPDF == 0)
+                        qtyPDF = 1;
 
                     _pdfModificationHelper.SelectPages(_localProcessingPath + "/PDFS/" + pdfFileName, "1-2", _localProcessingPath + "/PDFS/" + orderorderId + "-Stationery-In.PDF");
 
@@ -756,20 +766,10 @@ namespace ChateauSiteFlowApp
 
                 if (code == "StationerySet")
                 {
-                    /*
-                     SKU: Chateau-StationerySet
-                        Stationery Type:
-                        Card- 31
-                        Paper- 31
-                     */
+                    var qtyPDF = SheetQuantity;
 
-                    var qtyPDF = 50;
-
-                    if (stationeryType == "Card")
-                        qtyPDF = 31;
-
-                    if (stationeryType == "Paper")
-                        qtyPDF = 31;
+                    if (qtyPDF == 0)
+                        qtyPDF = 1;
 
                     _pdfModificationHelper.SelectPages(_localProcessingPath + "/PDFS/" + pdfFileName, "3-4", _localProcessingPath + "/PDFS/" + orderorderId + "-StationerySet-In.PDF");
 
@@ -800,23 +800,22 @@ namespace ChateauSiteFlowApp
             var StationeryStyle = item.components[0].attributes.StationeryStyle;
             var StationeryType = item.components[0].attributes.StationeryType;
 
+            if (!string.IsNullOrEmpty(StationeryStyle))
+                StationeryStyle = StationeryStyle.Trim();
+
+            if (!string.IsNullOrEmpty(StationeryType))
+                StationeryType = StationeryType.Trim();
+
             var pdfFileName = item.components[0].path.Split('/').Last();
+
+            var SheetQuantity = Convert.ToInt32(item.components[0].attributes.SheetQuantity);
 
             if (code == "Stationery")
             {
-                /*
-                 SKU: Chateau-Stationery
-                    Stationery Type:
-                    Card- 31
-                    Paper- 51
-                 */
+                var qtyPDF = SheetQuantity;
 
-                var qtyPDF = 50;
-                if (StationeryType == "Card")
-                    qtyPDF = 31;
-
-                if (StationeryType == "Paper")
-                    qtyPDF = 51;
+                if (qtyPDF == 0)
+                    qtyPDF = 1;
 
                 var newChateauStationeryPDFPath =
                     _pdfModificationHelper.ChateauStationeryPDFModifications(orderorderId,

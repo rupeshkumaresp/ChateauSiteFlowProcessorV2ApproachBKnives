@@ -28,6 +28,7 @@ namespace ChateauOrderHelper.Model
             public string PageDesign { get; set; }
             public string CardDesign { get; set; }
             public int? Pages { get; set; }
+            
             public string Country { get; set; }
             public string RUSH { get; set; }
             public string StockCoverType { get; set; }
@@ -35,7 +36,7 @@ namespace ChateauOrderHelper.Model
             public string StationeryStyle { get; set; }
             public string StationeryType { get; set; }
 
-
+            public int? SheetQuantity { get; set; }
         }
         [Serializable]
         public class Component

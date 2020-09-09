@@ -747,12 +747,20 @@ namespace ChateauSiteFlowApp
             var fileName = Path.GetFileNameWithoutExtension(inputPDFPath);
 
             List<string> clonedFiles = new List<string>();
+            var tempFile = inputPDFPath;
+
+            if (!File.Exists(inputPDFPath))
+            {
+                if (tempFile.Contains("-0"))
+                    tempFile = tempFile.Replace("-0", "-");
+            }
+
             for (int i = 1; i <= qtyPDF; i++)
             {
 
                 var newFileName = fileName + "-" + i.ToString() + ".PDF";
 
-                File.Copy(inputPDFPath, Path.Combine(directory, newFileName), true);
+                File.Copy(tempFile, Path.Combine(directory, newFileName), true);
 
                 clonedFiles.Add(Path.Combine(directory, newFileName));
             }
@@ -795,11 +803,21 @@ namespace ChateauSiteFlowApp
             var fileName = Path.GetFileNameWithoutExtension(inputPDFPath);
 
             List<string> clonedFiles = new List<string>();
+
+            var tempFile = inputPDFPath;
+
+            if (!File.Exists(inputPDFPath))
+            {
+                if (tempFile.Contains("-0"))
+                    tempFile = tempFile.Replace("-0", "-");
+            }
+
+
             for (int i = 1; i <= qtyPDF; i++)
             {
                 var newFileName = fileName + "-" + i.ToString() + ".PDF";
 
-                File.Copy(inputPDFPath, Path.Combine(directory, newFileName), true);
+                File.Copy(tempFile, Path.Combine(directory, newFileName), true);
 
                 clonedFiles.Add(Path.Combine(directory, newFileName));
             }

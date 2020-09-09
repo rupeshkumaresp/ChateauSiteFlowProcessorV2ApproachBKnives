@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.IO;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
 
@@ -36,6 +37,9 @@ namespace ChateauSiteFlowApp
     	Hi,</p>
         <p>
 	        Please find attached today's Chateau Belfield order spreadsheet. </p>       
+        
+           <p>
+	        Please connect to SFTP to access the imposed PDF file. </p>       
         
         <p>
 	        &nbsp;</p>
@@ -200,7 +204,7 @@ namespace ChateauSiteFlowApp
 
         }
 
-        public static void SendBelfieldReportEmail(string path)
+        public static void SendBelfieldReportEmail(string path, string mergedLabel)
         {
             var defaultMessage = ReportEmailTemplateBelfield;
 
@@ -213,7 +217,7 @@ namespace ChateauSiteFlowApp
                 if (string.IsNullOrEmpty(emails[i]))
                     continue;
 
-                SendMailWithAttachment(emails[i], "Chateau Belfield order Report - " + DateTime.Now.ToShortDateString(), defaultMessage, path);
+                SendMailWithAttachment(emails[i], "Chateau Belfield order Report - " + DateTime.Now.ToShortDateString(), defaultMessage, path, mergedLabel);
             }
 
         }
@@ -222,7 +226,7 @@ namespace ChateauSiteFlowApp
         {
             var defaultMessage = ErrorEmailTemplateBelfield;
 
-            defaultMessage= Regex.Replace(defaultMessage, "\\[ERRORSTATUS\\]", innerException);
+            defaultMessage = Regex.Replace(defaultMessage, "\\[ERRORSTATUS\\]", innerException);
 
             var emailTo = ConfigurationManager.AppSettings["NotificationEmailBelfield"];
 
@@ -255,6 +259,41 @@ namespace ChateauSiteFlowApp
 
         }
 
+        public static void SendMailWithAttachment(string eto, string subject, string message, string attachmentPath1, string attachmentPath2)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(eto))
+                    return;
+                var priority = MailPriority.Normal;
+
+                MailMessage mailer = new MailMessage("info@espweb2print.co.uk", eto, subject, message);
+
+                if (!string.IsNullOrEmpty(attachmentPath1))
+                    mailer.Attachments.Add(new Attachment(attachmentPath1));
+
+                if (!string.IsNullOrEmpty(attachmentPath2))
+                {
+                    if (File.Exists(attachmentPath2))
+                        mailer.Attachments.Add(new Attachment(attachmentPath2));
+                }
+
+
+                SmtpClient smtp = new SmtpClient("espcolour-co-uk.mail.protection.outlook.com");
+                mailer.IsBodyHtml = true;
+                mailer.Priority = priority;
+                smtp.UseDefaultCredentials = false;
+                smtp.Credentials = null;
+                smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+                smtp.Send(mailer);
+
+            }
+            catch (Exception)
+            {
+                //LOG IT TO A LOG FILE
+            }
+
+        }
 
         public static void SendMailWithAttachment(string eto, string subject, string message, string attachmentPath)
         {
