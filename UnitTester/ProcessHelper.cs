@@ -313,8 +313,23 @@ namespace ChateauSiteFlowApp
             {
 
                 string json = "";
+                SiteflowOrder.RootObject jsonObject = new SiteflowOrder.RootObject();
+                bool exceptionJsonRead = false;
+                try
+                {
+                    jsonObject = ProcessHelper.ReadJsonFile(jsonFile, ref json);
+                }
+                catch (Exception e)
+                {
+                    exceptionJsonRead = true;
+                }
 
-                SiteflowOrder.RootObject jsonObject = ProcessHelper.ReadJsonFile(jsonFile, ref json);
+                if (exceptionJsonRead)
+                {
+                    processingSummary.Add(Path.GetFileName(jsonFile.FullName), "JSON structure issue- Order failed");
+                    File.Delete(_localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
+                    continue;
+                }
 
                 var customerName = "";
 
@@ -467,7 +482,7 @@ namespace ChateauSiteFlowApp
                         }
                         else
                         {
-                            if (sku == "Chateau-Stationery" || sku == "Chateau-StationerySet")
+                            if (sku == "Chateau-Stationery" || sku == "Chateau-StationerySet" || sku == "ChildBook-Chateau")
                             {
                                 //donot do anything
                             }
@@ -615,29 +630,21 @@ namespace ChateauSiteFlowApp
                                 }
                                 else
                                 {
-                                    if (sku == "Chateau-Stationery")
-                                    {
-                                        try
-                                        {
-                                            ChateauStationeryProcessing(item, sourceOrderId, pdfCount, finalPdfPath, orderorderId, orderbarcode, customerName, processingSummary);
 
-                                        }
-                                        catch (Exception e)
-                                        {
-                                            if (processingSummary.ContainsKey(sourceOrderId))
-                                                processingSummary[sourceOrderId] += "Order failed";
-                                            else
-                                                processingSummary.Add(sourceOrderId, "Order failed");
-                                        }
+                                    if (sku == "ChildBook-Chateau")
+                                    {
+                                        ChateauChildBookProcessing(item, sourceOrderId, pdfCount, finalPdfPath,
+                                            orderorderId, orderbarcode, customerName, processingSummary);
                                     }
                                     else
                                     {
-
-                                        if (sku == "Chateau-StationerySet")
+                                        if (sku == "Chateau-Stationery")
                                         {
                                             try
                                             {
-                                                finalPdfPath = ChateauStationerySetProcessing(item, finalPdfPath, orderorderId, orderbarcode, customerName, processingSummary);
+                                                ChateauStationeryProcessing(item, sourceOrderId, pdfCount, finalPdfPath,
+                                                    orderorderId, orderbarcode, customerName, processingSummary);
+
                                             }
                                             catch (Exception e)
                                             {
@@ -646,21 +653,41 @@ namespace ChateauSiteFlowApp
                                                 else
                                                     processingSummary.Add(sourceOrderId, "Order failed");
                                             }
-
                                         }
                                         else
                                         {
-                                            if (staticOrder)
+
+                                            if (sku == "Chateau-StationerySet")
                                             {
-                                                File.Copy(
-                                                    pdfPath + sourceItemId + ".PDF", finalPdfPath, true);
+                                                try
+                                                {
+                                                    finalPdfPath = ChateauStationerySetProcessing(item, finalPdfPath,
+                                                        orderorderId, orderbarcode, customerName, processingSummary);
+                                                }
+                                                catch (Exception e)
+                                                {
+                                                    if (processingSummary.ContainsKey(sourceOrderId))
+                                                        processingSummary[sourceOrderId] += "Order failed";
+                                                    else
+                                                        processingSummary.Add(sourceOrderId, "Order failed");
+                                                }
+
                                             }
                                             else
                                             {
-                                                File.Copy(
-                                                    _localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) +
-                                                    ".PDF",
-                                                    finalPdfPath, true);
+                                                if (staticOrder)
+                                                {
+                                                    File.Copy(
+                                                        pdfPath + sourceItemId + ".PDF", finalPdfPath, true);
+                                                }
+                                                else
+                                                {
+                                                    File.Copy(
+                                                        _localProcessingPath + "/PDFS/" + sourceOrderId + "-" +
+                                                        (pdfCount) +
+                                                        ".PDF",
+                                                        finalPdfPath, true);
+                                                }
                                             }
                                         }
                                     }
@@ -669,10 +696,11 @@ namespace ChateauSiteFlowApp
                         }
 
                         bool chateauStationery = sku == "Chateau-Stationery" || sku == "Chateau-StationerySet";
+                        bool chateauChildBook = sku == "ChildBook-Chateau";
 
                         _orderHelper.AddOrderItem(orderId, sku, sourceItemId, qty, substrate, finalPdfPath);
 
-                        if (!chateauStationery)
+                        if (!chateauStationery && !chateauChildBook)
                             item.components[0].path = "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
                                                       "_" + orderbarcode + ".PDF";
 
@@ -705,6 +733,16 @@ namespace ChateauSiteFlowApp
 
                     if (!processingSummary.ContainsKey(sourceOrderId))
                         processingSummary.Add(sourceOrderId, "OK");
+
+
+                    //if failed - order delete the knives and Belfeild order so that it can be processed later
+                    if (!IsGoodOrder(processingSummary, sourceOrderId))
+                    {
+                        _orderHelper.DeleteKnives(sourceOrderId);
+                        _orderHelper.DeletePreOrder(sourceOrderId);
+                        _orderHelper.DeleteBelfield(sourceOrderId);
+                    }
+
                 }
                 catch (Exception exception)
                 {
@@ -792,6 +830,52 @@ namespace ChateauSiteFlowApp
 
             return finalPdfPath;
         }
+
+
+        private void ChateauChildBookProcessing(SiteflowOrder.Item item, string sourceOrderId, int pdfCount, string finalPdfPath,
+            string orderorderId, string orderbarcode, string customerName, Dictionary<string, string> processingSummary)
+        {
+            finalPdfPath = finalPdfPath.ToUpper();
+
+            var coverfinalPdfPath = finalPdfPath.Replace(".PDF", "_C.PDF");
+            var TextfinalPdfPath = finalPdfPath.Replace(".PDF", "_T.PDF");
+
+            int coverIndex = 0;
+
+            int textIndex = 0;
+
+            if (item.components[0].code == "Cover")
+                coverIndex = 0;
+
+            if (item.components[1].code == "Cover")
+                coverIndex = 1;
+
+            if (item.components[0].code == "Text")
+                textIndex = 0;
+
+            if (item.components[1].code == "Text")
+                textIndex = 1;
+
+
+            var pdfFileName = item.components[0].path.Split('/').Last();
+
+            _pdfModificationHelper.ChateauChildBookText(orderorderId, _localProcessingPath + "/PDFS/" + pdfFileName, TextfinalPdfPath, processingSummary);
+
+            _pdfModificationHelper.ChateauChildBookCover(orderorderId, _localProcessingPath + "/PDFS/" + pdfFileName, coverfinalPdfPath, processingSummary);
+
+
+            //File.Copy(newChateauStationeryPDFPath, finalPdfPath, true);
+
+
+            item.components[coverIndex].path =
+                "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
+                "_" + orderbarcode + "_C.PDF";
+
+            item.components[textIndex].path =
+                "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
+                "_" + orderbarcode + "_T.PDF";
+        }
+
 
         private void ChateauStationeryProcessing(SiteflowOrder.Item item, string sourceOrderId, int pdfCount, string finalPdfPath,
             string orderorderId, string orderbarcode, string customerName, Dictionary<string, string> processingSummary)

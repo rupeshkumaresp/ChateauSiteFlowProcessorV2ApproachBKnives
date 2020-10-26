@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using Aspose.Pdf.Facades;
 using Aspose.Pdf.Text;
 using Ghostscript.NET.Processor;
 using iTextSharp.text;
@@ -739,6 +740,67 @@ namespace ChateauSiteFlowApp
             }
         }
 
+        public void ChateauChildBookCover(string orderorderId, string inputPDFPath, string coverFileName, Dictionary<string, string> processingSummary)
+        {
+            Aspose.Pdf.License license = new Aspose.Pdf.License();
+            license.SetLicense(AsposeLicense);
+
+            var directory = Path.GetDirectoryName(inputPDFPath);
+            var fileName = Path.GetFileNameWithoutExtension(inputPDFPath);
+
+            try
+            {
+                Aspose.Pdf.Document documentBody = new Aspose.Pdf.Document(inputPDFPath);
+                var bodyPageCount = documentBody.Pages.Count;
+
+                Aspose.Pdf.Document documentCover = new Aspose.Pdf.Document();
+                documentCover.Pages.Add(documentBody.Pages[1]);
+                documentCover.Pages.Add(documentBody.Pages[bodyPageCount]);
+                documentCover.Save(coverFileName);
+
+            }
+            catch (Exception e)
+            {
+                if (processingSummary.ContainsKey(orderorderId))
+                    processingSummary[orderorderId] += "Order failed - Failed to create the cover";
+                else
+                    processingSummary.Add(orderorderId, "Order failed - Failed to create the cover");
+            }
+
+        }
+
+        public void ChateauChildBookText(string orderorderId, string inputPDFPath, string TextFileName, Dictionary<string, string> processingSummary)
+        {
+            Aspose.Pdf.License license = new Aspose.Pdf.License();
+            license.SetLicense(AsposeLicense);
+
+            var directory = Path.GetDirectoryName(inputPDFPath);
+            var fileName = Path.GetFileNameWithoutExtension(inputPDFPath);
+
+            try
+            {
+                PdfFileEditor pdfEditor = new PdfFileEditor();
+                // Array of pages to delete
+                Aspose.Pdf.Document documentBody = new Aspose.Pdf.Document(inputPDFPath);
+                var bodyPageCount = documentBody.Pages.Count;
+
+                documentBody.Pages.Delete(bodyPageCount);
+                documentBody.Pages.Delete(1);
+
+                documentBody.Save(TextFileName);
+
+            }
+            catch (Exception e)
+            {
+                if (processingSummary.ContainsKey(orderorderId))
+                    processingSummary[orderorderId] += "Order failed - Failed to create the Text";
+                else
+                    processingSummary.Add(orderorderId, "Order failed - Failed to create the Text");
+            }
+
+        }
+
+
         public string ChateauStationeryPDFModifications(string orderorderId, string inputPDFPath, string code, string StationeryStyle, string StationeryType, string customerName, int qtyPDF, Dictionary<string, string> processingSummary)
         {
 
@@ -805,7 +867,7 @@ namespace ChateauSiteFlowApp
             }
             return output;
         }
-        public string ChateauStationerySetPDFModifications(string orderorderId, string inputPDFPath, string code, string StationeryStyle, string StationeryType, string customerName, int qtyPDF, Dictionary<string,string> processingSummary)
+        public string ChateauStationerySetPDFModifications(string orderorderId, string inputPDFPath, string code, string StationeryStyle, string StationeryType, string customerName, int qtyPDF, Dictionary<string, string> processingSummary)
         {
             //50time file copy
             var directory = Path.GetDirectoryName(inputPDFPath);

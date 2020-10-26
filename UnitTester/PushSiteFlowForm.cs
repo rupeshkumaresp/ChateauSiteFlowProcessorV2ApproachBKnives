@@ -52,7 +52,6 @@ namespace ChateauSiteFlowApp
             ProcessHelper.SendProcessingSummaryEmail(processingResults);
 
             return;
-
             ChateauKnivesProcessing();
 
             ChateauPreOrderProcessing();
@@ -67,7 +66,7 @@ namespace ChateauSiteFlowApp
 
             var now = System.DateTime.Now;
 
-            if (now.Hour == 15)
+            if (now.Hour == 15 || now.Hour == 16 || now.Hour == 17)
             {
                 string path = "";
                 try
@@ -346,7 +345,7 @@ namespace ChateauSiteFlowApp
 
             var now = System.DateTime.Now;
 
-            if (now.Hour == 15)
+            if (now.Hour == 15 || now.Hour == 16 || now.Hour == 17)
             {
                 OrderHelper orderHelper = new OrderHelper();
                 chateaupreOrderReportengine.CreateSpreadSheetPreOrder(orderHelper.ExtractPreOrderReportData());
@@ -359,7 +358,7 @@ namespace ChateauSiteFlowApp
 
             var now = System.DateTime.Now;
 
-            if (now.Hour == 15)
+            if (now.Hour == 15 || now.Hour == 16 || now.Hour == 17)
             {
                 OrderHelper orderHelper = new OrderHelper();
                 chateauKnivesReportengine.CreateSpreadSheetKnives(orderHelper.ExtractKnifeReportData());

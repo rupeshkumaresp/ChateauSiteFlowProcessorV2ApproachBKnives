@@ -1,6 +1,8 @@
 ﻿using ChateauEntity.Entity;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
 using System.Linq;
 using ChateauEntity.SiteFlowEntity;
 using ChateauOrderHelper.Interface;
@@ -302,7 +304,7 @@ namespace ChateauOrderHelper
         }
 
 
-        
+
 
         public List<BelfieldModel> ExtractBelfieldReportData()
         {
@@ -310,21 +312,21 @@ namespace ChateauOrderHelper
 
             return belfield.Select(data => new BelfieldModel
             {
-                    Id = data.Id,
-                    OrderId = Convert.ToInt64(data.OrderId),
-                    OrderReference = data.OrderReference,
-                    OrderDetailsReference = data.OrderDetailsReference,
-                    BarCode = data.BarCode,
-                    AttributeDesignCode = data.AttributeDesignCode,
-                    AttributeLength = data.AttributeLength,
-                    Quantity = Convert.ToInt32(data.Quantity),
-                    ArtworkUrl = data.ArtworkUrl
-                    
-                })
+                Id = data.Id,
+                OrderId = Convert.ToInt64(data.OrderId),
+                OrderReference = data.OrderReference,
+                OrderDetailsReference = data.OrderDetailsReference,
+                BarCode = data.BarCode,
+                AttributeDesignCode = data.AttributeDesignCode,
+                AttributeLength = data.AttributeLength,
+                Quantity = Convert.ToInt32(data.Quantity),
+                ArtworkUrl = data.ArtworkUrl
+
+            })
                 .ToList();
         }
 
-        
+
 
         public List<ChateauPreOrder> ExtractPreOrderReportData()
         {
@@ -332,27 +334,27 @@ namespace ChateauOrderHelper
 
             return preOrder.Select(preo => new ChateauPreOrder
             {
-                    Id = preo.Id,
-                    OrderId = Convert.ToString(preo.OrderId),
-                    OrderReference = preo.OrderReference,
-                    OrderDetailsReference = preo.OrderDetailsReference,
-                    BarCode = preo.BarCode,
-                    Attribute = preo.Attribute,
-                    Substrate = preo.Substrate,
-                    Quantity = Convert.ToString(preo.Quantity),
-                    ArtworkUrl = preo.ArtworkUrl,
-                    CustomerName = preo.CustomerName,
-                    CustomerAddress1 = preo.CustomerAddress1,
-                    CustomerAddress2 = preo.CustomerAddress2,
-                    CustomerAddress3 = preo.CustomerAddress3,
-                    CustomerTown = preo.CustomerTown,
-                    CustomerState = preo.CustomerState,
-                    CustomerPostcode = preo.CustomerPostcode,
-                    CustomerCountry = preo.CustomerCountry,
-                    CustomerEmail = preo.CustomerEmail,
-                    CustomerCompanyName = preo.CustomerCompanyName,
-                    CustomerPhone = preo.CustomerPhone
-                })
+                Id = preo.Id,
+                OrderId = Convert.ToString(preo.OrderId),
+                OrderReference = preo.OrderReference,
+                OrderDetailsReference = preo.OrderDetailsReference,
+                BarCode = preo.BarCode,
+                Attribute = preo.Attribute,
+                Substrate = preo.Substrate,
+                Quantity = Convert.ToString(preo.Quantity),
+                ArtworkUrl = preo.ArtworkUrl,
+                CustomerName = preo.CustomerName,
+                CustomerAddress1 = preo.CustomerAddress1,
+                CustomerAddress2 = preo.CustomerAddress2,
+                CustomerAddress3 = preo.CustomerAddress3,
+                CustomerTown = preo.CustomerTown,
+                CustomerState = preo.CustomerState,
+                CustomerPostcode = preo.CustomerPostcode,
+                CustomerCountry = preo.CustomerCountry,
+                CustomerEmail = preo.CustomerEmail,
+                CustomerCompanyName = preo.CustomerCompanyName,
+                CustomerPhone = preo.CustomerPhone
+            })
                 .ToList();
         }
 
@@ -386,7 +388,7 @@ namespace ChateauOrderHelper
                 .ToList();
         }
 
-        
+
 
 
         public void MarkBelfieldSentToProduction(long id)
@@ -400,7 +402,7 @@ namespace ChateauOrderHelper
                 _contextChateau.SaveChanges();
             }
         }
-        
+
 
         public void MarkPreOrderSentToProduction(long id)
         {
@@ -437,7 +439,7 @@ namespace ChateauOrderHelper
                 AttributeLength = model.AttributeLength,
                 Quantity = Convert.ToInt32(model.Quantity),
                 ArtworkUrl = model.ArtworkUrl,
-                CreatedAt =  System.DateTime.Now,
+                CreatedAt = System.DateTime.Now,
                 EmailSentToProduction = false
             };
 
@@ -461,6 +463,71 @@ namespace ChateauOrderHelper
                     belfield.PrinergyOutputProcessedDatetime = System.DateTime.Now;
                     _contextChateau.SaveChanges();
                 }
+
+            }
+        }
+
+        public void DeleteKnives(string sourceOrderId)
+        {
+            var chateauKniveses = _contextChateau.tChateauKnives.Where(o => o.OrderReference == sourceOrderId).ToList();
+
+            if (chateauKniveses.Count > 0)
+            {
+                foreach (var knives in chateauKniveses)
+                {
+                    _contextChateau.tChateauKnives.Remove(knives);
+                }
+
+                _contextChateau.SaveChanges();
+            }
+        }
+
+        public void DeletePreOrder(string sourceOrderId)
+        {
+            var preOrderItems = _contextChateau.tChateauPreOrder.Where(o => o.OrderReference == sourceOrderId).ToList();
+
+            if (preOrderItems.Count > 0)
+            {
+                foreach (var preorder in preOrderItems)
+                {
+                    _contextChateau.tChateauPreOrder.Remove(preorder);
+                }
+
+                _contextChateau.SaveChanges();
+            }
+        }
+
+        public void DeleteBelfield(string sourceOrderId)
+        {
+            var holdingFolderDir = ConfigurationManager.AppSettings["BelfieldHolidingFolderPath"];
+
+            var belfieldItems = _contextChateau.tChateauBelfield.Where(o => o.OrderReference == sourceOrderId).ToList();
+
+            if (belfieldItems.Count > 0)
+            {
+                foreach (var belfield in belfieldItems)
+                {
+                    _contextChateau.tChateauBelfield.Remove(belfield);
+
+                    for (int i = 1; i <= belfield.Quantity; i++)
+                    {
+                        var file = holdingFolderDir + belfield.OrderReference + "_" + belfield.OrderDetailsReference +
+                                   "_" + i + ".PDF";
+
+                        try
+                        {
+                            if (File.Exists(file))
+                                File.Delete(file);
+                        }
+                        catch { }
+
+
+                    }
+
+                    _contextChateau.SaveChanges();
+
+                }
+
 
             }
         }
