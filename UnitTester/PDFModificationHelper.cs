@@ -745,6 +745,9 @@ namespace ChateauSiteFlowApp
             Aspose.Pdf.License license = new Aspose.Pdf.License();
             license.SetLicense(AsposeLicense);
 
+            if (inputPDFPath.Contains("-0"))
+                inputPDFPath = inputPDFPath.Replace("-0", "-");
+
             var directory = Path.GetDirectoryName(inputPDFPath);
             var fileName = Path.GetFileNameWithoutExtension(inputPDFPath);
 
@@ -773,6 +776,10 @@ namespace ChateauSiteFlowApp
         {
             Aspose.Pdf.License license = new Aspose.Pdf.License();
             license.SetLicense(AsposeLicense);
+
+            if (inputPDFPath.Contains("-0"))
+                inputPDFPath = inputPDFPath.Replace("-0", "-");
+
 
             var directory = Path.GetDirectoryName(inputPDFPath);
             var fileName = Path.GetFileNameWithoutExtension(inputPDFPath);
