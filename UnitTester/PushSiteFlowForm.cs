@@ -30,7 +30,7 @@ namespace ChateauSiteFlowApp
 
         private void ProcessJsonOrders()
         {
-            
+
             //PdfModificationHelper test = new PdfModificationHelper();
 
             //test.CreateBarcodeMirrorImageBelfield("0000169940202", "000016994");
@@ -107,6 +107,7 @@ namespace ChateauSiteFlowApp
 
                     Dictionary<string, string> dictionaryOnDesignCode = new Dictionary<string, string>();
 
+                    //get all the design code first for all orde details reference
                     foreach (var orderDetailsRef in distinctOrderDetailsReferenceBelfield)
                     {
                         var designCode = orderHelper.GetDesignCode(orderDetailsRef);
@@ -116,6 +117,7 @@ namespace ChateauSiteFlowApp
 
                     var sortedDictionaryOnDesignCode = dictionaryOnDesignCode.OrderBy(x => x.Value).ToList();
 
+                    //pdfLabelFiles Sorted List based on design code for merge and prinergy push
                     for (int i = 0; i < sortedDictionaryOnDesignCode.Count; i++)
                     {
                         var key = sortedDictionaryOnDesignCode[i].Key;
@@ -130,6 +132,7 @@ namespace ChateauSiteFlowApp
                         }
                     }
 
+                    //assign back the sorted labels array
                     pdfLabelFiles = pdfLabelFilesSortedList.ToArray();
 
                     List<string> mergedPDFList = new List<string>();
@@ -139,6 +142,7 @@ namespace ChateauSiteFlowApp
                     var count = 1;
 
                     var fileCount = 1;
+
 
                     //merge them 8 at a times and save to Merged folder
 
