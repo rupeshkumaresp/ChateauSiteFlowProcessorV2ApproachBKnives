@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -29,6 +30,10 @@ namespace ChateauSiteFlowApp
 
         private void ProcessJsonOrders()
         {
+            ChateauBelfieldProcessing();
+
+            return;
+
             //PdfModificationHelper test = new PdfModificationHelper();
 
             //test.CreateBarcodeMirrorImageBelfield("0000169940202", "000016994");
@@ -41,7 +46,7 @@ namespace ChateauSiteFlowApp
 
             var processHelper = new ProcessHelper();
             //DOWNLOAD ORDERS FROM SFTP
-            //ProcessHelper.DownloadOrders();
+            ProcessHelper.DownloadOrders();
 
             //CREATE THESE ORDERS TO DATABASE            
             var processingResults = processHelper.CreateOrder();
@@ -51,7 +56,6 @@ namespace ChateauSiteFlowApp
 
             ProcessHelper.SendProcessingSummaryEmail(processingResults);
 
-            return;
             ChateauKnivesProcessing();
 
             ChateauPreOrderProcessing();
@@ -66,7 +70,7 @@ namespace ChateauSiteFlowApp
 
             var now = System.DateTime.Now;
 
-            if (now.Hour == 15 || now.Hour == 16 || now.Hour == 17)
+            //if (now.Hour == 15 || now.Hour == 16 || now.Hour == 17)
             {
                 string path = "";
                 try
@@ -86,6 +90,8 @@ namespace ChateauSiteFlowApp
 
                     var pdfLabelFiles = new DirectoryInfo(baseHoldingFolder).GetFiles("*.PDF", SearchOption.TopDirectoryOnly);
 
+                    List<FileInfo> pdfLabelFilesSortedList = new List<FileInfo>();
+
                     List<string> distinctOrderDetailsReferenceBelfield = new List<string>();
 
                     for (int p = 0; p < pdfLabelFiles.Length; p++)
@@ -102,11 +108,36 @@ namespace ChateauSiteFlowApp
 
                     }
 
+                    Dictionary<string, string> dictionaryOnDesignCode = new Dictionary<string, string>();
+
+                    foreach (var orderDetailsRef in distinctOrderDetailsReferenceBelfield)
+                    {
+                        var designCode = orderHelper.GetDesignCode(orderDetailsRef);
+                        dictionaryOnDesignCode.Add(orderDetailsRef, designCode);
+
+                    }
+
+                    var sortedDictionaryOnDesignCode = dictionaryOnDesignCode.OrderBy(x => x.Value).ToList();
+
+                    for (int i = 0; i < sortedDictionaryOnDesignCode.Count; i++)
+                    {
+                        var key = sortedDictionaryOnDesignCode[i].Key;
+
+                        foreach (var pdflabel in pdfLabelFiles)
+                        {
+                            if (pdflabel.Name.Contains(key))
+                            {
+                                if (!pdfLabelFilesSortedList.Contains(pdflabel))
+                                    pdfLabelFilesSortedList.Add(pdflabel);
+                            }
+                        }
+                    }
+
+                    pdfLabelFiles = pdfLabelFilesSortedList.ToArray();
+
                     List<string> mergedPDFList = new List<string>();
 
                     List<string> pagesToMeMerged = new List<string>();
-
-                    var pdfStacks = GetNearestMultipleQuantity(pdfLabelFiles.Length, 8);
 
                     var count = 1;
 

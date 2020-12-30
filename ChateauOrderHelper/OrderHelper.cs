@@ -531,5 +531,16 @@ namespace ChateauOrderHelper
 
             }
         }
+
+        public string GetDesignCode(string orderDetailsRef)
+        {
+            var belfield =
+                _contextChateau.tChateauBelfield.FirstOrDefault(b => b.OrderDetailsReference == orderDetailsRef);
+
+            if (belfield != null)
+              return   belfield.AttributeDesignCode;
+
+            return null;
+        }
     }
 }
