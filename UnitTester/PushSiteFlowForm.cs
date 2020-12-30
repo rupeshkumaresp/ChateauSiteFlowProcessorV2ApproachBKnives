@@ -30,10 +30,7 @@ namespace ChateauSiteFlowApp
 
         private void ProcessJsonOrders()
         {
-            ChateauBelfieldProcessing();
-
-            return;
-
+            
             //PdfModificationHelper test = new PdfModificationHelper();
 
             //test.CreateBarcodeMirrorImageBelfield("0000169940202", "000016994");
@@ -70,7 +67,7 @@ namespace ChateauSiteFlowApp
 
             var now = System.DateTime.Now;
 
-            //if (now.Hour == 15 || now.Hour == 16 || now.Hour == 17)
+            if (now.Hour == 15 || now.Hour == 16 || now.Hour == 17)
             {
                 string path = "";
                 try
