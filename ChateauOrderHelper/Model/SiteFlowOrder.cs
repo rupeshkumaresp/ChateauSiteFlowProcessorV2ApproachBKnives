@@ -28,7 +28,7 @@ namespace ChateauOrderHelper.Model
             public string PageDesign { get; set; }
             public string CardDesign { get; set; }
             public int? Pages { get; set; }
-            
+
             public string Country { get; set; }
             public string RUSH { get; set; }
             public string StockCoverType { get; set; }
@@ -40,11 +40,11 @@ namespace ChateauOrderHelper.Model
         }
         [Serializable]
         public class Component
-        {            
+        {
             public bool fetch { get; set; }
             public bool localFile { get; set; }
             public Attributes attributes { get; set; }
-            public string barcode { get; set; }            
+            public string barcode { get; set; }
             public string code { get; set; }
             public string componentId { get; set; }
             public string path { get; set; }
@@ -55,24 +55,25 @@ namespace ChateauOrderHelper.Model
         {
             public List<Component> components { get; set; }
             public int shipmentIndex { get; set; }
-            public string barcode { get; set; }            
-            public string sourceItemId { get; set; }            
+            public string barcode { get; set; }
+            public string sourceItemId { get; set; }
             public int quantity { get; set; }
             public decimal unitWeight { get; set; }
             public string sku { get; set; }
+            public double unitPrice { get; set; }
         }
         [Serializable]
         public class ShipTo
         {
-            public string name { get; set; }            
+            public string name { get; set; }
             public string address1 { get; set; }
             public string address2 { get; set; }
             public string address3 { get; set; }
             public string town { get; set; }
             public string state { get; set; }
-            public string postcode { get; set; }            
+            public string postcode { get; set; }
             public string isoCountry { get; set; }
-            public string country { get; set; }            
+            public string country { get; set; }
             public string email { get; set; }
             public string companyName { get; set; }
             public string phone { get; set; }
@@ -85,16 +86,24 @@ namespace ChateauOrderHelper.Model
             public string alias { get; set; }
         }
         [Serializable]
+        public class Cost
+        {
+            public double value { get; set; }
+            public string currency { get; set; }
+        }
+
+        [Serializable]
         public class Shipment
         {
             public ShipTo shipTo { get; set; }
             public Carrier carrier { get; set; }
+            public Cost cost { get; set; }
             public string unitWeight { get; set; }
             public int shipmentIndex { get; set; }
             public string ShipByDate { get; set; }
             public int slaDays { get; set; }
             public bool canShipEarly { get; set; }
-            public bool pspBranding { get; set; }                      
+            public bool pspBranding { get; set; }
         }
         [Serializable]
         public class OrderData

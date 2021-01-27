@@ -538,7 +538,7 @@ namespace ChateauOrderHelper
                 _contextChateau.tChateauBelfield.FirstOrDefault(b => b.OrderDetailsReference == orderDetailsRef);
 
             if (belfield != null)
-              return   belfield.AttributeDesignCode;
+                return belfield.AttributeDesignCode;
 
             return null;
         }
