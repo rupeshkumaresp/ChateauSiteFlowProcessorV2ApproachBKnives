@@ -701,8 +701,23 @@ namespace ChateauSiteFlowApp
                         _orderHelper.AddOrderItem(orderId, sku, sourceItemId, qty, substrate, finalPdfPath);
 
                         if (!chateauStationery && !chateauChildBook)
-                            item.components[0].path = "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
-                                                      "_" + orderbarcode + ".PDF";
+                        {
+                            if (sku == "Chateau-WatercolourSet")
+                            {
+                                for (int compCount = 0; compCount < item.components.Count; compCount++)
+                                {
+                                    item.components[compCount].path =
+                                        "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
+                                        "_" + orderbarcode + ".PDF";
+                                }
+                            }
+                            else
+                            {
+                                item.components[0].path =
+                                    "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
+                                    "_" + orderbarcode + ".PDF";
+                            }
+                        }
 
                         //If item is knife then add this to database Knife table
                         DumpKnivesToDatabase(sku, orderContainsKnivesAndOtherProducts, knifeJsonItems, item, orderId, sourceOrderId, sourceItemId, orderbarcode, jsonObject);
