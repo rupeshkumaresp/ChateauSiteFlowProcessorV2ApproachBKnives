@@ -1057,5 +1057,29 @@ namespace ChateauSiteFlowApp
             var barcodeFilename = CreateBarcodeMirrorImageBelfield(barcode, orderid);
             AddBarcodeImageBelfield(input, barcodeFilename);
         }
+
+
+        public static void DoFindReplace(string find, Aspose.Pdf.Document pdfDocument, string replace)
+        {
+            if (string.IsNullOrEmpty(replace))
+                replace = "";
+
+            // Create TextAbsorber object to find all instances of the input search phrase
+            TextFragmentAbsorber textFragmentAbsorber = new TextFragmentAbsorber(find);
+
+            // Accept the absorber for all the pages
+            pdfDocument.Pages.Accept(textFragmentAbsorber);
+
+            // Get the extracted text fragments
+            TextFragmentCollection textFragmentCollection = textFragmentAbsorber.TextFragments;
+
+            // Loop through the fragments
+            foreach (TextFragment textFragment in textFragmentCollection)
+            {
+                // Update text and other properties
+                textFragment.Text = replace;
+            }
+        }
+
     }
 }

@@ -13,6 +13,7 @@ using ChateauOrderHelper.Model;
 using iTextSharp.text;
 using Newtonsoft.Json;
 using SiteFlowHelper;
+using SpreadsheetReaderLibrary;
 
 namespace ChateauSiteFlowApp
 {
@@ -27,13 +28,17 @@ namespace ChateauSiteFlowApp
         private static readonly string BaseUrlSiteFlow = ConfigurationManager.AppSettings["BaseUrlSiteFlow"];
         private static readonly string SiteflowKey = ConfigurationManager.AppSettings["SiteflowKey"];
         private static readonly string SiteflowSecretKey = ConfigurationManager.AppSettings["SiteflowSecretKey"];
-        readonly string _localProcessingPath = ConfigurationManager.AppSettings["WorkingDirectory"] + ConfigurationManager.AppSettings["ServiceFolderPath"];
+
+        readonly string _localProcessingPath = ConfigurationManager.AppSettings["WorkingDirectory"] +
+                                               ConfigurationManager.AppSettings["ServiceFolderPath"];
+
         private readonly PdfModificationHelper _pdfModificationHelper;
 
         public ProcessHelper()
         {
             _pdfModificationHelper = new PdfModificationHelper();
         }
+
         public static SiteflowOrder.RootObject ReadJsonFile(FileInfo jsonFile, ref string json)
         {
             SiteflowOrder.RootObject jsonObject;
@@ -45,6 +50,7 @@ namespace ChateauSiteFlowApp
                 jsonObject = JsonConvert.DeserializeObject<SiteflowOrder.RootObject>(json);
 
             }
+
             return jsonObject;
         }
 
@@ -62,6 +68,7 @@ namespace ChateauSiteFlowApp
             {
                 success = false;
             }
+
             return success;
         }
 
@@ -73,7 +80,8 @@ namespace ChateauSiteFlowApp
             var processedFolderPath = ConfigurationManager.AppSettings["SFTP_path_Processed"];
 
 
-            var localpath = ConfigurationManager.AppSettings["WorkingDirectory"] + ConfigurationManager.AppSettings["ServiceFolderPath"];
+            var localpath = ConfigurationManager.AppSettings["WorkingDirectory"] +
+                            ConfigurationManager.AppSettings["ServiceFolderPath"];
             var originalOrderInputPath = ConfigurationManager.AppSettings["OriginalOrderInputPath"];
 
             var pdfFiles = new DirectoryInfo(inputPathPdf).GetFiles("*.pdf");
@@ -100,7 +108,9 @@ namespace ChateauSiteFlowApp
                 {
                     File.Delete(pdfFile.FullName.ToString());
                 }
-                catch { }
+                catch
+                {
+                }
 
             }
 
@@ -125,7 +135,9 @@ namespace ChateauSiteFlowApp
                     {
                         File.Delete(jsonFile.FullName);
                     }
-                    catch { }
+                    catch
+                    {
+                    }
                 }
             }
 
@@ -208,7 +220,8 @@ namespace ChateauSiteFlowApp
 
             var orderstatuscontent = "";
 
-            orderstatuscontent += "<table border='1'><tr><td colspan='1'><strong>Order ID</strong></td><td colspan='1'><strong>Status</strong></td></tr>";
+            orderstatuscontent +=
+                "<table border='1'><tr><td colspan='1'><strong>Order ID</strong></td><td colspan='1'><strong>Status</strong></td></tr>";
 
             var orderStatusdetails = "";
 
@@ -344,7 +357,8 @@ namespace ChateauSiteFlowApp
                 }
                 catch
                 {
-                    processingSummary.Add(Path.GetFileNameWithoutExtension(jsonFile.FullName), "Error- Json structure issue");
+                    processingSummary.Add(Path.GetFileNameWithoutExtension(jsonFile.FullName),
+                        "Error- Json structure issue");
 
 
                     if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName)))
@@ -357,20 +371,24 @@ namespace ChateauSiteFlowApp
                 }
 
                 try
-                {  //check already in database then don't create again
+                {
+                    //check already in database then don't create again
 
                     var itemFound = _orderHelper.DoesOrderExists(sourceOrderId);
 
                     if (itemFound)
                     {
 
-                        if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName)))
-                            File.Delete(_localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
+                        if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName)))
+                            File.Delete(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName));
 
                         File.Move(jsonFile.FullName,
                             _localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
 
-                        processingSummary.Add(sourceOrderId, "Order exists in database and order has already been pushed to siteflow");
+                        processingSummary.Add(sourceOrderId,
+                            "Order exists in database and order has already been pushed to siteflow");
                         continue;
                     }
 
@@ -482,7 +500,8 @@ namespace ChateauSiteFlowApp
                         }
                         else
                         {
-                            if (sku == "Chateau-Stationery" || sku == "Chateau-StationerySet" || sku == "ChildBook-Chateau")
+                            if (sku == "Chateau-Stationery" || sku == "Chateau-StationerySet" ||
+                                sku == "ChildBook-Chateau")
                             {
                                 //donot do anything
                             }
@@ -554,7 +573,8 @@ namespace ChateauSiteFlowApp
                             //artwork
                             for (int i = 1; i <= qty; i++)
                             {
-                                var artworkFileName = @"\\192.168.0.84\TheChateauTV\Candles\Artwork\" + orderbarcode + "_Artwork_" + i.ToString() + ".pdf";
+                                var artworkFileName = @"\\192.168.0.84\TheChateauTV\Candles\Artwork\" + orderbarcode +
+                                                      "_Artwork_" + i.ToString() + ".pdf";
                                 File.Copy(orderfileName, artworkFileName, true);
                             }
 
@@ -563,23 +583,29 @@ namespace ChateauSiteFlowApp
                             //label
                             for (int i = 1; i <= qty; i++)
                             {
-                                var labelFileName = @"\\192.168.0.84\TheChateauTV\Candles\Label\" + orderbarcode + "_Label_" + i.ToString() + ".pdf";
+                                var labelFileName = @"\\192.168.0.84\TheChateauTV\Candles\Label\" + orderbarcode +
+                                                    "_Label_" + i.ToString() + ".pdf";
 
                                 var qtyString = i.ToString() + " of " + qty.ToString();
 
-                                _pdfModificationHelper.ChateauCandleLabelGeneration(labelFileName, substrate, orderbarcode, orderorderId, qtyString);
+                                _pdfModificationHelper.ChateauCandleLabelGeneration(labelFileName, substrate,
+                                    orderbarcode, orderorderId, qtyString);
                             }
+
                             _orderHelper.AddOrderItem(orderId, sku, sourceItemId, qty, substrate, finalPdfPath);
 
-                            item.components[0].path = "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId + "_" + orderbarcode + ".PDF";
+                            item.components[0].path = "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
+                                                      "_" + orderbarcode + ".PDF";
                         }
                         else
                         {
                             if (isDyeSub)
                             {
-                                _pdfModificationHelper.PdfModifications(orderfileName, ordersubstrateName, orderbarcode, orderorderId, orderQty);
+                                _pdfModificationHelper.PdfModifications(orderfileName, ordersubstrateName, orderbarcode,
+                                    orderorderId, orderQty);
 
-                                if (!File.Exists(_localProcessingPath + "//PDFS//Modified//" + orderorderId + "_" + orderbarcode + ".PDF"))
+                                if (!File.Exists(_localProcessingPath + "//PDFS//Modified//" + orderorderId + "_" +
+                                                 orderbarcode + ".PDF"))
                                 {
                                     processingSummary.Add(sourceOrderId + "-" + sourceItemId, "Flatten PDF not found");
 
@@ -591,41 +617,54 @@ namespace ChateauSiteFlowApp
                                     continue;
                                 }
 
-                                File.Copy(_localProcessingPath + "//PDFS//Modified//" + orderorderId + "_" + orderbarcode + ".PDF",
+                                File.Copy(
+                                    _localProcessingPath + "//PDFS//Modified//" + orderorderId + "_" + orderbarcode +
+                                    ".PDF",
                                     finalPdfPath, true);
                             }
                             else
                             {
-                                if (ordersubstrateName == "Tote" || sku == "Cushion-Chateau" || sku == "StaticBag-Chateau" || sku == "Tour-Chateau" || sku == "Belfield-Chateau" || sku == "BelfieldFabric-Chateau")
+                                if (ordersubstrateName == "Tote" || sku == "Cushion-Chateau" ||
+                                    sku == "StaticBag-Chateau" || sku == "Tour-Chateau" || sku == "Belfield-Chateau" ||
+                                    sku == "BelfieldFabric-Chateau")
                                 {
 
                                     //Belfield needs processing
                                     if (sku == "Belfield-Chateau" || sku == "BelfieldFabric-Chateau")
                                     {
-                                        var artworkPathBelfield = "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
-                                                                  "_" + orderbarcode + ".PDF";
+                                        var artworkPathBelfield =
+                                            "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
+                                            "_" + orderbarcode + ".PDF";
 
                                         //dump to database for impostions and processing
-                                        DumpBelfieldToDatabase(sku, item, orderId, sourceOrderId, sourceItemId, orderbarcode, artworkPathBelfield);
+                                        DumpBelfieldToDatabase(sku, item, orderId, sourceOrderId, sourceItemId,
+                                            orderbarcode, artworkPathBelfield);
 
                                         //modify the PDF
-                                        _pdfModificationHelper.BelfieldPDFProcessing(orderfileName, orderbarcode, orderorderId);
+                                        _pdfModificationHelper.BelfieldPDFProcessing(orderfileName, orderbarcode,
+                                            orderorderId);
 
                                         //copy to holiding folder based on quantity for impositions
 
-                                        var holdingFolderDir = ConfigurationManager.AppSettings["BelfieldHolidingFolderPath"];
+                                        var holdingFolderDir =
+                                            ConfigurationManager.AppSettings["BelfieldHolidingFolderPath"];
 
                                         if (!Directory.Exists(holdingFolderDir))
                                             Directory.CreateDirectory(holdingFolderDir);
 
                                         for (int i = 1; i <= qty; i++)
                                         {
-                                            File.Copy(orderfileName, holdingFolderDir + orderorderId + "_" + orderbarcode + "_" + i + ".PDF", true);
+                                            File.Copy(orderfileName,
+                                                holdingFolderDir + orderorderId + "_" + orderbarcode + "_" + i + ".PDF",
+                                                true);
                                         }
 
                                     }
-                                    File.Copy(orderfileName, originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode + ".PDF",
-                                            true);
+
+                                    File.Copy(orderfileName,
+                                        originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode +
+                                        ".PDF",
+                                        true);
 
                                 }
                                 else
@@ -720,8 +759,10 @@ namespace ChateauSiteFlowApp
                         }
 
                         //If item is knife then add this to database Knife table
-                        DumpKnivesToDatabase(sku, orderContainsKnivesAndOtherProducts, knifeJsonItems, item, orderId, sourceOrderId, sourceItemId, orderbarcode, jsonObject);
-                        DumpPreOrderToDatabase(sku, orderContainsPreOrderAndOtherProducts, preOrderJsonItems, item, orderId, sourceOrderId, sourceItemId, orderbarcode, jsonObject);
+                        DumpKnivesToDatabase(sku, orderContainsKnivesAndOtherProducts, knifeJsonItems, item, orderId,
+                            sourceOrderId, sourceItemId, orderbarcode, jsonObject);
+                        DumpPreOrderToDatabase(sku, orderContainsPreOrderAndOtherProducts, preOrderJsonItems, item,
+                            orderId, sourceOrderId, sourceItemId, orderbarcode, jsonObject);
                     }
 
                     RemoveKnivesOrderItem(orderContainsKnivesAndOtherProducts, jsonObject, knifeJsonItems);
@@ -771,7 +812,8 @@ namespace ChateauSiteFlowApp
             return processingSummary;
         }
 
-        private string ChateauStationerySetProcessing(SiteflowOrder.Item item, string finalPdfPath, string orderorderId, string orderbarcode, string customerName, Dictionary<string, string> processingSummary)
+        private string ChateauStationerySetProcessing(SiteflowOrder.Item item, string finalPdfPath, string orderorderId,
+            string orderbarcode, string customerName, Dictionary<string, string> processingSummary)
         {
             var originalOrderInputPath = ConfigurationManager.AppSettings["OriginalOrderInputPath"];
 
@@ -803,14 +845,18 @@ namespace ChateauSiteFlowApp
                     if (qtyPDF == 0)
                         qtyPDF = 1;
 
-                    _pdfModificationHelper.SelectPages(_localProcessingPath + "/PDFS/" + pdfFileName, "1-2", _localProcessingPath + "/PDFS/" + orderorderId + "-Stationery-In.PDF");
+                    _pdfModificationHelper.SelectPages(_localProcessingPath + "/PDFS/" + pdfFileName, "1-2",
+                        _localProcessingPath + "/PDFS/" + orderorderId + "-Stationery-In.PDF");
 
                     var newChateauStationeryPDFPath =
                         _pdfModificationHelper.ChateauStationeryPDFModifications(orderorderId,
-                            _localProcessingPath + "/PDFS/" + orderorderId + "-Stationery-In.PDF", code, stationeryStyle, stationeryType, customerName, qtyPDF, processingSummary);
+                            _localProcessingPath + "/PDFS/" + orderorderId + "-Stationery-In.PDF", code,
+                            stationeryStyle, stationeryType, customerName, qtyPDF, processingSummary);
 
                     finalPdfPath = finalPdfPath.Replace(".PDF", "_" + componentCount + ".PDF");
-                    File.Copy(newChateauStationeryPDFPath, originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode + "_" + componentCount + ".PDF", true);
+                    File.Copy(newChateauStationeryPDFPath,
+                        originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode + "_" +
+                        componentCount + ".PDF", true);
 
                     itemComponent.path =
                         "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
@@ -824,16 +870,20 @@ namespace ChateauSiteFlowApp
                     if (qtyPDF == 0)
                         qtyPDF = 1;
 
-                    _pdfModificationHelper.SelectPages(_localProcessingPath + "/PDFS/" + pdfFileName, "3-4", _localProcessingPath + "/PDFS/" + orderorderId + "-StationerySet-In.PDF");
+                    _pdfModificationHelper.SelectPages(_localProcessingPath + "/PDFS/" + pdfFileName, "3-4",
+                        _localProcessingPath + "/PDFS/" + orderorderId + "-StationerySet-In.PDF");
 
                     var newChateauStationerySetPDFPath =
                         _pdfModificationHelper.ChateauStationerySetPDFModifications(orderorderId,
-                            _localProcessingPath + "/PDFS/" + orderorderId + "-StationerySet-In.PDF", code, stationeryStyle, stationeryType, customerName, qtyPDF, processingSummary);
+                            _localProcessingPath + "/PDFS/" + orderorderId + "-StationerySet-In.PDF", code,
+                            stationeryStyle, stationeryType, customerName, qtyPDF, processingSummary);
 
 
 
                     finalPdfPath = finalPdfPath.Replace(".PDF", "_" + componentCount + ".PDF");
-                    File.Copy(newChateauStationerySetPDFPath, originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode + "_" + componentCount + ".PDF", true);
+                    File.Copy(newChateauStationerySetPDFPath,
+                        originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode + "_" +
+                        componentCount + ".PDF", true);
 
                     itemComponent.path =
                         "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
@@ -847,7 +897,8 @@ namespace ChateauSiteFlowApp
         }
 
 
-        private void ChateauChildBookProcessing(SiteflowOrder.Item item, string sourceOrderId, int pdfCount, string finalPdfPath,
+        private void ChateauChildBookProcessing(SiteflowOrder.Item item, string sourceOrderId, int pdfCount,
+            string finalPdfPath,
             string orderorderId, string orderbarcode, string customerName, Dictionary<string, string> processingSummary)
         {
             finalPdfPath = finalPdfPath.ToUpper();
@@ -874,9 +925,11 @@ namespace ChateauSiteFlowApp
 
             var pdfFileName = item.components[0].path.Split('/').Last();
 
-            _pdfModificationHelper.ChateauChildBookText(orderorderId, _localProcessingPath + "/PDFS/" + pdfFileName, TextfinalPdfPath, processingSummary);
+            _pdfModificationHelper.ChateauChildBookText(orderorderId, _localProcessingPath + "/PDFS/" + pdfFileName,
+                TextfinalPdfPath, processingSummary);
 
-            _pdfModificationHelper.ChateauChildBookCover(orderorderId, _localProcessingPath + "/PDFS/" + pdfFileName, coverfinalPdfPath, processingSummary);
+            _pdfModificationHelper.ChateauChildBookCover(orderorderId, _localProcessingPath + "/PDFS/" + pdfFileName,
+                coverfinalPdfPath, processingSummary);
 
 
             //File.Copy(newChateauStationeryPDFPath, finalPdfPath, true);
@@ -892,7 +945,8 @@ namespace ChateauSiteFlowApp
         }
 
 
-        private void ChateauStationeryProcessing(SiteflowOrder.Item item, string sourceOrderId, int pdfCount, string finalPdfPath,
+        private void ChateauStationeryProcessing(SiteflowOrder.Item item, string sourceOrderId, int pdfCount,
+            string finalPdfPath,
             string orderorderId, string orderbarcode, string customerName, Dictionary<string, string> processingSummary)
         {
             var code = item.components[0].code;
@@ -918,7 +972,8 @@ namespace ChateauSiteFlowApp
 
                 var newChateauStationeryPDFPath =
                     _pdfModificationHelper.ChateauStationeryPDFModifications(orderorderId,
-                        _localProcessingPath + "/PDFS/" + pdfFileName, code, StationeryStyle, StationeryType, customerName, qtyPDF, processingSummary);
+                        _localProcessingPath + "/PDFS/" + pdfFileName, code, StationeryStyle, StationeryType,
+                        customerName, qtyPDF, processingSummary);
 
                 File.Copy(newChateauStationeryPDFPath, finalPdfPath, true);
 
@@ -949,8 +1004,10 @@ namespace ChateauSiteFlowApp
 
 
 
-        private void DumpPreOrderToDatabase(string sku, bool orderContainsPreOrderAndOtherProducts, List<SiteflowOrder.Item> preOrderJsonItems, SiteflowOrder.Item item,
-  long orderId, string sourceOrderId, string sourceItemId, string orderbarcode, SiteflowOrder.RootObject jsonObject)
+        private void DumpPreOrderToDatabase(string sku, bool orderContainsPreOrderAndOtherProducts,
+            List<SiteflowOrder.Item> preOrderJsonItems, SiteflowOrder.Item item,
+            long orderId, string sourceOrderId, string sourceItemId, string orderbarcode,
+            SiteflowOrder.RootObject jsonObject)
         {
             if (sku == "Chateau-PreOrder")
             {
@@ -988,8 +1045,10 @@ namespace ChateauSiteFlowApp
         }
 
 
-        private void DumpKnivesToDatabase(string sku, bool orderContainsKnivesAndOtherProducts, List<SiteflowOrder.Item> knifeJsonItems, SiteflowOrder.Item item,
-            long orderId, string sourceOrderId, string sourceItemId, string orderbarcode, SiteflowOrder.RootObject jsonObject)
+        private void DumpKnivesToDatabase(string sku, bool orderContainsKnivesAndOtherProducts,
+            List<SiteflowOrder.Item> knifeJsonItems, SiteflowOrder.Item item,
+            long orderId, string sourceOrderId, string sourceItemId, string orderbarcode,
+            SiteflowOrder.RootObject jsonObject)
         {
             if (sku == "ShenKnives-Chateau")
             {
@@ -1026,7 +1085,7 @@ namespace ChateauSiteFlowApp
         }
 
         private void DumpBelfieldToDatabase(string sku, SiteflowOrder.Item item,
-          long orderId, string sourceOrderId, string sourceItemId, string orderbarcode, string artworkPathBelfield)
+            long orderId, string sourceOrderId, string sourceItemId, string orderbarcode, string artworkPathBelfield)
         {
 
             BelfieldModel model = new BelfieldModel()
@@ -1045,7 +1104,8 @@ namespace ChateauSiteFlowApp
 
         }
 
-        private static void RemoveKnivesOrderItem(bool orderContainsKnivesAndOtherProducts, SiteflowOrder.RootObject jsonObject,
+        private static void RemoveKnivesOrderItem(bool orderContainsKnivesAndOtherProducts,
+            SiteflowOrder.RootObject jsonObject,
             List<SiteflowOrder.Item> knifeJsonItems)
         {
             //REMOVE THE KNIFE json order item so it doesn't get duplicate in siteflow
@@ -1058,12 +1118,14 @@ namespace ChateauSiteFlowApp
                     if (!knifeJsonItems.Contains(item))
                         modifiedItems.Add(item);
                 }
+
                 jsonObject.orderData.items = modifiedItems;
             }
         }
 
 
-        private static void RemovePreOrderItem(bool orderContainsPreOrderAndOtherProducts, SiteflowOrder.RootObject jsonObject,
+        private static void RemovePreOrderItem(bool orderContainsPreOrderAndOtherProducts,
+            SiteflowOrder.RootObject jsonObject,
             List<SiteflowOrder.Item> preOrderJsonItems)
         {
             //REMOVE THE PREORDER json order item so it doesn't get duplicate in siteflow
@@ -1076,6 +1138,7 @@ namespace ChateauSiteFlowApp
                     if (!preOrderJsonItems.Contains(item))
                         modifiedItems.Add(item);
                 }
+
                 jsonObject.orderData.items = modifiedItems;
             }
         }
@@ -1098,6 +1161,7 @@ namespace ChateauSiteFlowApp
 
             return onlyPreOrder;
         }
+
         private static bool OrderContainsOnlyKnives(SiteflowOrder.RootObject jsonObject)
         {
             bool onlyKnives = true;
@@ -1228,5 +1292,137 @@ namespace ChateauSiteFlowApp
             }
 
         }
+
+
+        public void ChateauWelcomeCardsProcessing()
+        {
+            string json = "";
+            string ChateauWLJsonPath = ConfigurationManager.AppSettings["ChateauWLJsonPath"];
+            var xlsxFolder = ConfigurationManager.AppSettings["ChateauWLXLSXFolderPath"];
+            var ChateauWLPDFPath = ConfigurationManager.AppSettings["ChateauWLPDFPath"];
+            var originalOrderInputPath = ConfigurationManager.AppSettings["OriginalOrderInputPath"];
+
+            SiteflowOrder.RootObject jsonObject = new SiteflowOrder.RootObject();
+
+            jsonObject = ProcessHelper.ReadJsonFile(new FileInfo(ChateauWLJsonPath), ref json);
+
+            var xlsxFiles = new DirectoryInfo(xlsxFolder).GetFiles("*.xlsx", SearchOption.TopDirectoryOnly);
+
+            //Read the xlsxInput file
+
+            foreach (var xlsxInput in xlsxFiles)
+            {
+
+                ExcelRecordImporter importer = new ExcelRecordImporter(xlsxInput.FullName);
+
+                int dataset = 1;
+
+                foreach (var dataSetName in importer.GetDataSetNames())
+                {
+                    if (dataset > 1)
+                        break;
+
+                    var importedRows = importer.Import(dataSetName);
+                    dataset++;
+
+
+                    foreach (var importedRow in importedRows)
+                    {
+                        //for each csv row
+
+                        //generate the name pdf
+                        ////create order and order details, address entry in database
+                        var sourceOrderId = "SWP" + importedRow["Order #".ToLower()];
+
+
+                        var sourceItemId = importedRow["Order #".ToLower()];
+
+                        var finalPdfPath = originalOrderInputPath + "/Processed/" + sourceOrderId + "_" + sourceItemId +
+                                           ".PDF";
+
+
+                        Aspose.Pdf.Document pdfDocument = new Aspose.Pdf.Document(ChateauWLPDFPath);
+                        var name = importedRow["Customer name".ToLower()];
+
+
+                        PdfModificationHelper.DoFindReplace("#Name", pdfDocument, name);
+                        pdfDocument.Save(finalPdfPath);
+
+                        //build the json
+
+                        //push the json to siteflow
+                        DateTime orderDatetime = Convert.ToDateTime(importedRow["Created At".ToLower()]);
+
+
+                        decimal orderTotal = 0;
+                        decimal deliveryCost = 0;
+                        var email = importedRow["Email".ToLower()];
+                        var telephone = importedRow["Telephone".ToLower()];
+                        var originalJson = json;
+
+                        var orderId = _orderHelper.CreateOrder(sourceOrderId, orderDatetime, orderTotal, deliveryCost,
+                            email, telephone, originalJson);
+
+                        var sku = "Chateau-WL";
+
+
+                        int qty = 1;
+
+                        //modify the json 
+                        var substrate = "Chateau-WL";
+
+                        jsonObject.orderData.sourceOrderId = sourceOrderId;
+                        jsonObject.orderData.items[0].barcode = sourceOrderId;
+
+                        jsonObject.orderData.items[0].sourceItemId = sourceOrderId;
+
+                        jsonObject.orderData.items[0].components[0].barcode = sourceOrderId;
+                        jsonObject.orderData.items[0].components[0].path = "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + sourceOrderId +
+                                                                                "_" + sourceItemId + ".PDF";
+
+                        jsonObject.orderData.shipments[0].shipTo.name = "";
+                        jsonObject.orderData.shipments[0].shipTo.companyName = "";
+                        jsonObject.orderData.shipments[0].shipTo.address1 = "";
+                        jsonObject.orderData.shipments[0].shipTo.address2 = "";
+                        jsonObject.orderData.shipments[0].shipTo.town = "";
+                        jsonObject.orderData.shipments[0].shipTo.state = "";
+                        jsonObject.orderData.shipments[0].shipTo.postcode = "";
+                        jsonObject.orderData.shipments[0].shipTo.isoCountry = "";
+                        jsonObject.orderData.shipments[0].shipTo.phone = "";
+                        jsonObject.orderData.shipments[0].shipTo.email = "";
+
+
+                        //Get Carrier Alias based on country names
+                        var carrierAlias = "";
+
+                        jsonObject.orderData.shipments[0].carrier.alias = carrierAlias;
+
+                        _orderHelper.AddOrderItem(orderId, sku, sourceItemId, qty, substrate, finalPdfPath);
+
+                        var serializedResultJson = JsonConvert.SerializeObject(
+                            jsonObject,
+                            new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+
+                        _orderHelper.SubmitModifiedSiteflowJson(orderId, serializedResultJson);
+
+                        _siteflowEngine = new SiteFlowEngine(BaseUrlSiteFlow, SiteflowKey, SiteflowSecretKey);
+                        _siteflowEngine.PushOrderToSiteFlow(orderId);
+                        _orderHelper.MarkOrderPushedTositeFlow(sourceItemId);
+
+                    }
+                }
+
+                //end for each
+
+
+                //Move the xlsx file to processed folder 
+
+                var filename = Path.GetFileName(xlsxInput.FullName);
+
+                File.Move(xlsxInput.FullName, xlsxFolder + "Processed" + "\\" + filename);
+            }
+
+        }
+
     }
 }
