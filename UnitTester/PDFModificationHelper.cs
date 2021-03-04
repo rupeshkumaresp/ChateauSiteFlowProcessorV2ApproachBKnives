@@ -1061,6 +1061,7 @@ namespace ChateauSiteFlowApp
 
         public static void DoFindReplace(string find, Aspose.Pdf.Document pdfDocument, string replace)
         {
+            Font font = FontRepository.OpenFont(ChateauFont);
             if (string.IsNullOrEmpty(replace))
                 replace = "";
 
@@ -1078,6 +1079,8 @@ namespace ChateauSiteFlowApp
             {
                 // Update text and other properties
                 textFragment.Text = replace;
+                textFragment.TextState.Font = font;
+
             }
         }
 

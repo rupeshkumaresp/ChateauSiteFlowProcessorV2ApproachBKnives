@@ -1345,7 +1345,10 @@ namespace ChateauSiteFlowApp
         public void ChateauWelcomeCardsProcessing()
         {
             Dictionary<string, string> processingSummary = new Dictionary<string, string>();
+            string AsposeLicense = ConfigurationManager.AppSettings["WorkingDirectory"] + ConfigurationManager.AppSettings["ServiceFolderPath"] + @"License/Aspose.Pdf.lic";
 
+            Aspose.Pdf.License license = new Aspose.Pdf.License();
+            license.SetLicense(AsposeLicense);
 
             string json = "";
             string ChateauWLJsonPath = ConfigurationManager.AppSettings["ChateauWLJsonPath"];
@@ -1379,6 +1382,9 @@ namespace ChateauSiteFlowApp
 
                     foreach (var importedRow in importedRows)
                     {
+                        if (string.IsNullOrEmpty(importedRow["Order #".ToLower()]))
+                            continue;
+
                         var sourceOrderId = "SWP" + importedRow["Order #".ToLower()].PadLeft(9, '0');
 
                         //for each csv row
@@ -1450,7 +1456,7 @@ namespace ChateauSiteFlowApp
                             jsonObject.orderData.shipments[0].shipTo.isoCountry = isoCountry;
                             jsonObject.orderData.shipments[0].shipTo.phone = telephone;
                             jsonObject.orderData.shipments[0].shipTo.email = email;
-
+                            jsonObject.orderData.shipments[0].slaDays = 1;
 
 
                             //Get Carrier Alias based on country names
@@ -1493,6 +1499,7 @@ namespace ChateauSiteFlowApp
             }
 
             //send email
+            ProcessHelper.SendProcessingSummaryWelcomeCardsEmail(processingSummary);
 
 
         }
