@@ -258,6 +258,54 @@ namespace ChateauSiteFlowApp
             }
         }
 
+        public static void SendProcessingSummaryWelcomeCardsEmail(Dictionary<string, string> messages)
+        {
+            if (messages.Count == 0)
+                return;
+
+            var defaultMessage = EmailHelper.ProcessingStatusSummaryWelcomeCardsEmailTemplate;
+
+            var orderstatuscontent = "";
+
+            orderstatuscontent +=
+                "<table border='1'><tr><td colspan='1'><strong>Order ID</strong></td><td colspan='1'><strong>Status</strong></td></tr>";
+
+            var orderStatusdetails = "";
+
+            if (messages.Keys.Count == 0)
+                return;
+
+            foreach (var key in messages.Keys)
+            {
+
+                orderStatusdetails += "<tr>";
+                orderStatusdetails += "<td>" + key + "</td>";
+
+                orderStatusdetails += "<td>" + messages[key] + "</td>";
+
+                orderStatusdetails += "</tr>";
+            }
+
+            orderstatuscontent += orderStatusdetails;
+            orderstatuscontent += "</table>";
+
+            defaultMessage = Regex.Replace(defaultMessage, "\\[ORDERSTATUS\\]", orderstatuscontent);
+
+            var emails = ConfigurationManager.AppSettings["NotificationEmails"].Split(new char[] { ';' });
+              
+            foreach (var email in emails)
+            {
+                if (String.IsNullOrEmpty(email))
+                    continue;
+
+                var timeNow = DateTime.Now.ToString("MM/dd/yyyy H:mm:ss");
+
+                EmailHelper.SendMail(email,
+                    "Chateau Welcome Cards Order Summary - " + timeNow, defaultMessage);
+            }
+        }
+
+
         public void PushOrdersToSiteFlow(Dictionary<string, string> processingStatus)
         {
             foreach (var orderReference in processingStatus.Keys)
@@ -1296,6 +1344,9 @@ namespace ChateauSiteFlowApp
 
         public void ChateauWelcomeCardsProcessing()
         {
+            Dictionary<string, string> processingSummary = new Dictionary<string, string>();
+
+
             string json = "";
             string ChateauWLJsonPath = ConfigurationManager.AppSettings["ChateauWLJsonPath"];
             var xlsxFolder = ConfigurationManager.AppSettings["ChateauWLXLSXFolderPath"];
@@ -1328,86 +1379,105 @@ namespace ChateauSiteFlowApp
 
                     foreach (var importedRow in importedRows)
                     {
+                        var sourceOrderId = "SWP" + importedRow["Order #".ToLower()].PadLeft(9, '0');
+
                         //for each csv row
+                        try
+                        {
 
-                        //generate the name pdf
-                        ////create order and order details, address entry in database
-                        var sourceOrderId = "SWP" + importedRow["Order #".ToLower()];
+                            //generate the name pdf
+                            ////create order and order details, address entry in database
 
+                            var sourceItemId = sourceOrderId;
 
-                        var sourceItemId = importedRow["Order #".ToLower()];
-
-                        var finalPdfPath = originalOrderInputPath + "/Processed/" + sourceOrderId + "_" + sourceItemId +
-                                           ".PDF";
-
-
-                        Aspose.Pdf.Document pdfDocument = new Aspose.Pdf.Document(ChateauWLPDFPath);
-                        var name = importedRow["Customer name".ToLower()];
+                            var finalPdfPath = originalOrderInputPath + "/Processed/" + sourceOrderId + "_" +
+                                               sourceItemId +
+                                               ".PDF";
 
 
-                        PdfModificationHelper.DoFindReplace("#Name", pdfDocument, name);
-                        pdfDocument.Save(finalPdfPath);
-
-                        //build the json
-
-                        //push the json to siteflow
-                        DateTime orderDatetime = Convert.ToDateTime(importedRow["Created At".ToLower()]);
+                            Aspose.Pdf.Document pdfDocument = new Aspose.Pdf.Document(ChateauWLPDFPath);
+                            var name = importedRow["Customer name".ToLower()];
 
 
-                        decimal orderTotal = 0;
-                        decimal deliveryCost = 0;
-                        var email = importedRow["Email".ToLower()];
-                        var telephone = importedRow["Telephone".ToLower()];
-                        var originalJson = json;
+                            PdfModificationHelper.DoFindReplace("#Name", pdfDocument, name);
+                            pdfDocument.Save(finalPdfPath);
 
-                        var orderId = _orderHelper.CreateOrder(sourceOrderId, orderDatetime, orderTotal, deliveryCost,
-                            email, telephone, originalJson);
+                            //build the json
 
-                        var sku = "Chateau-WL";
+                            //push the json to siteflow
+                            DateTime orderDatetime = Convert.ToDateTime(importedRow["Created At".ToLower()]);
 
 
-                        int qty = 1;
+                            decimal orderTotal = 0;
+                            decimal deliveryCost = 0;
+                            var email = importedRow["Email".ToLower()];
+                            var telephone = importedRow["Telephone".ToLower()];
+                            var originalJson = json;
 
-                        //modify the json 
-                        var substrate = "Chateau-WL";
+                            var orderId = _orderHelper.CreateOrder(sourceOrderId, orderDatetime, orderTotal,
+                                deliveryCost,
+                                email, telephone, originalJson);
 
-                        jsonObject.orderData.sourceOrderId = sourceOrderId;
-                        jsonObject.orderData.items[0].barcode = sourceOrderId;
-
-                        jsonObject.orderData.items[0].sourceItemId = sourceOrderId;
-
-                        jsonObject.orderData.items[0].components[0].barcode = sourceOrderId;
-                        jsonObject.orderData.items[0].components[0].path = "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + sourceOrderId +
-                                                                                "_" + sourceItemId + ".PDF";
-
-                        jsonObject.orderData.shipments[0].shipTo.name = "";
-                        jsonObject.orderData.shipments[0].shipTo.companyName = "";
-                        jsonObject.orderData.shipments[0].shipTo.address1 = "";
-                        jsonObject.orderData.shipments[0].shipTo.address2 = "";
-                        jsonObject.orderData.shipments[0].shipTo.town = "";
-                        jsonObject.orderData.shipments[0].shipTo.state = "";
-                        jsonObject.orderData.shipments[0].shipTo.postcode = "";
-                        jsonObject.orderData.shipments[0].shipTo.isoCountry = "";
-                        jsonObject.orderData.shipments[0].shipTo.phone = "";
-                        jsonObject.orderData.shipments[0].shipTo.email = "";
+                            var sku = "Chateau-WL";
 
 
-                        //Get Carrier Alias based on country names
-                        var carrierAlias = "";
+                            int qty = 1;
 
-                        jsonObject.orderData.shipments[0].carrier.alias = carrierAlias;
+                            //modify the json 
+                            var substrate = "Chateau-WL";
 
-                        _orderHelper.AddOrderItem(orderId, sku, sourceItemId, qty, substrate, finalPdfPath);
+                            jsonObject.orderData.sourceOrderId = sourceOrderId;
+                            jsonObject.orderData.items[0].barcode = sourceOrderId;
 
-                        var serializedResultJson = JsonConvert.SerializeObject(
-                            jsonObject,
-                            new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+                            jsonObject.orderData.items[0].sourceItemId = sourceOrderId;
 
-                        _orderHelper.SubmitModifiedSiteflowJson(orderId, serializedResultJson);
+                            jsonObject.orderData.items[0].components[0].barcode = sourceOrderId;
+                            jsonObject.orderData.items[0].components[0].path =
+                                "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + sourceOrderId +
+                                "_" + sourceItemId + ".PDF";
 
-                        _siteflowEngine = new SiteFlowEngine(BaseUrlSiteFlow, SiteflowKey, SiteflowSecretKey);
-                        _siteflowEngine.PushOrderToSiteFlow(orderId);
-                        _orderHelper.MarkOrderPushedTositeFlow(sourceItemId);
+                            //       Country
+
+                            var isoCountry = importedRow["ISO Country".ToLower()];
+                            jsonObject.orderData.shipments[0].shipTo.name = importedRow["Customer name".ToLower()];
+                            jsonObject.orderData.shipments[0].shipTo.companyName =
+                                importedRow["Company Name".ToLower()];
+                            jsonObject.orderData.shipments[0].shipTo.address1 = importedRow["Address1".ToLower()];
+                            jsonObject.orderData.shipments[0].shipTo.address2 = importedRow["Address2".ToLower()];
+                            jsonObject.orderData.shipments[0].shipTo.town = importedRow["City".ToLower()];
+                            jsonObject.orderData.shipments[0].shipTo.state = importedRow["Region".ToLower()];
+                            jsonObject.orderData.shipments[0].shipTo.postcode = importedRow["Post Code".ToLower()];
+                            jsonObject.orderData.shipments[0].shipTo.isoCountry = isoCountry;
+                            jsonObject.orderData.shipments[0].shipTo.phone = telephone;
+                            jsonObject.orderData.shipments[0].shipTo.email = email;
+
+
+
+                            //Get Carrier Alias based on country names
+                            var carrierAlias = "ChateauP2P";
+
+                            if (isoCountry == "GB")
+                                carrierAlias = "chateau.rm.48u";
+
+                            jsonObject.orderData.shipments[0].carrier.alias = carrierAlias;
+
+                            _orderHelper.AddOrderItem(orderId, sku, sourceItemId, qty, substrate, finalPdfPath);
+
+                            var serializedResultJson = JsonConvert.SerializeObject(
+                                jsonObject,
+                                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+
+                            _orderHelper.SubmitModifiedSiteflowJson(orderId, serializedResultJson);
+
+                            _siteflowEngine = new SiteFlowEngine(BaseUrlSiteFlow, SiteflowKey, SiteflowSecretKey);
+                            _siteflowEngine.PushOrderToSiteFlow(orderId);
+                            _orderHelper.MarkOrderPushedTositeFlow(sourceItemId);
+                            processingSummary.Add(sourceOrderId, "OK");
+                        }
+                        catch (Exception ex)
+                        {
+                            processingSummary.Add(sourceOrderId, "ERROR - " + ex.Message);
+                        }
 
                     }
                 }
@@ -1421,6 +1491,9 @@ namespace ChateauSiteFlowApp
 
                 File.Move(xlsxInput.FullName, xlsxFolder + "Processed" + "\\" + filename);
             }
+
+            //send email
+
 
         }
 

@@ -120,6 +120,25 @@ namespace ChateauSiteFlowApp
 	        <span style='color:#696969;'><em><span style='font-size: 12px;'>Please note this is an automated response email, please do not reply to this email address.</span></em></span><br /></em></span></p>";
 
 
+        public static string ProcessingStatusSummaryWelcomeCardsEmailTemplate =
+
+            @"<p>
+    	Hi,</p>
+        <p>
+	        Please find below processing summary for Chateau Welcome Card orders:</p>       
+        <p>
+	        [ORDERSTATUS]</p>
+        
+        <p>
+	        &nbsp;</p>
+        <p>
+	        Kind Regards,</p>
+        <p>
+	        ESP Team</p>
+        <p>
+	        <span style='color:#696969;'><em><span style='font-size: 12px;'>Please note this is an automated response email, please do not reply to this email address.</span></em></span><br /></em></span></p>";
+
+
         public static string MissingJsonEmailTemplate =
 
             @"<p>
