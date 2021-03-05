@@ -92,7 +92,13 @@ namespace ChateauOrderHelper
                 order.SiteflowSentDatetme = DateTime.Now;
                 _contextChateau.SaveChanges();
 
-                WriteLog("Siteflow submission success", Convert.ToInt64(orderRef));
+                try
+                {
+                    WriteLog("Siteflow submission success", Convert.ToInt64(orderRef));
+                }
+                catch
+                {
+                }
             }
 
 
