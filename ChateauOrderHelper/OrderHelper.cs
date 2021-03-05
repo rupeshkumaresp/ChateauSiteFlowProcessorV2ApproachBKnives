@@ -548,5 +548,12 @@ namespace ChateauOrderHelper
 
             return null;
         }
+
+        public bool DuplicateWelcomeCardsCheck(string sourceOrderId)
+        {
+            var order = _contextChateau.tOrders.FirstOrDefault(o => o.ReferenceNumber == sourceOrderId);
+
+            return order != null;
+        }
     }
 }

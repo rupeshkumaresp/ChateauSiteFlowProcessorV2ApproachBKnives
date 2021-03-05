@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text.RegularExpressions;
+using System.Web.UI.WebControls;
 using System.Windows.Forms;
 using ChateauEntity.Entity;
 using ChateauOrderHelper;
@@ -292,7 +293,7 @@ namespace ChateauSiteFlowApp
             defaultMessage = Regex.Replace(defaultMessage, "\\[ORDERSTATUS\\]", orderstatuscontent);
 
             var emails = ConfigurationManager.AppSettings["NotificationEmails"].Split(new char[] { ';' });
-              
+
             foreach (var email in emails)
             {
                 if (String.IsNullOrEmpty(email))
@@ -1387,6 +1388,14 @@ namespace ChateauSiteFlowApp
 
                         var sourceOrderId = "SWP" + importedRow["Order #".ToLower()].PadLeft(9, '0');
 
+                        bool duplicate = _orderHelper.DuplicateWelcomeCardsCheck(sourceOrderId);
+
+
+                        if (duplicate)
+                        {
+                            processingSummary.Add(sourceOrderId, "Duplicate order, order rejected!");
+                            continue;
+                        }
                         //for each csv row
                         try
                         {
@@ -1494,6 +1503,9 @@ namespace ChateauSiteFlowApp
                 //Move the xlsx file to processed folder 
 
                 var filename = Path.GetFileName(xlsxInput.FullName);
+
+                if (File.Exists(xlsxFolder + "Processed" + "\\" + filename))
+                    File.Delete(xlsxFolder + "Processed" + "\\" + filename);
 
                 File.Move(xlsxInput.FullName, xlsxFolder + "Processed" + "\\" + filename);
             }
