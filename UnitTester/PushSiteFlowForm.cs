@@ -32,10 +32,6 @@ namespace ChateauSiteFlowApp
         {
             var processHelper = new ProcessHelper();
 
-            processHelper.ChateauWelcomeCardsProcessing();
-
-            return;
-
             Cleanup();
 
             
@@ -56,7 +52,8 @@ namespace ChateauSiteFlowApp
 
             ChateauBelfieldProcessing();
 
-           
+            processHelper.ChateauWelcomeCardsProcessing();
+
 
         }
 
