@@ -537,6 +537,192 @@ namespace ChateauSiteFlowApp
             AddBarcodeImage(_pdfPath, Path.GetFileName(file), substrateName, barcode, orderId, qty);
         }
 
+        internal void ChateauBagApronLabelGeneration(string labelFileName, string substrate, string orderbarcode, string orderorderId, string qtyString)
+        {
+            //Generate  label of size  54x25mm
+
+            var fixedHeight = 13;
+
+            BaseFont bf = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
+
+            iTextSharp.text.Font font = new iTextSharp.text.Font(bf, 6, iTextSharp.text.Font.NORMAL);
+
+            var width = Utilities.MillimetersToPoints(54);
+            var height = Utilities.MillimetersToPoints(25);
+
+            var doc = new Document(new Rectangle(width, height), 0, 0, 0, 0);
+
+            var output = new FileStream(labelFileName, FileMode.Create);
+
+            var writer = PdfWriter.GetInstance(doc, output);
+            PdfContentByte cb = new PdfContentByte(writer);
+
+            doc.Open();
+
+            PdfPTable boxTableBarcode = new PdfPTable(1);
+            boxTableBarcode.DefaultCell.Border = 0;
+            boxTableBarcode.WidthPercentage = 100;
+
+            float[] widths = new float[] { 452f };
+            boxTableBarcode.SetWidths(widths);
+
+            PdfPCell cell11Border = new PdfPCell();
+            cell11Border.BorderWidthTop = 0;
+            cell11Border.BorderWidthBottom = 0;
+            cell11Border.BorderWidthRight = 0;
+            cell11Border.BorderWidthLeft = 0;
+            cell11Border.FixedHeight = 18;
+            cell11Border.HorizontalAlignment = iTextSharp.text.Element.ALIGN_CENTER;
+
+            cell11Border.PaddingLeft = 35;
+            Barcode128 code128 = new Barcode128
+            {
+                CodeType = Barcode.CODE128,
+                ChecksumText = true,
+                GenerateChecksum = true,
+                StartStopText = true,
+                Code = orderbarcode
+            };
+
+
+            //code128.BarHeight = (code128.BarcodeSize.Height) * (float)(1.20);
+
+            var bm = new Bitmap(code128.CreateDrawingImage(Color.Black, Color.White));
+
+
+            cell11Border.AddElement(Image.GetInstance(bm, ImageFormat.Jpeg));
+
+            boxTableBarcode.AddCell(cell11Border);
+
+            boxTableBarcode.CompleteRow();
+
+            PdfPTable boxTable = new PdfPTable(2);
+            boxTable.DefaultCell.Border = 0;
+            boxTable.WidthPercentage = 100;
+
+            widths = new float[] { 226f, 226f };
+            boxTable.SetWidths(widths);
+
+
+
+            PdfPCell cell21 = new PdfPCell();
+            cell21.AddElement(new Paragraph(new Chunk("Order Number:", font)));
+            cell21.BorderWidthTop = 0;
+            cell21.Colspan = 1;
+            cell21.BorderWidthBottom = 0;
+            cell21.BorderWidthLeft = 0;
+            cell21.BorderWidthRight = 0;
+            cell21.FixedHeight = fixedHeight;
+            //cell21.PaddingTop = -5;
+
+            boxTable.AddCell(cell21);
+
+
+            PdfPCell cell22 = new PdfPCell();
+            cell22.AddElement(new Paragraph(new Chunk(orderorderId, font)));
+            cell22.BorderWidthTop = 0;
+            cell22.Colspan = 1;
+            cell22.BorderWidthBottom = 0;
+            cell22.BorderWidthLeft = 0;
+            cell22.BorderWidthRight = 0;
+            cell22.FixedHeight = fixedHeight;
+            //cell22.PaddingTop = -5;
+
+            boxTable.AddCell(cell22);
+
+            boxTable.CompleteRow();
+
+
+            PdfPCell cell31 = new PdfPCell();
+            cell31.AddElement(new Paragraph(new Chunk("Barcode:", font)));
+            cell31.BorderWidthTop = 0;
+            cell31.Colspan = 1;
+            cell31.BorderWidthBottom = 0;
+            cell31.BorderWidthLeft = 0;
+            cell31.BorderWidthRight = 0;
+            cell31.FixedHeight = fixedHeight;
+            //cell31.PaddingTop = -10;
+
+            boxTable.AddCell(cell31);
+
+
+            PdfPCell cell32 = new PdfPCell();
+            cell32.AddElement(new Paragraph(new Chunk(orderbarcode, font)));
+            cell32.BorderWidthTop = 0;
+            cell32.Colspan = 1;
+            cell32.BorderWidthBottom = 0;
+            cell32.BorderWidthLeft = 0;
+            cell32.BorderWidthRight = 0;
+            cell32.FixedHeight = fixedHeight;
+            //cell32.PaddingTop = -10;
+
+            boxTable.AddCell(cell32);
+
+            boxTable.CompleteRow();
+
+
+            PdfPCell cell41 = new PdfPCell();
+            cell41.AddElement(new Paragraph(new Chunk("Substrate:", font)));
+            cell41.BorderWidthTop = 0;
+            cell41.Colspan = 1;
+            cell41.BorderWidthBottom = 0;
+            cell41.BorderWidthLeft = 0;
+            cell41.BorderWidthRight = 0;
+            cell41.FixedHeight = fixedHeight;
+            //cell41.PaddingTop = -15;
+            boxTable.AddCell(cell41);
+
+
+            PdfPCell cell42 = new PdfPCell();
+            cell42.AddElement(new Paragraph(new Chunk(substrate, font)));
+            cell42.BorderWidthTop = 0;
+            cell42.Colspan = 1;
+            cell42.BorderWidthBottom = 0;
+            cell42.BorderWidthLeft = 0;
+            cell42.BorderWidthRight = 0;
+            cell42.FixedHeight = fixedHeight;
+            //cell42.PaddingTop = -15;
+            boxTable.AddCell(cell42);
+
+            boxTable.CompleteRow();
+
+            //New Row Added
+
+
+            PdfPCell cell51 = new PdfPCell();
+            cell51.AddElement(new Paragraph(new Chunk("Qty:", font)));
+            cell51.BorderWidthTop = 0;
+            cell51.Colspan = 1;
+            cell51.BorderWidthBottom = 0;
+            cell51.BorderWidthLeft = 0;
+            cell51.BorderWidthRight = 0;
+            cell51.FixedHeight = fixedHeight;
+            //cell51.PaddingTop = -20;
+            boxTable.AddCell(cell51);
+
+
+            PdfPCell cell52 = new PdfPCell();
+            cell52.AddElement(new Paragraph(new Chunk(qtyString, font)));
+            cell52.BorderWidthTop = 0;
+            cell52.Colspan = 1;
+            cell52.BorderWidthBottom = 0;
+            cell52.BorderWidthLeft = 0;
+            cell52.BorderWidthRight = 0;
+            cell52.FixedHeight = fixedHeight;
+            //cell52.PaddingTop = -20;
+            boxTable.AddCell(cell52);
+
+            boxTable.CompleteRow();
+
+            doc.Add(boxTableBarcode);
+
+            doc.Add(boxTable);
+
+            doc.Close();
+
+        }
+
+
         internal void ChateauCandleLabelGeneration(string labelFileName, string substrate, string orderbarcode, string orderorderId, string qtyString)
         {
             //Generate  label of size  54x25mm

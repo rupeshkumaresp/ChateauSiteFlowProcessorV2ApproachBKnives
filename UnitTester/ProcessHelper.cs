@@ -300,7 +300,6 @@ namespace ChateauSiteFlowApp
                     continue;
 
                 var timeNow = DateTime.Now.ToString("MM/dd/yyyy H:mm:ss");
-
                 EmailHelper.SendMail(email,
                     "Chateau Welcome Cards Order Summary - " + timeNow, defaultMessage);
             }
@@ -1385,10 +1384,24 @@ namespace ChateauSiteFlowApp
 
                         var importedRows = importer.Import(dataSetName);
                         dataset++;
+                        if (!importedRows.Any())
+                            break;
 
+                        //xlsx validation
+                        int row = 1;
 
                         foreach (var importedRow in importedRows)
                         {
+                            if (row == 1)
+                            {
+                                bool valid = true;
+                                //validation
+                                valid = ValidateWelcomeCardsColumns(importedRow, processingSummary, valid);
+
+                                if (!valid)
+                                    break;
+                            }
+
                             if (string.IsNullOrEmpty(importedRow["Order #".ToLower()]))
                                 continue;
 
@@ -1487,7 +1500,7 @@ namespace ChateauSiteFlowApp
 
                                 var serializedResultJson = JsonConvert.SerializeObject(
                                     jsonObject,
-                                    new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
+                                    new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
                                 _orderHelper.SubmitModifiedSiteflowJson(orderId, serializedResultJson);
 
@@ -1501,6 +1514,7 @@ namespace ChateauSiteFlowApp
                                 processingSummary.Add(sourceOrderId, "ERROR - " + ex.Message);
                             }
 
+                            row++;
                         }
                     }
 
@@ -1518,10 +1532,97 @@ namespace ChateauSiteFlowApp
                 }
 
                 //send email
-                ProcessHelper.SendProcessingSummaryWelcomeCardsEmail(processingSummary);
+
+                if (processingSummary.Count > 0)
+                    ProcessHelper.SendProcessingSummaryWelcomeCardsEmail(processingSummary);
 
             }
         }
 
+        private static bool ValidateWelcomeCardsColumns(Dictionary<string, string> importedRow, Dictionary<string, string> processingSummary, bool valid)
+        {
+            if (!importedRow.ContainsKey("Created At".ToLower()))
+            {
+                processingSummary.Add("Created At column is missing!", "INVALID SPREADSHEET");
+                valid = false;
+            }
+
+            if (!importedRow.ContainsKey("Order #".ToLower()))
+            {
+                processingSummary.Add( "Order # column is missing!", "INVALID SPREADSHEET");
+                valid = false;
+            }
+
+            if (!importedRow.ContainsKey("Customer name".ToLower()))
+            {
+                processingSummary.Add("Customer name column is missing!", "INVALID SPREADSHEET");
+                valid = false;
+            }
+
+            if (!importedRow.ContainsKey("Company Name".ToLower()))
+            {
+                processingSummary.Add("Company Name column is missing!", "INVALID SPREADSHEET");
+                valid = false;
+            }
+
+            if (!importedRow.ContainsKey("Address1".ToLower()))
+            {
+                processingSummary.Add("Address1 column is missing!", "INVALID SPREADSHEET");
+                valid = false;
+            }
+
+            if (!importedRow.ContainsKey("Address2".ToLower()))
+            {
+                processingSummary.Add("Address2 column is missing!", "INVALID SPREADSHEET");
+                valid = false;
+            }
+
+            if (!importedRow.ContainsKey("City".ToLower()))
+            {
+                processingSummary.Add("City column is missing!", "INVALID SPREADSHEET");
+                valid = false;
+            }
+
+            if (!importedRow.ContainsKey("Region".ToLower()))
+            {
+                processingSummary.Add("Region column is missing!", "INVALID SPREADSHEET");
+                valid = false;
+            }
+
+            if (!importedRow.ContainsKey("Post Code".ToLower()))
+            {
+                processingSummary.Add("Post Code column is missing!", "INVALID SPREADSHEET");
+                valid = false;
+            }
+
+            if (!importedRow.ContainsKey("Country".ToLower()))
+            {
+                processingSummary.Add("Country column is missing!", "INVALID SPREADSHEET");
+                valid = false;
+            }
+
+
+            if (!importedRow.ContainsKey("ISO Country".ToLower()))
+            {
+                processingSummary.Add("ISO Country column is missing!", "INVALID SPREADSHEET");
+                valid = false;
+            }
+
+
+            if (!importedRow.ContainsKey("Telephone".ToLower()))
+            {
+                processingSummary.Add("Telephone column is missing!", "INVALID SPREADSHEET");
+                valid = false;
+            }
+
+
+            if (!importedRow.ContainsKey("Email".ToLower()))
+            {
+                processingSummary.Add("Email column is missing!", "INVALID SPREADSHEET");
+                valid = false;
+            }
+
+            return valid;
+        }
     }
 }
