@@ -32,13 +32,8 @@ namespace ChateauSiteFlowApp
         {
             var processHelper = new ProcessHelper();
 
-            processHelper.ChateauWelcomeCardsProcessing();
-
-            return;
-
             Cleanup();
 
-            
             //DOWNLOAD ORDERS FROM SFTP
             ProcessHelper.DownloadOrders();
 
@@ -56,8 +51,7 @@ namespace ChateauSiteFlowApp
 
             ChateauBelfieldProcessing();
 
-         
-
+            processHelper.ChateauWelcomeCardsProcessing();
 
         }
 

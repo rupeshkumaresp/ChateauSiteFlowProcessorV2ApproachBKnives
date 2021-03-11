@@ -47,9 +47,7 @@ namespace ChateauSiteFlowApp
             using (StreamReader r = new StreamReader(jsonFile.FullName))
             {
                 json = r.ReadToEnd();
-
                 jsonObject = JsonConvert.DeserializeObject<SiteflowOrder.RootObject>(json);
-
             }
 
             return jsonObject;
