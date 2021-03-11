@@ -47,6 +47,11 @@ namespace ChateauSiteFlowApp
             using (StreamReader r = new StreamReader(jsonFile.FullName))
             {
                 json = r.ReadToEnd();
+                json = json.Replace("\"" + "error" + "\"" + ":[],", "");
+                json = json.Replace("\"" + "stockItems" + "\"" + ":[],", "");
+                json = json.Replace("\"" + "attributes" + "\"" + ":[],", "");
+                json = json.Replace("\"" + "extraData" + "\"" + ": [],", "");
+                json = json.Replace("\"" + "extraData" + "\"" + ":[],", "");
                 jsonObject = JsonConvert.DeserializeObject<SiteflowOrder.RootObject>(json);
             }
 
