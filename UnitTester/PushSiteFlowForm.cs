@@ -31,7 +31,7 @@ namespace ChateauSiteFlowApp
         private void ProcessJsonOrders()
         {
             var processHelper = new ProcessHelper();
-
+            
             Cleanup();
 
             //DOWNLOAD ORDERS FROM SFTP
