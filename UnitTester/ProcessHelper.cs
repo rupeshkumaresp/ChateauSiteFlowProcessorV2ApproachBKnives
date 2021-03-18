@@ -602,17 +602,17 @@ namespace ChateauSiteFlowApp
 
                         if (sku == "Bag-Chateau" || sku == "Apron-Chateau")
                         {
-                            if (!Directory.Exists(@"\\192.168.0.84\TheChateauTV\DyeSubChateau\Artwork\"))
-                                Directory.CreateDirectory(@"\\192.168.0.84\TheChateauTV\DyeSubChateau\Artwork\");
+                            if (!Directory.Exists(@"\\192.168.0.84\TheChateauTV\DyeSubChateau\" + substrate + @"\Artwork\"))
+                                Directory.CreateDirectory(@"\\192.168.0.84\TheChateauTV\DyeSubChateau\" + substrate + @"\Artwork\");
 
-                            if (!Directory.Exists(@"\\192.168.0.84\TheChateauTV\DyeSubChateau\Label\"))
-                                Directory.CreateDirectory(@"\\192.168.0.84\TheChateauTV\DyeSubChateau\Label\");
+                            if (!Directory.Exists(@"\\192.168.0.84\TheChateauTV\DyeSubChateau\" + substrate + @"\Label\"))
+                                Directory.CreateDirectory(@"\\192.168.0.84\TheChateauTV\DyeSubChateau\" + substrate + @"\Label\");
 
                             //artwork
                             for (int i = 1; i <= qty; i++)
                             {
                                 var artworkFileName =
-                                    @"\\192.168.0.84\TheChateauTV\DyeSubChateau\Artwork\" + orderbarcode +
+                                    @"\\192.168.0.84\TheChateauTV\DyeSubChateau\" + substrate + @"\Artwork\" + orderbarcode +
                                     "_Artwork_" + i.ToString() + ".pdf";
                                 File.Copy(orderfileName, artworkFileName, true);
                             }
@@ -622,7 +622,7 @@ namespace ChateauSiteFlowApp
                             //label
                             for (int i = 1; i <= qty; i++)
                             {
-                                var labelFileName = @"\\192.168.0.84\TheChateauTV\DyeSubChateau\Label\" + orderbarcode +
+                                var labelFileName = @"\\192.168.0.84\TheChateauTV\DyeSubChateau\" + substrate + @"\Label\" + orderbarcode +
                                                     "_Label_" + i.ToString() + ".pdf";
 
                                 var qtyString = i.ToString() + " of " + qty.ToString();
