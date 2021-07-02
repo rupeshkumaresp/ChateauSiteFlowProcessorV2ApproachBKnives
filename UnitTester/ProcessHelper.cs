@@ -1465,7 +1465,10 @@ namespace ChateauSiteFlowApp
 
                             if (duplicate)
                             {
-                                processingSummary.Add(sourceOrderId, "Duplicate order, order rejected!");
+                                if (processingSummary.ContainsKey(sourceOrderId))
+                                    processingSummary.Add(sourceOrderId + " - " + Guid.NewGuid(), "Duplicate order, order rejected!");
+                                else
+                                    processingSummary.Add(sourceOrderId, "Duplicate order, order rejected!");
                                 continue;
                             }
 
