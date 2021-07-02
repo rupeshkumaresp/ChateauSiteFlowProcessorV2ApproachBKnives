@@ -457,8 +457,6 @@ namespace ChateauSiteFlowApp
 
                     var itemCount = jsonObject.orderData.items.Count;
 
-                    bool onlyKnives = OrderContainsOnlyKnives(jsonObject);
-
                     bool onlyPreOrderItems = OrderContainsOnlyPreOrder(jsonObject);
 
                     bool orderContainsKnivesAndOtherProducts = OrderContainsMixProductsWithKnives(jsonObject);
@@ -866,14 +864,13 @@ namespace ChateauSiteFlowApp
                             orderId, sourceOrderId, sourceItemId, orderbarcode, jsonObject);
                     }
 
-                    RemoveKnivesOrderItem(orderContainsKnivesAndOtherProducts, jsonObject, knifeJsonItems);
                     RemovePreOrderItem(orderContainsPreOrderAndOtherProducts, jsonObject, preOrderJsonItems);
 
                     var serializedResultJson = JsonConvert.SerializeObject(
                         jsonObject,
                         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
-                    if (!onlyKnives && !onlyPreOrderItems)
+                    if (!onlyPreOrderItems)
                     {
                         var goodOrder = IsGoodOrder(processingSummary, sourceOrderId);
 
@@ -1205,25 +1202,6 @@ namespace ChateauSiteFlowApp
 
         }
 
-        private static void RemoveKnivesOrderItem(bool orderContainsKnivesAndOtherProducts,
-            SiteflowOrder.RootObject jsonObject,
-            List<SiteflowOrder.Item> knifeJsonItems)
-        {
-            //REMOVE THE KNIFE json order item so it doesn't get duplicate in siteflow
-            if (orderContainsKnivesAndOtherProducts)
-            {
-                List<SiteflowOrder.Item> modifiedItems = new List<SiteflowOrder.Item>();
-
-                foreach (var item in jsonObject.orderData.items)
-                {
-                    if (!knifeJsonItems.Contains(item))
-                        modifiedItems.Add(item);
-                }
-
-                jsonObject.orderData.items = modifiedItems;
-            }
-        }
-
 
         private static void RemovePreOrderItem(bool orderContainsPreOrderAndOtherProducts,
             SiteflowOrder.RootObject jsonObject,
@@ -1262,25 +1240,6 @@ namespace ChateauSiteFlowApp
 
             return onlyPreOrder;
         }
-
-        private static bool OrderContainsOnlyKnives(SiteflowOrder.RootObject jsonObject)
-        {
-            bool onlyKnives = true;
-
-            foreach (var item in jsonObject.orderData.items)
-            {
-                var sku = item.sku;
-
-                if (sku != "ShenKnives-Chateau")
-                {
-                    onlyKnives = false;
-                    break;
-                }
-            }
-
-            return onlyKnives;
-        }
-
 
 
         private static bool OrderContainsMixProductsWithPreOrder(SiteflowOrder.RootObject jsonObject)
