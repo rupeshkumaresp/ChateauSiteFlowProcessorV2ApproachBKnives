@@ -90,7 +90,7 @@ namespace ChateauSiteFlowApp
             @"<p>
     	Hi,</p>
         <p>
-	        Please find attached today's Chateau Knives order spreadsheet. </p>       
+	        Chateau Knives report has been copied to FTP. Please login and access the report from FTP. </p>       
         
         <p>
 	        &nbsp;</p>
@@ -218,7 +218,7 @@ namespace ChateauSiteFlowApp
                 if (string.IsNullOrEmpty(emails[i]))
                     continue;
 
-                SendMailWithAttachment(emails[i], "Chateau Knives order Report - " + DateTime.Now.ToShortDateString(), defaultMessage, path);
+                SendMailWithAttachment(emails[i], "Chateau Knives order Report - " + DateTime.Now.ToShortDateString(), defaultMessage, "");
             }
 
         }

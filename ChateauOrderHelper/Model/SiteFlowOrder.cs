@@ -60,6 +60,8 @@ namespace ChateauOrderHelper.Model
             public int quantity { get; set; }
             public decimal unitWeight { get; set; }
             public string sku { get; set; }
+            public string isoCountryOfOrigin { get; set; }
+            public string harmonizedCode { get; set; }
             public double unitPrice { get; set; }
         }
         [Serializable]
