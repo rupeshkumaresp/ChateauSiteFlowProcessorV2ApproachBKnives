@@ -398,7 +398,10 @@ namespace ChateauSiteFlowApp
                 var customerName = "";
 
                 if (jsonObject.orderData.shipments.Count > 0)
+                {
                     customerName = jsonObject.orderData.shipments[0].shipTo.name;
+                    jsonObject.orderData.customerName = customerName;
+                }
 
                 var sourceOrderId = "";
                 try
