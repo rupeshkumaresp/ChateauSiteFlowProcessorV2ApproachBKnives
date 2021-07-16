@@ -446,6 +446,25 @@ namespace ChateauSiteFlowApp
                         continue;
                     }
 
+                    if (jsonObject.orderData.shipments.Count > 0 && jsonObject.orderData.shipments[0].shipTo != null)
+                    {
+                        if (string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.address1) ||
+                            string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.town) ||
+                            string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.postcode))
+                        {
+                            if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" +
+                                            Path.GetFileName(jsonFile.FullName)))
+                                File.Delete(_localProcessingPath + "\\ProcessedInput\\" +
+                                            Path.GetFileName(jsonFile.FullName));
+
+                            File.Move(jsonFile.FullName,
+                                _localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
+
+                            processingSummary.Add(sourceOrderId, "Error - Incomplete Address");
+                            continue;
+                        }
+                    }
+
                     var orderDatetime = SetOrderDatetime(jsonObject);
 
                     decimal orderTotal = 0M;
@@ -1454,6 +1473,16 @@ namespace ChateauSiteFlowApp
 
                                 PdfModificationHelper.DoFindReplace("#Name", pdfDocument, name);
                                 pdfDocument.Save(finalPdfPath);
+
+                                if (string.IsNullOrEmpty(importedRow["Address1".ToLower()]) || string.IsNullOrEmpty(importedRow["City".ToLower()]) || string.IsNullOrEmpty(importedRow["Post Code".ToLower()]))
+                                {
+                                    if (processingSummary.ContainsKey(sourceOrderId))
+                                        processingSummary.Add(sourceOrderId + " - " + Guid.NewGuid(), "Incomplete Address, order rejected!");
+                                    else
+                                        processingSummary.Add(sourceOrderId, "Incomplete Address, order rejected!");
+                                    continue;
+
+                                }
 
                                 //build the json
 
