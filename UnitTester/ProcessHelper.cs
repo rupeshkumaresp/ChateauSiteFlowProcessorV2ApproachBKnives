@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices.ComTypes;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Web.UI.WebControls;
 using System.Windows.Forms;
@@ -364,6 +365,7 @@ namespace ChateauSiteFlowApp
 
         public Dictionary<string, string> CreateOrder()
         {
+
             //get each order json pdf from FTP location            
 
             var jsonFiles = new DirectoryInfo(_localProcessingPath + "\\Input\\").GetFiles("*.json");
@@ -1555,6 +1557,11 @@ namespace ChateauSiteFlowApp
                                 _siteflowEngine.PushOrderToSiteFlow(orderId);
                                 _orderHelper.MarkOrderPushedTositeFlow(sourceItemId);
                                 processingSummary.Add(sourceOrderId, "OK");
+
+                                var orderRef = sourceOrderId.ToUpper().Replace("SWP", "");
+
+                                PostMagentoProductionAcceptedStatus(orderRef);
+
                             }
                             catch (Exception ex)
                             {
@@ -1584,6 +1591,37 @@ namespace ChateauSiteFlowApp
                     ProcessHelper.SendProcessingSummaryWelcomeCardsEmail(processingSummary);
 
             }
+        }
+
+        public void PostMagentoProductionAcceptedStatus(string orderReference)
+        {
+            ServicePointManager.Expect100Continue = true;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+            var magentoProductionAcceptedModel = new WelcomeCardProductionModel { OrderStatus = "Production", SourceOrderId = orderReference, TimeStamp = DateTime.UtcNow.ToString("s") + "Z" };
+            String jsonString = JsonConvert.SerializeObject(magentoProductionAcceptedModel);
+
+            var baseAddress = "https://thechateau.tv/webhook_api_test.php";
+
+            var http = (HttpWebRequest)WebRequest.Create(new Uri(baseAddress));
+            http.Accept = "application/json";
+            http.ContentType = "application/json";
+            http.Method = "POST";
+            http.Headers.Add("esp", "LMKdRdoGk5Lsmlc52CA8");
+
+            string parsedContent = jsonString;
+
+            ASCIIEncoding encoding = new ASCIIEncoding();
+            Byte[] bytes = encoding.GetBytes(parsedContent);
+
+            Stream newStream = http.GetRequestStream();
+            newStream.Write(bytes, 0, bytes.Length);
+            newStream.Close();
+
+            var response = (HttpWebResponse)http.GetResponse();
+
+            var ResponseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
+
         }
 
         private static bool ValidateWelcomeCardsColumns(Dictionary<string, string> importedRow, Dictionary<string, string> processingSummary, bool valid)

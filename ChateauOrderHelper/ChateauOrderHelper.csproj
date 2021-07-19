@@ -84,6 +84,7 @@
     <Compile Include="Model\ChateauKnivesReportData.cs" />
     <Compile Include="Model\ChateauPreOrder.cs" />
     <Compile Include="Model\SiteFlowOrder.cs" />
+    <Compile Include="Model\WelcomeCardProductionModel.cs" />
     <Compile Include="OrderHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
