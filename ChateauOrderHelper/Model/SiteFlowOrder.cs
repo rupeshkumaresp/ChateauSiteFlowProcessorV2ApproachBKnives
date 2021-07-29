@@ -57,6 +57,8 @@ namespace ChateauOrderHelper.Model
             public int shipmentIndex { get; set; }
             public string barcode { get; set; }
             public string sourceItemId { get; set; }
+            public string supplierPartAuxiliaryId { get; set; }
+            public int mediaclipLineNumber { get; set; }
             public int quantity { get; set; }
             public decimal unitWeight { get; set; }
             public string sku { get; set; }

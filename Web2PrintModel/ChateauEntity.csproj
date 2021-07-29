@@ -119,6 +119,33 @@
     <Compile Include="Entity\tSiteFlowResponse.cs">
       <DependentUpon>ChateauV2Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="MediaClipEntity\MediaClipModel.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MediaClipModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MediaClipEntity\MediaClipModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MediaClipModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MediaClipEntity\MediaClipModel.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MediaClipModel.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="MediaClipEntity\tCustomer.cs">
+      <DependentUpon>MediaClipModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MediaClipEntity\tMediaClipOrder.cs">
+      <DependentUpon>MediaClipModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MediaClipEntity\tMediaClipOrderDetails.cs">
+      <DependentUpon>MediaClipModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MediaClipEntity\tMediaClipOrderExtrinsic.cs">
+      <DependentUpon>MediaClipModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SiteFlowEntity\SiteFlowModel.Context.cs">
       <AutoGen>True</AutoGen>
@@ -153,6 +180,13 @@
     <None Include="Entity\ChateauV2Model.edmx.diagram">
       <DependentUpon>ChateauV2Model.edmx</DependentUpon>
     </None>
+    <EntityDeploy Include="MediaClipEntity\MediaClipModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>MediaClipModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="MediaClipEntity\MediaClipModel.edmx.diagram">
+      <DependentUpon>MediaClipModel.edmx</DependentUpon>
+    </None>
     <None Include="packages.config" />
     <EntityDeploy Include="SiteFlowEntity\SiteFlowModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
@@ -176,6 +210,16 @@
       <DependentUpon>ChateauV2Model.edmx</DependentUpon>
       <LastGenOutput>ChateauV2Model.cs</LastGenOutput>
     </Content>
+    <Content Include="MediaClipEntity\MediaClipModel.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>MediaClipModel.edmx</DependentUpon>
+      <LastGenOutput>MediaClipModel.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="MediaClipEntity\MediaClipModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>MediaClipModel.edmx</DependentUpon>
+      <LastGenOutput>MediaClipModel.cs</LastGenOutput>
+    </Content>
     <Content Include="SiteFlowEntity\SiteFlowModel.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>SiteFlowModel.edmx</DependentUpon>
@@ -187,6 +231,7 @@
       <LastGenOutput>SiteFlowModel.cs</LastGenOutput>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

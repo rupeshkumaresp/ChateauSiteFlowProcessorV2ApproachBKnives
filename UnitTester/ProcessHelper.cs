@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using System.Web.UI.WebControls;
 using System.Windows.Forms;
 using ChateauEntity.Entity;
+using ChateauEntity.MediaClipEntity;
 using ChateauOrderHelper;
 using ChateauOrderHelper.Model;
 using iTextSharp.text;
@@ -30,6 +31,8 @@ namespace ChateauSiteFlowApp
         private static readonly string BaseUrlSiteFlow = ConfigurationManager.AppSettings["BaseUrlSiteFlow"];
         private static readonly string SiteflowKey = ConfigurationManager.AppSettings["SiteflowKey"];
         private static readonly string SiteflowSecretKey = ConfigurationManager.AppSettings["SiteflowSecretKey"];
+        MediaClipEntities _mediaClipEntities = new MediaClipEntities();
+
 
         readonly string _localProcessingPath = ConfigurationManager.AppSettings["WorkingDirectory"] +
                                                ConfigurationManager.AppSettings["ServiceFolderPath"];
@@ -395,6 +398,51 @@ namespace ChateauSiteFlowApp
                     processingSummary.Add(Path.GetFileName(jsonFile.FullName), "JSON structure issue- Order failed");
                     File.Delete(_localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
                     continue;
+                }
+
+                var hasMediaClipItem = false;
+                hasMediaClipItem = ContainsMediaClipItem(jsonObject);
+
+                if (hasMediaClipItem)
+                {
+                    //read from database
+                    //download and save pdf to local with name
+                    //_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) +".PDF")
+
+                    foreach (var item in jsonObject.orderData.items)
+                    {
+                        if (!string.IsNullOrEmpty(item.supplierPartAuxiliaryId))
+                        {
+                            var orderDetails = _mediaClipEntities.tMediaClipOrderDetails.FirstOrDefault(m => m.SupplierPartAuxilliaryId == item.supplierPartAuxiliaryId && m.LineNumber == item.mediaclipLineNumber);
+
+                            var extrinsicDetails = _mediaClipEntities.tMediaClipOrderExtrinsic.Where(e => e.MediaClipOrderDetailsId == orderDetails.OrderDetailsId).ToList();
+
+                            foreach (var component in item.components)
+                            {
+                                var path = component.path;
+                                var coverOrText = component.code;
+
+                                if (coverOrText == "Cover")
+                                {
+                                    var coverExtrinsic = extrinsicDetails.FirstOrDefault(x => x.ExtrinsicName.Contains("cover"));
+
+                                    DownloadPdf(coverExtrinsic.ExtrinsicValue,
+                                        _localProcessingPath + "/PDFS/" + jsonObject.orderData.sourceOrderId + "-" +
+                                        (1) + ".PDF");
+
+
+                                }
+                                else
+                                {
+                                    var pageExtrinsic = extrinsicDetails.FirstOrDefault(x => x.ExtrinsicName.Contains("pages"));
+
+                                    DownloadPdf(pageExtrinsic.ExtrinsicValue,
+                                        _localProcessingPath + "/PDFS/" + jsonObject.orderData.sourceOrderId + "-" +
+                                        (2) + ".PDF");
+                                }
+                            }
+                        }
+                    }
                 }
 
                 var customerName = "";
@@ -843,11 +891,18 @@ namespace ChateauSiteFlowApp
                                                     }
                                                     else
                                                     {
-                                                        File.Copy(
-                                                            _localProcessingPath + "/PDFS/" + sourceOrderId + "-" +
-                                                            (pdfCount) +
-                                                            ".PDF",
-                                                            finalPdfPath, true);
+                                                        if (sku.ToLower().Contains("photobook"))
+                                                        {
+                                                            PhotobookProcessing(sourceOrderId, originalOrderInputPath, orderorderId, orderbarcode, item);
+                                                        }
+                                                        else
+                                                        {
+                                                            File.Copy(
+                                                                _localProcessingPath + "/PDFS/" + sourceOrderId + "-" +
+                                                                (pdfCount) +
+                                                                ".PDF",
+                                                                finalPdfPath, true);
+                                                        }
                                                     }
                                                 }
                                             }
@@ -875,9 +930,12 @@ namespace ChateauSiteFlowApp
                             }
                             else
                             {
-                                item.components[0].path =
-                                    "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
-                                    "_" + orderbarcode + ".PDF";
+                                if (!sku.ToLower().Contains("photobook"))
+                                {
+                                    item.components[0].path =
+                                        "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
+                                        "_" + orderbarcode + ".PDF";
+                                }
                             }
                         }
 
@@ -889,6 +947,11 @@ namespace ChateauSiteFlowApp
                     }
 
                     RemovePreOrderItem(orderContainsPreOrderAndOtherProducts, jsonObject, preOrderJsonItems);
+
+
+                    //check for help@thechateau.tv email and set RUSH as rush
+
+                    SetRushOrderForChateauHelp(jsonObject);
 
                     var serializedResultJson = JsonConvert.SerializeObject(
                         jsonObject,
@@ -932,6 +995,50 @@ namespace ChateauSiteFlowApp
             }
 
             return processingSummary;
+        }
+
+        private static void SetRushOrderForChateauHelp(SiteflowOrder.RootObject jsonObject)
+        {
+            if (jsonObject.orderData.shipments.Count > 0 && jsonObject.orderData.shipments[0].shipTo != null)
+            {
+                if (jsonObject.orderData.shipments[0].shipTo.email == "help@thechateau.tv")
+                {
+                    foreach (var item in jsonObject.orderData.items)
+                    {
+                        foreach (var component in item.components)
+                        {
+                            component.attributes.RUSH = "rush";
+                        }
+                    }
+                }
+            }
+        }
+
+        private void PhotobookProcessing(string sourceOrderId, string originalOrderInputPath, string orderorderId, string orderbarcode, SiteflowOrder.Item item)
+        {
+            File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + 1 + ".PDF", originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode + "_1.PDF", true);
+            File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + 2 + ".PDF", originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode + "_2.PDF", true);
+
+            item.components[0].path =
+                "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId + "_" + orderbarcode + "_1.PDF";
+
+            item.components[1].path =
+                "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId + "_" + orderbarcode + "_2.PDF";
+        }
+
+        private static bool ContainsMediaClipItem(SiteflowOrder.RootObject jsonObject)
+        {
+            bool hasMediaClipItem = false;
+            foreach (var item in jsonObject.orderData.items)
+            {
+                if (!string.IsNullOrEmpty(item.supplierPartAuxiliaryId))
+                {
+                    hasMediaClipItem = true;
+                    break;
+                }
+            }
+
+            return hasMediaClipItem;
         }
 
         private string ChateauStationerySetProcessing(SiteflowOrder.Item item, string finalPdfPath, string orderorderId,

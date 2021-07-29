@@ -1,0 +1,265 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="MediaClipModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="tCustomer">
+          <Key>
+            <PropertyRef Name="CustomerId" />
+          </Key>
+          <Property Name="CustomerId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CustomerName" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tMediaClipOrder">
+          <Key>
+            <PropertyRef Name="OrderId" />
+          </Key>
+          <Property Name="OrderId" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CustomerId" Type="int" Nullable="false" />
+          <Property Name="OrderDate" Type="datetime" Nullable="false" />
+          <Property Name="orderNumber" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tMediaClipOrderDetails">
+          <Key>
+            <PropertyRef Name="OrderDetailsId" />
+          </Key>
+          <Property Name="OrderDetailsId" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MediaClipOrderId" Type="bigint" Nullable="false" />
+          <Property Name="SupplierPartAuxilliaryId" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="LineNumber" Type="int" Nullable="false" />
+          <Property Name="Quantity" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tMediaClipOrderExtrinsic">
+          <Key>
+            <PropertyRef Name="ExtrinsicId" />
+          </Key>
+          <Property Name="ExtrinsicId" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MediaClipOrderDetailsId" Type="bigint" Nullable="false" />
+          <Property Name="ExtrinsicName" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="ExtrinsicValue" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_tMediaClipOrder_tCustomer">
+          <End Role="tCustomer" Type="Self.tCustomer" Multiplicity="1" />
+          <End Role="tMediaClipOrder" Type="Self.tMediaClipOrder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tCustomer">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="tMediaClipOrder">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tMediaClipOrderDetails_tMediaClipOrder">
+          <End Role="tMediaClipOrder" Type="Self.tMediaClipOrder" Multiplicity="1" />
+          <End Role="tMediaClipOrderDetails" Type="Self.tMediaClipOrderDetails" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tMediaClipOrder">
+              <PropertyRef Name="OrderId" />
+            </Principal>
+            <Dependent Role="tMediaClipOrderDetails">
+              <PropertyRef Name="MediaClipOrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tMediaClipOrderExtrinsic_tMediaClipOrderDetails">
+          <End Role="tMediaClipOrderDetails" Type="Self.tMediaClipOrderDetails" Multiplicity="1" />
+          <End Role="tMediaClipOrderExtrinsic" Type="Self.tMediaClipOrderExtrinsic" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tMediaClipOrderDetails">
+              <PropertyRef Name="OrderDetailsId" />
+            </Principal>
+            <Dependent Role="tMediaClipOrderExtrinsic">
+              <PropertyRef Name="MediaClipOrderDetailsId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="MediaClipModelStoreContainer">
+          <EntitySet Name="tCustomer" EntityType="Self.tCustomer" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tMediaClipOrder" EntityType="Self.tMediaClipOrder" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tMediaClipOrderDetails" EntityType="Self.tMediaClipOrderDetails" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tMediaClipOrderExtrinsic" EntityType="Self.tMediaClipOrderExtrinsic" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_tMediaClipOrder_tCustomer" Association="Self.FK_tMediaClipOrder_tCustomer">
+            <End Role="tCustomer" EntitySet="tCustomer" />
+            <End Role="tMediaClipOrder" EntitySet="tMediaClipOrder" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tMediaClipOrderDetails_tMediaClipOrder" Association="Self.FK_tMediaClipOrderDetails_tMediaClipOrder">
+            <End Role="tMediaClipOrder" EntitySet="tMediaClipOrder" />
+            <End Role="tMediaClipOrderDetails" EntitySet="tMediaClipOrderDetails" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tMediaClipOrderExtrinsic_tMediaClipOrderDetails" Association="Self.FK_tMediaClipOrderExtrinsic_tMediaClipOrderDetails">
+            <End Role="tMediaClipOrderDetails" EntitySet="tMediaClipOrderDetails" />
+            <End Role="tMediaClipOrderExtrinsic" EntitySet="tMediaClipOrderExtrinsic" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="MediaClipModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="tCustomer">
+          <Key>
+            <PropertyRef Name="CustomerId" />
+          </Key>
+          <Property Name="CustomerId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CustomerName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="tMediaClipOrder" Relationship="Self.FK_tMediaClipOrder_tCustomer" FromRole="tCustomer" ToRole="tMediaClipOrder" />
+        </EntityType>
+        <EntityType Name="tMediaClipOrder">
+          <Key>
+            <PropertyRef Name="OrderId" />
+          </Key>
+          <Property Name="OrderId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CustomerId" Type="Int32" Nullable="false" />
+          <Property Name="OrderDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="orderNumber" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="tCustomer" Relationship="Self.FK_tMediaClipOrder_tCustomer" FromRole="tMediaClipOrder" ToRole="tCustomer" />
+          <NavigationProperty Name="tMediaClipOrderDetails" Relationship="Self.FK_tMediaClipOrderDetails_tMediaClipOrder" FromRole="tMediaClipOrder" ToRole="tMediaClipOrderDetails" />
+        </EntityType>
+        <EntityType Name="tMediaClipOrderDetails">
+          <Key>
+            <PropertyRef Name="OrderDetailsId" />
+          </Key>
+          <Property Name="OrderDetailsId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="MediaClipOrderId" Type="Int64" Nullable="false" />
+          <Property Name="SupplierPartAuxilliaryId" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="LineNumber" Type="Int32" Nullable="false" />
+          <Property Name="Quantity" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="tMediaClipOrder" Relationship="Self.FK_tMediaClipOrderDetails_tMediaClipOrder" FromRole="tMediaClipOrderDetails" ToRole="tMediaClipOrder" />
+          <NavigationProperty Name="tMediaClipOrderExtrinsic" Relationship="Self.FK_tMediaClipOrderExtrinsic_tMediaClipOrderDetails" FromRole="tMediaClipOrderDetails" ToRole="tMediaClipOrderExtrinsic" />
+        </EntityType>
+        <EntityType Name="tMediaClipOrderExtrinsic">
+          <Key>
+            <PropertyRef Name="ExtrinsicId" />
+          </Key>
+          <Property Name="ExtrinsicId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="MediaClipOrderDetailsId" Type="Int64" Nullable="false" />
+          <Property Name="ExtrinsicName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ExtrinsicValue" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="tMediaClipOrderDetails" Relationship="Self.FK_tMediaClipOrderExtrinsic_tMediaClipOrderDetails" FromRole="tMediaClipOrderExtrinsic" ToRole="tMediaClipOrderDetails" />
+        </EntityType>
+        <Association Name="FK_tMediaClipOrder_tCustomer">
+          <End Role="tCustomer" Type="Self.tCustomer" Multiplicity="1" />
+          <End Role="tMediaClipOrder" Type="Self.tMediaClipOrder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tCustomer">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="tMediaClipOrder">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tMediaClipOrderDetails_tMediaClipOrder">
+          <End Role="tMediaClipOrder" Type="Self.tMediaClipOrder" Multiplicity="1" />
+          <End Role="tMediaClipOrderDetails" Type="Self.tMediaClipOrderDetails" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tMediaClipOrder">
+              <PropertyRef Name="OrderId" />
+            </Principal>
+            <Dependent Role="tMediaClipOrderDetails">
+              <PropertyRef Name="MediaClipOrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tMediaClipOrderExtrinsic_tMediaClipOrderDetails">
+          <End Role="tMediaClipOrderDetails" Type="Self.tMediaClipOrderDetails" Multiplicity="1" />
+          <End Role="tMediaClipOrderExtrinsic" Type="Self.tMediaClipOrderExtrinsic" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tMediaClipOrderDetails">
+              <PropertyRef Name="OrderDetailsId" />
+            </Principal>
+            <Dependent Role="tMediaClipOrderExtrinsic">
+              <PropertyRef Name="MediaClipOrderDetailsId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="MediaClipEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="tCustomer" EntityType="Self.tCustomer" />
+          <EntitySet Name="tMediaClipOrder" EntityType="Self.tMediaClipOrder" />
+          <EntitySet Name="tMediaClipOrderDetails" EntityType="Self.tMediaClipOrderDetails" />
+          <EntitySet Name="tMediaClipOrderExtrinsic" EntityType="Self.tMediaClipOrderExtrinsic" />
+          <AssociationSet Name="FK_tMediaClipOrder_tCustomer" Association="Self.FK_tMediaClipOrder_tCustomer">
+            <End Role="tCustomer" EntitySet="tCustomer" />
+            <End Role="tMediaClipOrder" EntitySet="tMediaClipOrder" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tMediaClipOrderDetails_tMediaClipOrder" Association="Self.FK_tMediaClipOrderDetails_tMediaClipOrder">
+            <End Role="tMediaClipOrder" EntitySet="tMediaClipOrder" />
+            <End Role="tMediaClipOrderDetails" EntitySet="tMediaClipOrderDetails" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tMediaClipOrderExtrinsic_tMediaClipOrderDetails" Association="Self.FK_tMediaClipOrderExtrinsic_tMediaClipOrderDetails">
+            <End Role="tMediaClipOrderDetails" EntitySet="tMediaClipOrderDetails" />
+            <End Role="tMediaClipOrderExtrinsic" EntitySet="tMediaClipOrderExtrinsic" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="MediaClipModelStoreContainer" CdmEntityContainer="MediaClipEntities">
+          <EntitySetMapping Name="tCustomer">
+            <EntityTypeMapping TypeName="MediaClipModel.tCustomer">
+              <MappingFragment StoreEntitySet="tCustomer">
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="CustomerName" ColumnName="CustomerName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tMediaClipOrder">
+            <EntityTypeMapping TypeName="MediaClipModel.tMediaClipOrder">
+              <MappingFragment StoreEntitySet="tMediaClipOrder">
+                <ScalarProperty Name="OrderId" ColumnName="OrderId" />
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="OrderDate" ColumnName="OrderDate" />
+                <ScalarProperty Name="orderNumber" ColumnName="orderNumber" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tMediaClipOrderDetails">
+            <EntityTypeMapping TypeName="MediaClipModel.tMediaClipOrderDetails">
+              <MappingFragment StoreEntitySet="tMediaClipOrderDetails">
+                <ScalarProperty Name="OrderDetailsId" ColumnName="OrderDetailsId" />
+                <ScalarProperty Name="MediaClipOrderId" ColumnName="MediaClipOrderId" />
+                <ScalarProperty Name="SupplierPartAuxilliaryId" ColumnName="SupplierPartAuxilliaryId" />
+                <ScalarProperty Name="LineNumber" ColumnName="LineNumber" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tMediaClipOrderExtrinsic">
+            <EntityTypeMapping TypeName="MediaClipModel.tMediaClipOrderExtrinsic">
+              <MappingFragment StoreEntitySet="tMediaClipOrderExtrinsic">
+                <ScalarProperty Name="ExtrinsicId" ColumnName="ExtrinsicId" />
+                <ScalarProperty Name="MediaClipOrderDetailsId" ColumnName="MediaClipOrderDetailsId" />
+                <ScalarProperty Name="ExtrinsicName" ColumnName="ExtrinsicName" />
+                <ScalarProperty Name="ExtrinsicValue" ColumnName="ExtrinsicValue" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
