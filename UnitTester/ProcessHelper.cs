@@ -403,55 +403,11 @@ namespace ChateauSiteFlowApp
                 var hasMediaClipItem = false;
                 hasMediaClipItem = ContainsMediaClipItem(jsonObject);
 
-                if (hasMediaClipItem)
-                {
-                    //read from database
-                    //download and save pdf to local with name
-                    //_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) +".PDF")
-
-                    foreach (var item in jsonObject.orderData.items)
-                    {
-                        if (!string.IsNullOrEmpty(item.supplierPartAuxiliaryId))
-                        {
-                            var orderDetails = _mediaClipEntities.tMediaClipOrderDetails.FirstOrDefault(m => m.SupplierPartAuxilliaryId == item.supplierPartAuxiliaryId && m.LineNumber == item.mediaclipLineNumber);
-
-                            var extrinsicDetails = _mediaClipEntities.tMediaClipOrderExtrinsic.Where(e => e.MediaClipOrderDetailsId == orderDetails.OrderDetailsId).ToList();
-
-                            foreach (var component in item.components)
-                            {
-                                var path = component.path;
-                                var coverOrText = component.code;
-
-                                if (coverOrText == "Cover")
-                                {
-                                    var coverExtrinsic = extrinsicDetails.FirstOrDefault(x => x.ExtrinsicName.Contains("cover"));
-
-                                    DownloadPdf(coverExtrinsic.ExtrinsicValue,
-                                        _localProcessingPath + "/PDFS/" + jsonObject.orderData.sourceOrderId + "-" +
-                                        (1) + ".PDF");
-
-
-                                }
-                                else
-                                {
-                                    var pageExtrinsic = extrinsicDetails.FirstOrDefault(x => x.ExtrinsicName.Contains("pages"));
-
-                                    DownloadPdf(pageExtrinsic.ExtrinsicValue,
-                                        _localProcessingPath + "/PDFS/" + jsonObject.orderData.sourceOrderId + "-" +
-                                        (2) + ".PDF");
-                                }
-                            }
-                        }
-                    }
-                }
+                MediaClipFilesDownload(hasMediaClipItem, jsonObject);
 
                 var customerName = "";
 
-                if (jsonObject.orderData.shipments.Count > 0)
-                {
-                    customerName = jsonObject.orderData.shipments[0].shipTo.name;
-                    jsonObject.orderData.customerName = customerName;
-                }
+                customerName = SetCustomerName(jsonObject, customerName);
 
                 var sourceOrderId = "";
                 try
@@ -995,6 +951,63 @@ namespace ChateauSiteFlowApp
             }
 
             return processingSummary;
+        }
+
+        private static string SetCustomerName(SiteflowOrder.RootObject jsonObject, string customerName)
+        {
+            if (jsonObject.orderData.shipments.Count > 0)
+            {
+                customerName = jsonObject.orderData.shipments[0].shipTo.name;
+                jsonObject.orderData.customerName = customerName;
+            }
+
+            return customerName;
+        }
+
+        private void MediaClipFilesDownload(bool hasMediaClipItem, SiteflowOrder.RootObject jsonObject)
+        {
+            if (hasMediaClipItem)
+            {
+                //read from database
+                //download and save pdf to local with name
+                //_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) +".PDF")
+
+                foreach (var item in jsonObject.orderData.items)
+                {
+                    if (!string.IsNullOrEmpty(item.supplierPartAuxiliaryId))
+                    {
+                        var orderDetails = _mediaClipEntities.tMediaClipOrderDetails.FirstOrDefault(m =>
+                            m.SupplierPartAuxilliaryId == item.supplierPartAuxiliaryId &&
+                            m.LineNumber == item.mediaclipLineNumber);
+
+                        var extrinsicDetails = _mediaClipEntities.tMediaClipOrderExtrinsic
+                            .Where(e => e.MediaClipOrderDetailsId == orderDetails.OrderDetailsId).ToList();
+
+                        foreach (var component in item.components)
+                        {
+                            var path = component.path;
+                            var coverOrText = component.code;
+
+                            if (coverOrText == "Cover")
+                            {
+                                var coverExtrinsic = extrinsicDetails.FirstOrDefault(x => x.ExtrinsicName.Contains("cover"));
+
+                                DownloadPdf(coverExtrinsic.ExtrinsicValue,
+                                    _localProcessingPath + "/PDFS/" + jsonObject.orderData.sourceOrderId + "-" +
+                                    (1) + ".PDF");
+                            }
+                            else
+                            {
+                                var pageExtrinsic = extrinsicDetails.FirstOrDefault(x => x.ExtrinsicName.Contains("pages"));
+
+                                DownloadPdf(pageExtrinsic.ExtrinsicValue,
+                                    _localProcessingPath + "/PDFS/" + jsonObject.orderData.sourceOrderId + "-" +
+                                    (2) + ".PDF");
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         private static void SetRushOrderForChateauHelp(SiteflowOrder.RootObject jsonObject)
