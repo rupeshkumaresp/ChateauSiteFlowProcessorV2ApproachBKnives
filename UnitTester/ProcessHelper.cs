@@ -502,13 +502,9 @@ namespace ChateauSiteFlowApp
                         if (string.IsNullOrEmpty(sku))
                         {
                             if (processingSummary.ContainsKey(sourceOrderId))
-                            {
                                 processingSummary[sourceOrderId] += "NULL SKU - Order failed";
-                            }
                             else
-                            {
                                 processingSummary.Add(sourceOrderId, "NULL SKU - Order failed");
-                            }
 
                             break;
                         }
@@ -562,13 +558,9 @@ namespace ChateauSiteFlowApp
                                     staticPdfPath + pdfName + " not found in static folder");
 
                                 if (processingSummary.ContainsKey(sourceOrderId))
-                                {
                                     processingSummary[sourceOrderId] += "Order failed";
-                                }
                                 else
-                                {
                                     processingSummary.Add(sourceOrderId, "Order failed");
-                                }
 
                                 continue;
                             }
@@ -628,92 +620,13 @@ namespace ChateauSiteFlowApp
 
                         if (sku == "Bag-Chateau" || sku == "Apron-Chateau")
                         {
-                            if (!Directory.Exists(@"\\192.168.0.84\TheChateauTV\DyeSubChateau\" + substrate + @"\Artwork\"))
-                                Directory.CreateDirectory(@"\\192.168.0.84\TheChateauTV\DyeSubChateau\" + substrate + @"\Artwork\");
-
-                            if (!Directory.Exists(@"\\192.168.0.84\TheChateauTV\DyeSubChateau\" + substrate + @"\Label\"))
-                                Directory.CreateDirectory(@"\\192.168.0.84\TheChateauTV\DyeSubChateau\" + substrate + @"\Label\");
-
-                            //artwork
-                            for (int i = 1; i <= qty; i++)
-                            {
-                                var artworkFileName =
-                                    @"\\192.168.0.84\TheChateauTV\DyeSubChateau\" + substrate + @"\Artwork\" + orderbarcode +
-                                    "_Artwork_" + i.ToString() + ".pdf";
-                                File.Copy(orderfileName, artworkFileName, true);
-                            }
-
-                            File.Copy(orderfileName, finalPdfPath, true);
-
-                            //label
-                            for (int i = 1; i <= qty; i++)
-                            {
-                                var labelFileName = @"\\192.168.0.84\TheChateauTV\DyeSubChateau\" + substrate + @"\Label\" + orderbarcode +
-                                                    "_Label_" + i.ToString() + ".pdf";
-
-                                var qtyString = i.ToString() + " of " + qty.ToString();
-
-                                _pdfModificationHelper.ChateauBagApronLabelGeneration(labelFileName, substrate,
-                                    orderbarcode, orderorderId, qtyString);
-                            }
-
-                            _orderHelper.AddOrderItem(orderId, sku, sourceItemId, qty, substrate, finalPdfPath);
-
-                            item.components[0].path =
-                                "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
-                                "_" + orderbarcode + ".PDF";
-
+                            BagApronChateauProcesing(substrate, qty, orderbarcode, orderfileName, finalPdfPath, orderorderId, orderId, sku, sourceItemId, item);
                         }
                         else
                         {
                             if (etchedProductCandle)
                             {
-                                //generate the PDF and save to  \\192.168.0.84\TheChateauTV\Candle_Labels\barcode.pdf
-                                //Scent = “The Orangery” and "Walled Garden"
-                                // 54x25mm
-
-                                string orderfileNameUnRotated = pdfPath + sourceItemId + "_NO_ROT.PDF";
-
-                                File.Copy(orderfileName, orderfileNameUnRotated, true);
-
-                                File.Delete(orderfileName);
-
-                                _pdfModificationHelper.RotatePDF(orderfileNameUnRotated, orderfileName, 270);
-
-                                if (!Directory.Exists(@"\\192.168.0.84\TheChateauTV\Candles\Artwork\"))
-                                    Directory.CreateDirectory(@"\\192.168.0.84\TheChateauTV\Candles\Artwork\");
-
-                                if (!Directory.Exists(@"\\192.168.0.84\TheChateauTV\Candles\Label\"))
-                                    Directory.CreateDirectory(@"\\192.168.0.84\TheChateauTV\Candles\Label\");
-
-                                //artwork
-                                for (int i = 1; i <= qty; i++)
-                                {
-                                    var artworkFileName =
-                                        @"\\192.168.0.84\TheChateauTV\Candles\Artwork\" + orderbarcode +
-                                        "_Artwork_" + i.ToString() + ".pdf";
-                                    File.Copy(orderfileName, artworkFileName, true);
-                                }
-
-                                File.Copy(orderfileName, finalPdfPath, true);
-
-                                //label
-                                for (int i = 1; i <= qty; i++)
-                                {
-                                    var labelFileName = @"\\192.168.0.84\TheChateauTV\Candles\Label\" + orderbarcode +
-                                                        "_Label_" + i.ToString() + ".pdf";
-
-                                    var qtyString = i.ToString() + " of " + qty.ToString();
-
-                                    _pdfModificationHelper.ChateauCandleLabelGeneration(labelFileName, substrate,
-                                        orderbarcode, orderorderId, qtyString);
-                                }
-
-                                _orderHelper.AddOrderItem(orderId, sku, sourceItemId, qty, substrate, finalPdfPath);
-
-                                item.components[0].path =
-                                    "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
-                                    "_" + orderbarcode + ".PDF";
+                                EtchedCandleProcessing(pdfPath, sourceItemId, orderfileName, qty, orderbarcode, finalPdfPath, substrate, orderorderId, orderId, sku, item);
                             }
                             else
                             {
@@ -754,45 +667,16 @@ namespace ChateauSiteFlowApp
                                         //Belfield needs processing
                                         if (sku == "Belfield-Chateau" || sku == "BelfieldFabric-Chateau")
                                         {
-                                            var artworkPathBelfield =
-                                                "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
-                                                "_" + orderbarcode + ".PDF";
-
-                                            //dump to database for impostions and processing
-                                            DumpBelfieldToDatabase(sku, item, orderId, sourceOrderId, sourceItemId,
-                                                orderbarcode, artworkPathBelfield);
-
-                                            //modify the PDF
-                                            _pdfModificationHelper.BelfieldPDFProcessing(orderfileName, orderbarcode,
-                                                orderorderId);
-
-                                            //copy to holiding folder based on quantity for impositions
-
-                                            var holdingFolderDir =
-                                                ConfigurationManager.AppSettings["BelfieldHolidingFolderPath"];
-
-                                            if (!Directory.Exists(holdingFolderDir))
-                                                Directory.CreateDirectory(holdingFolderDir);
-
-                                            for (int i = 1; i <= qty; i++)
-                                            {
-                                                File.Copy(orderfileName,
-                                                    holdingFolderDir + orderorderId + "_" + orderbarcode + "_" + i +
-                                                    ".PDF",
-                                                    true);
-                                            }
-
+                                            BelfieldProcessingInit(orderorderId, orderbarcode, sku, item, orderId, sourceOrderId, sourceItemId, orderfileName, qty);
                                         }
 
                                         File.Copy(orderfileName,
                                             originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode +
                                             ".PDF",
                                             true);
-
                                     }
                                     else
                                     {
-
                                         if (sku == "ChildBook-Chateau")
                                         {
                                             ChateauChildBookProcessing(item, sourceOrderId, pdfCount, finalPdfPath,
@@ -824,10 +708,7 @@ namespace ChateauSiteFlowApp
                                                 {
                                                     try
                                                     {
-                                                        finalPdfPath = ChateauStationerySetProcessing(item,
-                                                            finalPdfPath,
-                                                            orderorderId, orderbarcode, customerName,
-                                                            processingSummary);
+                                                        finalPdfPath = ChateauStationerySetProcessing(item, finalPdfPath, orderorderId, orderbarcode, customerName, processingSummary);
                                                     }
                                                     catch (Exception e)
                                                     {
@@ -904,7 +785,6 @@ namespace ChateauSiteFlowApp
 
                     RemovePreOrderItem(orderContainsPreOrderAndOtherProducts, jsonObject, preOrderJsonItems);
 
-
                     //check for help@thechateau.tv email and set RUSH as rush
 
                     SetRushOrderForChateauHelp(jsonObject);
@@ -951,6 +831,129 @@ namespace ChateauSiteFlowApp
             }
 
             return processingSummary;
+        }
+
+        private void BelfieldProcessingInit(string orderorderId, string orderbarcode, string sku, SiteflowOrder.Item item, long orderId,
+            string sourceOrderId, string sourceItemId, string orderfileName, int qty)
+        {
+            var artworkPathBelfield =
+                "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
+                "_" + orderbarcode + ".PDF";
+
+            //dump to database for impostions and processing
+            DumpBelfieldToDatabase(sku, item, orderId, sourceOrderId, sourceItemId,
+                orderbarcode, artworkPathBelfield);
+
+            //modify the PDF
+            _pdfModificationHelper.BelfieldPDFProcessing(orderfileName, orderbarcode,
+                orderorderId);
+
+            //copy to holiding folder based on quantity for impositions
+
+            var holdingFolderDir =
+                ConfigurationManager.AppSettings["BelfieldHolidingFolderPath"];
+
+            if (!Directory.Exists(holdingFolderDir))
+                Directory.CreateDirectory(holdingFolderDir);
+
+            for (int i = 1; i <= qty; i++)
+            {
+                File.Copy(orderfileName,
+                    holdingFolderDir + orderorderId + "_" + orderbarcode + "_" + i +
+                    ".PDF",
+                    true);
+            }
+        }
+
+        private void EtchedCandleProcessing(string pdfPath, string sourceItemId, string orderfileName, int qty,
+            string orderbarcode, string finalPdfPath, string substrate, string orderorderId, long orderId, string sku,
+            SiteflowOrder.Item item)
+        {
+            //generate the PDF and save to  \\192.168.0.84\TheChateauTV\Candle_Labels\barcode.pdf
+            //Scent = “The Orangery” and "Walled Garden"
+            // 54x25mm
+
+            string orderfileNameUnRotated = pdfPath + sourceItemId + "_NO_ROT.PDF";
+
+            File.Copy(orderfileName, orderfileNameUnRotated, true);
+
+            File.Delete(orderfileName);
+
+            _pdfModificationHelper.RotatePDF(orderfileNameUnRotated, orderfileName, 270);
+
+            if (!Directory.Exists(@"\\192.168.0.84\TheChateauTV\Candles\Artwork\"))
+                Directory.CreateDirectory(@"\\192.168.0.84\TheChateauTV\Candles\Artwork\");
+
+            if (!Directory.Exists(@"\\192.168.0.84\TheChateauTV\Candles\Label\"))
+                Directory.CreateDirectory(@"\\192.168.0.84\TheChateauTV\Candles\Label\");
+
+            //artwork
+            for (int i = 1; i <= qty; i++)
+            {
+                var artworkFileName =
+                    @"\\192.168.0.84\TheChateauTV\Candles\Artwork\" + orderbarcode +
+                    "_Artwork_" + i.ToString() + ".pdf";
+                File.Copy(orderfileName, artworkFileName, true);
+            }
+
+            File.Copy(orderfileName, finalPdfPath, true);
+
+            //label
+            for (int i = 1; i <= qty; i++)
+            {
+                var labelFileName = @"\\192.168.0.84\TheChateauTV\Candles\Label\" + orderbarcode +
+                                    "_Label_" + i.ToString() + ".pdf";
+
+                var qtyString = i.ToString() + " of " + qty.ToString();
+
+                _pdfModificationHelper.ChateauCandleLabelGeneration(labelFileName, substrate,
+                    orderbarcode, orderorderId, qtyString);
+            }
+
+            _orderHelper.AddOrderItem(orderId, sku, sourceItemId, qty, substrate, finalPdfPath);
+
+            item.components[0].path =
+                "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
+                "_" + orderbarcode + ".PDF";
+        }
+
+        private void BagApronChateauProcesing(string substrate, int qty, string orderbarcode, string orderfileName,
+            string finalPdfPath, string orderorderId, long orderId, string sku, string sourceItemId, SiteflowOrder.Item item)
+        {
+            if (!Directory.Exists(@"\\192.168.0.84\TheChateauTV\DyeSubChateau\" + substrate + @"\Artwork\"))
+                Directory.CreateDirectory(@"\\192.168.0.84\TheChateauTV\DyeSubChateau\" + substrate + @"\Artwork\");
+
+            if (!Directory.Exists(@"\\192.168.0.84\TheChateauTV\DyeSubChateau\" + substrate + @"\Label\"))
+                Directory.CreateDirectory(@"\\192.168.0.84\TheChateauTV\DyeSubChateau\" + substrate + @"\Label\");
+
+            //artwork
+            for (int i = 1; i <= qty; i++)
+            {
+                var artworkFileName =
+                    @"\\192.168.0.84\TheChateauTV\DyeSubChateau\" + substrate + @"\Artwork\" + orderbarcode +
+                    "_Artwork_" + i.ToString() + ".pdf";
+                File.Copy(orderfileName, artworkFileName, true);
+            }
+
+            File.Copy(orderfileName, finalPdfPath, true);
+
+            //label
+            for (int i = 1; i <= qty; i++)
+            {
+                var labelFileName = @"\\192.168.0.84\TheChateauTV\DyeSubChateau\" + substrate + @"\Label\" + orderbarcode +
+                                    "_Label_" + i.ToString() + ".pdf";
+
+                var qtyString = i.ToString() + " of " + qty.ToString();
+
+                _pdfModificationHelper.ChateauBagApronLabelGeneration(labelFileName, substrate,
+                    orderbarcode, orderorderId, qtyString);
+            }
+
+            _orderHelper.AddOrderItem(orderId, sku, sourceItemId, qty, substrate, finalPdfPath);
+
+            item.components[0].path =
+                "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
+                "_" + orderbarcode + ".PDF";
         }
 
         private static string SetCustomerName(SiteflowOrder.RootObject jsonObject, string customerName)
