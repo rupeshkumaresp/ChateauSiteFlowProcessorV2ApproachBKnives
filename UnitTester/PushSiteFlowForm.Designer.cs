@@ -1,4 +1,4 @@
-﻿namespace ChateauSiteFlowApp
+﻿namespace PicsMeSiteFlowApp
 {
     partial class PushSiteFlowForm
     {
@@ -37,7 +37,7 @@
             this.ClientSize = new System.Drawing.Size(351, 280);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "PushSiteFlowForm";
-            this.Text = "Chateau III Service";
+            this.Text = "PicsMe III Service";
             this.Load += new System.EventHandler(this.UnitTestForm_Load);
             this.ResumeLayout(false);
 

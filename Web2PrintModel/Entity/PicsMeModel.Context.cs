@@ -7,16 +7,16 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ChateauEntity.Entity
+namespace PicsMeEntity.Entity
 {
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class Chateau_V2Entities : DbContext
+    public partial class PicsMeEntities : DbContext
     {
-        public Chateau_V2Entities()
-            : base("name=Chateau_V2Entities")
+        public PicsMeEntities()
+            : base("name=PicsMeEntities")
         {
         }
     
@@ -25,13 +25,7 @@ namespace ChateauEntity.Entity
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<tAdminUsers> tAdminUsers { get; set; }
-        public virtual DbSet<tChateauKnives> tChateauKnives { get; set; }
         public virtual DbSet<tOrderDetails> tOrderDetails { get; set; }
         public virtual DbSet<tOrders> tOrders { get; set; }
-        public virtual DbSet<tSiteFlowOrderPushManual> tSiteFlowOrderPushManual { get; set; }
-        public virtual DbSet<tSiteFlowResponse> tSiteFlowResponse { get; set; }
-        public virtual DbSet<tChateauBelfield> tChateauBelfield { get; set; }
-        public virtual DbSet<tChateauPreOrder> tChateauPreOrder { get; set; }
     }
 }

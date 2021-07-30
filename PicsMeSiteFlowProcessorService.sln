@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChateauEntity", "Web2PrintModel\ChateauEntity.csproj", "{DB4FE651-5E1C-47F2-901C-04164E69ACD8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PicsMeEntity", "Web2PrintModel\PicsMeEntity.csproj", "{DB4FE651-5E1C-47F2-901C-04164E69ACD8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChateauSiteFlowApp", "UnitTester\ChateauSiteFlowApp.csproj", "{8E954C51-F1EA-49F4-95B4-C20C6922B698}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PicsMeSiteFlowApp", "UnitTester\PicsMeSiteFlowApp.csproj", "{8E954C51-F1EA-49F4-95B4-C20C6922B698}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiteFlowHelper", "SiteFlowHelper\SiteFlowHelper.csproj", "{523E54F3-A8D2-4C12-AD86-BDB463D28210}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChateauOrderHelper", "ChateauOrderHelper\ChateauOrderHelper.csproj", "{425747A3-0035-4DFE-8A74-A4A5A418CED2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PicsMeOrderHelper", "ChateauOrderHelper\PicsMeOrderHelper.csproj", "{425747A3-0035-4DFE-8A74-A4A5A418CED2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpreadsheetReaderLibrary", "SpreadsheetReaderLibrary\SpreadsheetReaderLibrary.csproj", "{8DA411F9-662F-43CD-8FAA-10F79C532EA7}"
 EndProject

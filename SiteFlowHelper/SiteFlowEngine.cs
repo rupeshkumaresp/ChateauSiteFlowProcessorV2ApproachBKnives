@@ -1,4 +1,4 @@
-﻿using ChateauOrderHelper;
+﻿using PicsMeOrderHelper;
 using SiteFlowHelper.Interface;
 using System;
 using System.IO;
@@ -71,14 +71,14 @@ namespace SiteFlowHelper
                     }
                     else
                     {
-                        _orderHelper.WriteLog("SiteFlow order submission- failed, Error: " + response.ReasonPhrase, Convert.ToInt64(orderId));
+                       // _orderHelper.WriteLog("SiteFlow order submission- failed, Error: " + response.ReasonPhrase, Convert.ToInt64(orderId));
                     }
                 }
                 catch (Exception ex)
                 {
 
                     var msg = ex.Message;
-                    _orderHelper.WriteLog("SiteFlow order submission- failed, Error: " + ex.Message, Convert.ToInt64(orderId));
+                    //_orderHelper.WriteLog("SiteFlow order submission- failed, Error: " + ex.Message, Convert.ToInt64(orderId));
 
                 }
             }

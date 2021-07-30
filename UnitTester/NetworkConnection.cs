@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Net;
 using System.Runtime.InteropServices;
 
-namespace ChateauSiteFlowApp
+namespace PicsMeSiteFlowApp
 {
     public class NetworkConnection : IDisposable
     {

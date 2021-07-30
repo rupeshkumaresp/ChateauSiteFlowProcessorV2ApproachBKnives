@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ChateauEntity.Entity
+namespace PicsMeEntity.Entity
 {
     using System;
     using System.Collections.Generic;

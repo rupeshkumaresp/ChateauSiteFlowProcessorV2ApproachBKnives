@@ -4,7 +4,7 @@ using System.IO;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 
-namespace ChateauSiteFlowApp
+namespace PicsMeSiteFlowApp
 {
     public static class PdfMerger
     {

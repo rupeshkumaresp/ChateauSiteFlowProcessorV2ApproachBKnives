@@ -88,13 +88,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ChateauOrderHelper\ChateauOrderHelper.csproj">
+    <ProjectReference Include="..\ChateauOrderHelper\PicsMeOrderHelper.csproj">
       <Project>{425747a3-0035-4dfe-8a74-a4a5a418ced2}</Project>
-      <Name>ChateauOrderHelper</Name>
+      <Name>PicsMeOrderHelper</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Web2PrintModel\ChateauEntity.csproj">
+    <ProjectReference Include="..\Web2PrintModel\PicsMeEntity.csproj">
       <Project>{db4fe651-5e1c-47f2-901c-04164e69acd8}</Project>
-      <Name>ChateauEntity</Name>
+      <Name>PicsMeEntity</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -4,7 +4,7 @@ using System.IO;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
 
-namespace ChateauSiteFlowApp
+namespace PicsMeSiteFlowApp
 {
     /// <summary>
     /// EMAIL ENGINE - SEND PROCESSING SUMMARY 
@@ -36,7 +36,7 @@ namespace ChateauSiteFlowApp
             @"<p>
     	Hi,</p>
         <p>
-	        Please find attached today's Chateau Belfield order spreadsheet. </p>       
+	        Please find attached today's PicsMe Belfield order spreadsheet. </p>       
         
            <p>
 	        Please connect to SFTP to access the imposed PDF file. </p>       
@@ -90,7 +90,7 @@ namespace ChateauSiteFlowApp
             @"<p>
     	Hi,</p>
         <p>
-	        Chateau Knives report has been copied to FTP. Please login and access the report from FTP. </p>       
+	        PicsMe Knives report has been copied to FTP. Please login and access the report from FTP. </p>       
         
         <p>
 	        &nbsp;</p>
@@ -125,7 +125,7 @@ namespace ChateauSiteFlowApp
             @"<p>
     	Hi,</p>
         <p>
-	        Please find below processing summary for Chateau Welcome Card orders:</p>       
+	        Please find below processing summary for PicsMe Welcome Card orders:</p>       
         <p>
 	        [ORDERSTATUS]</p>
         
@@ -199,7 +199,7 @@ namespace ChateauSiteFlowApp
                 if (string.IsNullOrEmpty(emails[i]))
                     continue;
 
-                SendMailWithAttachment(emails[i], "Chateau Pre-Order Report - " + DateTime.Now.ToShortDateString(), defaultMessage, path);
+                SendMailWithAttachment(emails[i], "PicsMe Pre-Order Report - " + DateTime.Now.ToShortDateString(), defaultMessage, path);
             }
 
         }
@@ -218,7 +218,7 @@ namespace ChateauSiteFlowApp
                 if (string.IsNullOrEmpty(emails[i]))
                     continue;
 
-                SendMailWithAttachment(emails[i], "Chateau Knives order Report - " + DateTime.Now.ToShortDateString(), defaultMessage, "");
+                SendMailWithAttachment(emails[i], "PicsMe Knives order Report - " + DateTime.Now.ToShortDateString(), defaultMessage, "");
             }
 
         }
@@ -236,7 +236,7 @@ namespace ChateauSiteFlowApp
                 if (string.IsNullOrEmpty(emails[i]))
                     continue;
 
-                SendMailWithAttachment(emails[i], "Chateau Belfield order Report - " + DateTime.Now.ToShortDateString(), defaultMessage, path, mergedLabel);
+                SendMailWithAttachment(emails[i], "PicsMe Belfield order Report - " + DateTime.Now.ToShortDateString(), defaultMessage, path, mergedLabel);
             }
 
         }
@@ -256,7 +256,7 @@ namespace ChateauSiteFlowApp
                 if (string.IsNullOrEmpty(emails[i]))
                     continue;
 
-                SendMailWithAttachment(emails[i], "Chateau Belfield Error - Action needed " + DateTime.Now.ToShortDateString(), defaultMessage, path);
+                SendMailWithAttachment(emails[i], "PicsMe Belfield Error - Action needed " + DateTime.Now.ToShortDateString(), defaultMessage, path);
             }
         }
 
@@ -273,7 +273,7 @@ namespace ChateauSiteFlowApp
                 if (string.IsNullOrEmpty(emails[i]))
                     continue;
 
-                SendMailWithAttachment(emails[i], "Chateau Belfield Error - No Prinergy Impostions- " + DateTime.Now.ToShortDateString(), defaultMessage, path);
+                SendMailWithAttachment(emails[i], "PicsMe Belfield Error - No Prinergy Impostions- " + DateTime.Now.ToShortDateString(), defaultMessage, path);
             }
 
         }

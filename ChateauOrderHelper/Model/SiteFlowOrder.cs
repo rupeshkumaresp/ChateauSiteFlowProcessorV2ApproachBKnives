@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ChateauOrderHelper.Model
+namespace PicsMeOrderHelper.Model
 {
     [Serializable]
     public class SiteflowOrder

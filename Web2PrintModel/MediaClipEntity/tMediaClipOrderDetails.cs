@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ChateauEntity.MediaClipEntity
+namespace PicsMeEntity.MediaClipEntity
 {
     using System;
     using System.Collections.Generic;

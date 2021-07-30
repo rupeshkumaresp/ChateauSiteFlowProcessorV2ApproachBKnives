@@ -16,7 +16,7 @@ using Rectangle = iTextSharp.text.Rectangle;
 
 
 
-namespace ChateauSiteFlowApp
+namespace PicsMeSiteFlowApp
 {
     /// <summary>
     /// EXTEND PDF – ADD MIRRORED BARCODE
@@ -27,7 +27,7 @@ namespace ChateauSiteFlowApp
 
         static string AsposeLicense = ConfigurationManager.AppSettings["WorkingDirectory"] + ConfigurationManager.AppSettings["ServiceFolderPath"] + @"License/Aspose.Pdf.lic";
 
-        static string ChateauFont = ConfigurationManager.AppSettings["WorkingDirectory"] + ConfigurationManager.AppSettings["ServiceFolderPath"] + @"License/ChateauTitles-Regular.ttf";
+        static string PicsMeFont = ConfigurationManager.AppSettings["WorkingDirectory"] + ConfigurationManager.AppSettings["ServiceFolderPath"] + @"License/PicsMeTitles-Regular.ttf";
 
         public void AddBarcodeImage(string path, string fileName, string substrateName, string barcode, string orderId, string quantity)
         {
@@ -537,7 +537,7 @@ namespace ChateauSiteFlowApp
             AddBarcodeImage(_pdfPath, Path.GetFileName(file), substrateName, barcode, orderId, qty);
         }
 
-        internal void ChateauBagApronLabelGeneration(string labelFileName, string substrate, string orderbarcode, string orderorderId, string qtyString)
+        internal void PicsMeBagApronLabelGeneration(string labelFileName, string substrate, string orderbarcode, string orderorderId, string qtyString)
         {
             //Generate  label of size  54x25mm
 
@@ -723,7 +723,7 @@ namespace ChateauSiteFlowApp
         }
 
 
-        internal void ChateauCandleLabelGeneration(string labelFileName, string substrate, string orderbarcode, string orderorderId, string qtyString)
+        internal void PicsMeCandleLabelGeneration(string labelFileName, string substrate, string orderbarcode, string orderorderId, string qtyString)
         {
             //Generate  label of size  54x25mm
 
@@ -926,7 +926,7 @@ namespace ChateauSiteFlowApp
             }
         }
 
-        public void ChateauChildBookCover(string orderorderId, string inputPDFPath, string coverFileName, Dictionary<string, string> processingSummary)
+        public void PicsMeChildBookCover(string orderorderId, string inputPDFPath, string coverFileName, Dictionary<string, string> processingSummary)
         {
             Aspose.Pdf.License license = new Aspose.Pdf.License();
             license.SetLicense(AsposeLicense);
@@ -958,7 +958,7 @@ namespace ChateauSiteFlowApp
 
         }
 
-        public void ChateauChildBookText(string orderorderId, string inputPDFPath, string TextFileName, Dictionary<string, string> processingSummary)
+        public void PicsMeChildBookText(string orderorderId, string inputPDFPath, string TextFileName, Dictionary<string, string> processingSummary)
         {
             Aspose.Pdf.License license = new Aspose.Pdf.License();
             license.SetLicense(AsposeLicense);
@@ -994,7 +994,7 @@ namespace ChateauSiteFlowApp
         }
 
 
-        public string ChateauStationeryPDFModifications(string orderorderId, string inputPDFPath, string code, string StationeryStyle, string StationeryType, string customerName, int qtyPDF, Dictionary<string, string> processingSummary)
+        public string PicsMeStationeryPDFModifications(string orderorderId, string inputPDFPath, string code, string StationeryStyle, string StationeryType, string customerName, int qtyPDF, Dictionary<string, string> processingSummary)
         {
 
             //50time file copy
@@ -1024,11 +1024,11 @@ namespace ChateauSiteFlowApp
 
             var staticPdfPath = ConfigurationManager.AppSettings["StaticPDFPath"];
 
-            var ChateauStationeryBasePath = Path.Combine(staticPdfPath, "Chateau-Stationery");
+            var PicsMeStationeryBasePath = Path.Combine(staticPdfPath, "PicsMe-Stationery");
 
-            ChateauStationeryBasePath = Path.Combine(ChateauStationeryBasePath, StationeryType);
+            PicsMeStationeryBasePath = Path.Combine(PicsMeStationeryBasePath, StationeryType);
 
-            coverPdfFile = ChateauStationeryBasePath + "//" + StationeryStyle + ".PDF";
+            coverPdfFile = PicsMeStationeryBasePath + "//" + StationeryStyle + ".PDF";
 
             if (!File.Exists(coverPdfFile))
             {
@@ -1060,7 +1060,7 @@ namespace ChateauSiteFlowApp
             }
             return output;
         }
-        public string ChateauStationerySetPDFModifications(string orderorderId, string inputPDFPath, string code, string StationeryStyle, string StationeryType, string customerName, int qtyPDF, Dictionary<string, string> processingSummary)
+        public string PicsMeStationerySetPDFModifications(string orderorderId, string inputPDFPath, string code, string StationeryStyle, string StationeryType, string customerName, int qtyPDF, Dictionary<string, string> processingSummary)
         {
             //50time file copy
             var directory = Path.GetDirectoryName(inputPDFPath);
@@ -1091,11 +1091,11 @@ namespace ChateauSiteFlowApp
 
             var staticPdfPath = ConfigurationManager.AppSettings["StaticPDFPath"];
 
-            var ChateauStationerySetBasePath = Path.Combine(staticPdfPath, "Chateau-Stationery");
+            var PicsMeStationerySetBasePath = Path.Combine(staticPdfPath, "PicsMe-Stationery");
 
-            ChateauStationerySetBasePath = Path.Combine(ChateauStationerySetBasePath, StationeryType);
+            PicsMeStationerySetBasePath = Path.Combine(PicsMeStationerySetBasePath, StationeryType);
 
-            coverPdfFile = ChateauStationerySetBasePath + "//" + StationeryStyle + ".PDF";
+            coverPdfFile = PicsMeStationerySetBasePath + "//" + StationeryStyle + ".PDF";
 
             if (!File.Exists(coverPdfFile))
             {
@@ -1156,7 +1156,7 @@ namespace ChateauSiteFlowApp
 
         private void ReplaceTextInPDF(String input, String result, string FindText1, String newText1, string FindText2, String newText2)
         {
-            Font font = FontRepository.OpenFont(ChateauFont);
+            Font font = FontRepository.OpenFont(PicsMeFont);
 
             Aspose.Pdf.License license = new Aspose.Pdf.License();
             license.SetLicense(AsposeLicense);
@@ -1247,7 +1247,7 @@ namespace ChateauSiteFlowApp
 
         public static void DoFindReplace(string find, Aspose.Pdf.Document pdfDocument, string replace)
         {
-            Font font = FontRepository.OpenFont(ChateauFont);
+            Font font = FontRepository.OpenFont(PicsMeFont);
             if (string.IsNullOrEmpty(replace))
                 replace = "";
 
