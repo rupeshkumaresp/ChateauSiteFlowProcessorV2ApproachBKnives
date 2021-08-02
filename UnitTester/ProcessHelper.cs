@@ -209,7 +209,7 @@ namespace PicsMeSiteFlowApp
             }
         }
 
-       
+
 
         public static void SendProcessingSummaryEmail(Dictionary<string, string> messages)
         {
@@ -335,27 +335,7 @@ namespace PicsMeSiteFlowApp
             }
         }
 
-        public void ManualPushOrdersProcessing()
-        {
-            //var manualPushOrders = _orderHelper.GetOrdersToPushToSiteFlowManual();
 
-            //if (manualPushOrders != null)
-            //{
-            //    foreach (var manualPushOrder in manualPushOrders)
-            //    {
-            //        var orderId = _orderHelper.GetOrderIdFromReference(manualPushOrder);
-
-            //        _siteflowEngine = new SiteFlowEngine(BaseUrlSiteFlow, SiteflowKey, SiteflowSecretKey);
-
-            //        _siteflowEngine.PushOrderToSiteFlow(orderId);
-
-            //        _orderHelper.MarkOrderPushedTositeFlow(manualPushOrder);
-            //    }
-
-            //    //if (manualPushOrders.Count > 0)
-            //    //    _orderHelper.MarkManualSiteFlowProcessingComplete();
-            //}
-        }
 
         public Dictionary<string, string> CreateOrder()
         {
@@ -371,15 +351,532 @@ namespace PicsMeSiteFlowApp
 
             foreach (var jsonFile in jsonFiles)
             {
+                string json = "";
+                SiteflowOrder.RootObject jsonObject = new SiteflowOrder.RootObject();
+                bool exceptionJsonRead = false;
+                try
+                {
+                    jsonObject = ProcessHelper.ReadJsonFile(jsonFile, ref json);
+                }
+                catch (Exception e)
+                {
+                    exceptionJsonRead = true;
+                }
+
+                if (exceptionJsonRead)
+                {
+                    processingSummary.Add(Path.GetFileName(jsonFile.FullName), "JSON structure issue- Order failed");
+                    File.Delete(_localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
+                    continue;
+                }
+
+                var hasMediaClipItem = false;
+                hasMediaClipItem = ContainsMediaClipItem(jsonObject);
+
+                MediaClipFilesDownload(hasMediaClipItem, jsonObject);
+
+                var customerName = "";
+
+                customerName = SetCustomerName(jsonObject, customerName);
+
+                var sourceOrderId = "";
+                try
+                {
+                    sourceOrderId = jsonObject.orderData.sourceOrderId;
+
+                }
+                catch
+                {
+                    processingSummary.Add(Path.GetFileNameWithoutExtension(jsonFile.FullName),
+                        "Error- Json structure issue");
+
+
+                    if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName)))
+                        File.Delete(_localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
+
+                    File.Move(jsonFile.FullName,
+                        _localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
+                    continue;
+
+                }
+
+
+                var itemFound = _orderHelper.DoesOrderExists(sourceOrderId);
+
+                if (itemFound)
+                {
+
+                    if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" +
+                                    Path.GetFileName(jsonFile.FullName)))
+                        File.Delete(_localProcessingPath + "\\ProcessedInput\\" +
+                                    Path.GetFileName(jsonFile.FullName));
+
+                    File.Move(jsonFile.FullName,
+                        _localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
+
+                    processingSummary.Add(sourceOrderId,
+                        "Order exists in database and order has already been pushed to siteflow");
+                    continue;
+                }
+
+                if (jsonObject.orderData.shipments.Count > 0 && jsonObject.orderData.shipments[0].shipTo != null)
+                {
+                    if (string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.address1) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.town) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.postcode))
+                    {
+                        if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName)))
+                            File.Delete(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName));
+
+                        File.Move(jsonFile.FullName,
+                            _localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
+
+                        processingSummary.Add(sourceOrderId, "Error - Incomplete Address");
+                        continue;
+                    }
+                }
+                if (jsonObject.orderData.shipments.Count > 0 && jsonObject.orderData.shipments[0].shipTo != null)
+                {
+                    if (string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.address1) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.town) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.postcode))
+                    {
+                        if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName)))
+                            File.Delete(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName));
+
+                        File.Move(jsonFile.FullName,
+                            _localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
+
+                        processingSummary.Add(sourceOrderId, "Error - Incomplete Address");
+                        continue;
+                    }
+                }
+                if (jsonObject.orderData.shipments.Count > 0 && jsonObject.orderData.shipments[0].shipTo != null)
+                {
+                    if (string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.address1) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.town) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.postcode))
+                    {
+                        if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName)))
+                            File.Delete(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName));
+
+                        File.Move(jsonFile.FullName,
+                            _localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
+
+                        processingSummary.Add(sourceOrderId, "Error - Incomplete Address");
+                        continue;
+                    }
+                }
+                if (jsonObject.orderData.shipments.Count > 0 && jsonObject.orderData.shipments[0].shipTo != null)
+                {
+                    if (string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.address1) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.town) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.postcode))
+                    {
+                        if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName)))
+                            File.Delete(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName));
+
+                        File.Move(jsonFile.FullName,
+                            _localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
+
+                        processingSummary.Add(sourceOrderId, "Error - Incomplete Address");
+                        continue;
+                    }
+                }
+                if (jsonObject.orderData.shipments.Count > 0 && jsonObject.orderData.shipments[0].shipTo != null)
+                {
+                    if (string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.address1) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.town) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.postcode))
+                    {
+                        if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName)))
+                            File.Delete(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName));
+
+                        File.Move(jsonFile.FullName,
+                            _localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
+
+                        processingSummary.Add(sourceOrderId, "Error - Incomplete Address");
+                        continue;
+                    }
+                }
+                if (jsonObject.orderData.shipments.Count > 0 && jsonObject.orderData.shipments[0].shipTo != null)
+                {
+                    if (string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.address1) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.town) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.postcode))
+                    {
+                        if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName)))
+                            File.Delete(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName));
+
+                        File.Move(jsonFile.FullName,
+                            _localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
+
+                        processingSummary.Add(sourceOrderId, "Error - Incomplete Address");
+                        continue;
+                    }
+                }
+                if (jsonObject.orderData.shipments.Count > 0 && jsonObject.orderData.shipments[0].shipTo != null)
+                {
+                    if (string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.address1) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.town) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.postcode))
+                    {
+                        if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName)))
+                            File.Delete(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName));
+
+                        File.Move(jsonFile.FullName,
+                            _localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
+
+                        processingSummary.Add(sourceOrderId, "Error - Incomplete Address");
+                        continue;
+                    }
+                }
+                if (jsonObject.orderData.shipments.Count > 0 && jsonObject.orderData.shipments[0].shipTo != null)
+                {
+                    if (string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.address1) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.town) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.postcode))
+                    {
+                        if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName)))
+                            File.Delete(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName));
+
+                        File.Move(jsonFile.FullName,
+                            _localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
+
+                        processingSummary.Add(sourceOrderId, "Error - Incomplete Address");
+                        continue;
+                    }
+                }
+                if (jsonObject.orderData.shipments.Count > 0 && jsonObject.orderData.shipments[0].shipTo != null)
+                {
+                    if (string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.address1) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.town) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.postcode))
+                    {
+                        if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName)))
+                            File.Delete(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName));
+
+                        File.Move(jsonFile.FullName,
+                            _localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
+
+                        processingSummary.Add(sourceOrderId, "Error - Incomplete Address");
+                        continue;
+                    }
+                }
+                if (jsonObject.orderData.shipments.Count > 0 && jsonObject.orderData.shipments[0].shipTo != null)
+                {
+                    if (string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.address1) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.town) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.postcode))
+                    {
+                        if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName)))
+                            File.Delete(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName));
+
+                        File.Move(jsonFile.FullName,
+                            _localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
+
+                        processingSummary.Add(sourceOrderId, "Error - Incomplete Address");
+                        continue;
+                    }
+                }
+                if (jsonObject.orderData.shipments.Count > 0 && jsonObject.orderData.shipments[0].shipTo != null)
+                {
+                    if (string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.address1) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.town) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.postcode))
+                    {
+                        if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName)))
+                            File.Delete(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName));
+
+                        File.Move(jsonFile.FullName,
+                            _localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
+
+                        processingSummary.Add(sourceOrderId, "Error - Incomplete Address");
+                        continue;
+                    }
+                }
+                if (jsonObject.orderData.shipments.Count > 0 && jsonObject.orderData.shipments[0].shipTo != null)
+                {
+                    if (string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.address1) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.town) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.postcode))
+                    {
+                        if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName)))
+                            File.Delete(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName));
+
+                        File.Move(jsonFile.FullName,
+                            _localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
+
+                        processingSummary.Add(sourceOrderId, "Error - Incomplete Address");
+                        continue;
+                    }
+                }
+                if (jsonObject.orderData.shipments.Count > 0 && jsonObject.orderData.shipments[0].shipTo != null)
+                {
+                    if (string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.address1) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.town) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.postcode))
+                    {
+                        if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName)))
+                            File.Delete(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName));
+
+                        File.Move(jsonFile.FullName,
+                            _localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
+
+                        processingSummary.Add(sourceOrderId, "Error - Incomplete Address");
+                        continue;
+                    }
+                }
+                if (jsonObject.orderData.shipments.Count > 0 && jsonObject.orderData.shipments[0].shipTo != null)
+                {
+                    if (string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.address1) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.town) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.postcode))
+                    {
+                        if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName)))
+                            File.Delete(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName));
+
+                        File.Move(jsonFile.FullName,
+                            _localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
+
+                        processingSummary.Add(sourceOrderId, "Error - Incomplete Address");
+                        continue;
+                    }
+                }
+                if (jsonObject.orderData.shipments.Count > 0 && jsonObject.orderData.shipments[0].shipTo != null)
+                {
+                    if (string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.address1) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.town) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.postcode))
+                    {
+                        if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName)))
+                            File.Delete(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName));
+
+                        File.Move(jsonFile.FullName,
+                            _localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
+
+                        processingSummary.Add(sourceOrderId, "Error - Incomplete Address");
+                        continue;
+                    }
+                }
+                if (jsonObject.orderData.shipments.Count > 0 && jsonObject.orderData.shipments[0].shipTo != null)
+                {
+                    if (string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.address1) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.town) ||
+                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.postcode))
+                    {
+                        if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName)))
+                            File.Delete(_localProcessingPath + "\\ProcessedInput\\" +
+                                        Path.GetFileName(jsonFile.FullName));
+
+                        File.Move(jsonFile.FullName,
+                            _localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
+
+                        processingSummary.Add(sourceOrderId, "Error - Incomplete Address");
+                        continue;
+                    }
+                }
+
+                var orderDatetime = SetOrderDatetime(jsonObject);
+
+                decimal orderTotal = 0M;
+                decimal deliveryCost = 0M;
+                string email = "";
+                string telephone = "";
+                string originalJson = json;
+
+                ////create order and order details, address entry in database
+                var orderId = _orderHelper.CreateOrder(sourceOrderId, orderDatetime, orderTotal, deliveryCost,
+                    email, telephone, originalJson);
+
+                var itemCount = jsonObject.orderData.items.Count;
+
+
+                foreach (var item in jsonObject.orderData.items)
+                {
+                    var sourceItemId = item.sourceItemId;
+                    var sku = item.sku;
+
+                    if (string.IsNullOrEmpty(sku))
+                    {
+                        if (processingSummary.ContainsKey(sourceOrderId))
+                            processingSummary[sourceOrderId] += "NULL SKU - Order failed";
+                        else
+                            processingSummary.Add(sourceOrderId, "NULL SKU - Order failed");
+
+                        break;
+
+                    }
+
+
+                    var qty = item.quantity;
+                    var pdfUri = item.components[0].path;
+
+                    bool staticOrder = pdfUri != null && pdfUri.ToLower().Contains("static");
+
+                    var pdfName = "";
+                    if (staticOrder)
+                        pdfName = pdfUri.Split('/').Last();
+
+                    var partArray = pdfUri.Split(new char[] { '-' });
+
+                    var pdfCount = 1;
+
+                    if (itemCount > 1)
+                    {
+                        if (partArray.Length == 2)
+                        {
+                            partArray[1] = partArray[1].Replace(".pdf", "");
+
+                            try
+                            {
+                                pdfCount = Convert.ToInt32(partArray[1]);
+                            }
+                            catch (Exception e)
+                            {
+                                pdfCount = 1;
+                            }
+
+                        }
+                    }
+
+                    var substrate = item.components[0].attributes.Substrate;
+
+                    var pdfPath = _localProcessingPath + "/PDFS/Original/";
+
+                    var staticPdfPath = ConfigurationManager.AppSettings["StaticPDFPath"];
+
+
+                    if (staticOrder)
+                    {
+                        if (!File.Exists(staticPdfPath + pdfName))
+                        {
+                            //send email
+                            processingSummary.Add(sourceOrderId + "-" + sourceItemId,
+                                staticPdfPath + pdfName + " not found in static folder");
+
+                            if (processingSummary.ContainsKey(sourceOrderId))
+                                processingSummary[sourceOrderId] += "Order failed";
+                            else
+                                processingSummary.Add(sourceOrderId, "Order failed");
+
+                            continue;
+                        }
+
+                        File.Copy(staticPdfPath + pdfName, pdfPath + sourceItemId + ".PDF", true);
+                    }
+                    else
+                    {
+                        if (!File.Exists(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) +
+                                         ".PDF"))
+                        {
+                            processingSummary.Add(sourceOrderId + "-" + sourceItemId,
+                                sourceOrderId + "-" + (pdfCount) + ".PDF" + " PDF not found");
+
+                            if (processingSummary.ContainsKey(sourceOrderId))
+                            {
+                                processingSummary[sourceOrderId] += "Order failed";
+                            }
+                            else
+                            {
+                                processingSummary.Add(sourceOrderId, "Order failed");
+                            }
+
+                            continue;
+                        }
+
+                        File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) + ".PDF",
+                            pdfPath + sourceItemId + ".PDF", true);
+                    }
+
+                    string orderfileName = pdfPath + sourceItemId + ".PDF";
+                    string ordersubstrateName = substrate;
+                    string orderbarcode = sourceItemId;
+                    string orderorderId = sourceOrderId;
+                    string orderQty = Convert.ToString(qty);
+
+                    var originalOrderInputPath = ConfigurationManager.AppSettings["OriginalOrderInputPath"];
+
+                    var finalPdfPath = originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode +
+                                       ".PDF";
+
+                    if (sku.ToLower().Contains("photobook"))
+                    {
+                        //PhotobookProcessing(sourceOrderId, originalOrderInputPath, orderorderId, orderbarcode, item);
+                    }
+                    else
+                    {
+                        File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) + ".PDF", finalPdfPath, true);
+                    }
+
+                    _orderHelper.AddOrderItem(orderId, sku, sourceItemId, qty, substrate, finalPdfPath);
+
+                    item.components[0].path =
+                        "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
+                        "_" + orderbarcode + ".PDF";
+                }
+
+                var serializedResultJson = JsonConvert.SerializeObject(
+                    jsonObject,
+                    new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+
+
+                var goodOrder = IsGoodOrder(processingSummary, sourceOrderId);
+
+                if (goodOrder)
+                    _orderHelper.SubmitModifiedSiteflowJson(orderId, serializedResultJson);
+
+
+                var fileName = Path.GetFileName(jsonFile.FullName);
+
+                if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" + fileName))
+                    File.Delete(_localProcessingPath + "\\ProcessedInput\\" + fileName);
+
+                File.Move(jsonFile.FullName.ToString(), _localProcessingPath + "\\ProcessedInput\\" + fileName);
+
+                if (!processingSummary.ContainsKey(sourceOrderId))
+                    processingSummary.Add(sourceOrderId, "OK");
 
             }
 
-            
+
+
             return processingSummary;
         }
 
-       
-       
+
+      
         private static string SetCustomerName(SiteflowOrder.RootObject jsonObject, string customerName)
         {
             if (jsonObject.orderData.shipments.Count > 0)
@@ -481,7 +978,7 @@ namespace PicsMeSiteFlowApp
             return hasMediaClipItem;
         }
 
-       
+
         private bool IsGoodOrder(Dictionary<string, string> processingSummary, string sourceOrderId)
         {
             var goodOrder = true;
@@ -500,7 +997,7 @@ namespace PicsMeSiteFlowApp
 
             return goodOrder;
         }
-        
+
         private static DateTime SetOrderDatetime(SiteflowOrder.RootObject jsonObject)
         {
             var orderDatetime = Convert.ToDateTime(jsonObject.orderData.slaTimestamp);

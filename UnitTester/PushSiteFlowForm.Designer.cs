@@ -37,7 +37,7 @@
             this.ClientSize = new System.Drawing.Size(351, 280);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "PushSiteFlowForm";
-            this.Text = "PicsMe III Service";
+            this.Text = "PicsMe Service";
             this.Load += new System.EventHandler(this.UnitTestForm_Load);
             this.ResumeLayout(false);
 
