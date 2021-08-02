@@ -17,15 +17,11 @@ namespace SiteFlowHelper
     public class SiteFlowEngine : ISiteFlowEngine
     {
         private readonly string _baseUrlSiteFlow;
-        private readonly string _siteflowKey;
-        private readonly string _siteflowSecretKey;
         readonly OrderHelper _orderHelper = new OrderHelper();
 
         public SiteFlowEngine(string baseUrlSiteFlow, string siteflowKey, string siteflowSecretKey)
         {
             _baseUrlSiteFlow = baseUrlSiteFlow;
-            _siteflowKey = siteflowKey;
-            _siteflowSecretKey = siteflowSecretKey;
         }
 
         public void CreateHmacHeadersSiteFlow(string method, string path, HttpClient client)
@@ -33,10 +29,10 @@ namespace SiteFlowHelper
             string timeStamp = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ");
 
             string stringToSign = method + " " + path + " " + timeStamp;
-            HMACSHA1 hmac = new HMACSHA1(Encoding.UTF8.GetBytes("c8d8ab695cf8eb3e05ce266db84fb0d6af3173da9b1856e5"));
+            HMACSHA1 hmac = new HMACSHA1(Encoding.UTF8.GetBytes("3481f6a9b7209d5a34d229fafe695992a072c3fd72c62702"));
             byte[] signatureBytes = hmac.ComputeHash(Encoding.UTF8.GetBytes(stringToSign));
             string signature = BitConverter.ToString(signatureBytes).Replace("-", "").ToLower();
-            string authHeader = "1279908480073" + ":" + signature;
+            string authHeader = "2599971514309" + ":" + signature;
 
             client.DefaultRequestHeaders.Add("x-oneflow-authorization", authHeader);
             client.DefaultRequestHeaders.Add("x-oneflow-date", timeStamp);
