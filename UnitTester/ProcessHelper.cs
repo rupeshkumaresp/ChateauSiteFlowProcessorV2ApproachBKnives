@@ -400,10 +400,6 @@ namespace ChateauSiteFlowApp
                     continue;
                 }
 
-                var hasMediaClipItem = false;
-                hasMediaClipItem = ContainsMediaClipItem(jsonObject);
-
-                MediaClipFilesDownload(hasMediaClipItem, jsonObject);
 
                 var customerName = "";
 
@@ -499,6 +495,11 @@ namespace ChateauSiteFlowApp
                         var sourceItemId = item.sourceItemId;
                         var sku = item.sku;
 
+                        var hasMediaClipItem = false;
+                        hasMediaClipItem = !string.IsNullOrEmpty(item.supplierPartAuxiliaryId);
+
+                        MediaClipFilesDownload(hasMediaClipItem, jsonObject);
+
                         if (string.IsNullOrEmpty(sku))
                         {
                             if (processingSummary.ContainsKey(sourceOrderId))
@@ -548,54 +549,61 @@ namespace ChateauSiteFlowApp
 
                         var staticPdfPath = ConfigurationManager.AppSettings["StaticPDFPath"];
 
+                        if (hasMediaClipItem)
+                            staticOrder = false;
 
-                        if (staticOrder)
+                        if (!hasMediaClipItem)
                         {
-                            if (!File.Exists(staticPdfPath + pdfName))
+                            if (staticOrder)
                             {
-                                //send email
-                                processingSummary.Add(sourceOrderId + "-" + sourceItemId,
-                                    staticPdfPath + pdfName + " not found in static folder");
-
-                                if (processingSummary.ContainsKey(sourceOrderId))
-                                    processingSummary[sourceOrderId] += "Order failed";
-                                else
-                                    processingSummary.Add(sourceOrderId, "Order failed");
-
-                                continue;
-                            }
-
-                            File.Copy(staticPdfPath + pdfName, pdfPath + sourceItemId + ".PDF", true);
-                        }
-                        else
-                        {
-                            if (sku == "Chateau-Stationery" || sku == "Chateau-StationerySet" ||
-                                sku == "ChildBook-Chateau")
-                            {
-                                //donot do anything
-                            }
-                            else
-                            {
-                                if (!File.Exists(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) +
-                                                 ".PDF"))
+                                if (!File.Exists(staticPdfPath + pdfName))
                                 {
+                                    //send email
                                     processingSummary.Add(sourceOrderId + "-" + sourceItemId,
-                                        sourceOrderId + "-" + (pdfCount) + ".PDF" + " PDF not found");
+                                        staticPdfPath + pdfName + " not found in static folder");
 
                                     if (processingSummary.ContainsKey(sourceOrderId))
-                                    {
                                         processingSummary[sourceOrderId] += "Order failed";
-                                    }
                                     else
-                                    {
                                         processingSummary.Add(sourceOrderId, "Order failed");
-                                    }
 
                                     continue;
                                 }
 
-                                File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) + ".PDF",
-                                    pdfPath + sourceItemId + ".PDF", true);
+                                File.Copy(staticPdfPath + pdfName, pdfPath + sourceItemId + ".PDF", true);
+                            }
+                            else
+                            {
+                                if (sku == "Chateau-Stationery" || sku == "Chateau-StationerySet" ||
+                                    sku == "ChildBook-Chateau")
+                                {
+                                    //donot do anything
+                                }
+                                else
+                                {
+                                    if (!File.Exists(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" +
+                                                     (pdfCount) +
+                                                     ".PDF"))
+                                    {
+                                        processingSummary.Add(sourceOrderId + "-" + sourceItemId,
+                                            sourceOrderId + "-" + (pdfCount) + ".PDF" + " PDF not found");
+
+                                        if (processingSummary.ContainsKey(sourceOrderId))
+                                        {
+                                            processingSummary[sourceOrderId] += "Order failed";
+                                        }
+                                        else
+                                        {
+                                            processingSummary.Add(sourceOrderId, "Order failed");
+                                        }
+
+                                        continue;
+                                    }
+
+                                    File.Copy(
+                                        _localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) + ".PDF",
+                                        pdfPath + sourceItemId + ".PDF", true);
+                                }
                             }
                         }
 
@@ -1035,10 +1043,18 @@ namespace ChateauSiteFlowApp
             File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + 1 + ".PDF", originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode + "_1.PDF", true);
             File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + 2 + ".PDF", originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode + "_2.PDF", true);
 
-            item.components[0].path =
+            int coverIndex = 0;
+            int textIndex = 1;
+
+            coverIndex = item.components[0].code == "Cover" ? 0 : 1;
+
+            textIndex = item.components[0].code == "Text" ? 0 : 1;
+
+
+            item.components[coverIndex].path =
                 "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId + "_" + orderbarcode + "_1.PDF";
 
-            item.components[1].path =
+            item.components[textIndex].path =
                 "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId + "_" + orderbarcode + "_2.PDF";
         }
 
