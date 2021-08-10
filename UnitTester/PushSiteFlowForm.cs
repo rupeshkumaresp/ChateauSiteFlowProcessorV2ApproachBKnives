@@ -32,7 +32,6 @@ namespace PicsMeSiteFlowApp
         {
             var processHelper = new ProcessHelper();
 
-            Cleanup();
 
             //DOWNLOAD ORDERS FROM SFTP
             ProcessHelper.DownloadOrders();
@@ -71,34 +70,5 @@ namespace PicsMeSiteFlowApp
 
         }
 
-        private void Cleanup()
-        {
-            try
-            {
-                var localpath = ConfigurationManager.AppSettings["WorkingDirectory"] + ConfigurationManager.AppSettings["ServiceFolderPath"] + @"PDFs/Modified/";
-
-                var pdfFiles = new DirectoryInfo(localpath).GetFiles("*.*", SearchOption.AllDirectories);
-
-                foreach (var fileInfo in pdfFiles)
-                {
-                    fileInfo.Delete();
-                }
-
-                localpath = ConfigurationManager.AppSettings["WorkingDirectory"] + ConfigurationManager.AppSettings["ServiceFolderPath"] + @"PDFs/original/";
-
-                pdfFiles = new DirectoryInfo(localpath).GetFiles("*.*", SearchOption.AllDirectories);
-
-                foreach (var fileInfo in pdfFiles)
-                {
-                    fileInfo.Delete();
-                }
-            }
-            catch (Exception e)
-            {
-
-            }
-
-
-        }
     }
 }
