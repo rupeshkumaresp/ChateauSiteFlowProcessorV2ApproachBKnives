@@ -102,7 +102,6 @@
     <Compile Include="EmailHelper.cs" />
     <Compile Include="Interface\IProcessHelper.cs" />
     <Compile Include="NetworkConnection.cs" />
-    <Compile Include="PDfMerger.cs" />
     <Compile Include="PDFModificationHelper.cs" />
     <Compile Include="ProcessHelper.cs" />
     <Compile Include="PushSiteFlowForm.cs">

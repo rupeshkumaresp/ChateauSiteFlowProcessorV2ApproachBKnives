@@ -46,29 +46,6 @@ namespace PicsMeSiteFlowApp
 
         }
 
-        private static void MergeFiles(string mergeFileName, List<string> filesToBeMerged)
-        {
-
-            if (File.Exists(mergeFileName))
-                File.Delete(mergeFileName);
-
-            List<byte[]> filesByte = new List<byte[]>();
-
-
-            for (int i = 0; i <= filesToBeMerged.Count; i++)
-            {
-                try
-                {
-                    var thisFileBytes = System.IO.File.ReadAllBytes(filesToBeMerged[i]);
-                    filesByte.Add(thisFileBytes);
-                }
-                catch { }
-
-            }
-
-            System.IO.File.WriteAllBytes(mergeFileName, PdfMerger.MergeFiles(filesByte));
-
-        }
-
+      
     }
 }
