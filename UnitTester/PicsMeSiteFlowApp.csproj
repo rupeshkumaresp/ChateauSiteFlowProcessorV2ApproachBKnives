@@ -147,10 +147,6 @@
       <Project>{523e54f3-a8d2-4c12-ad86-bdb463d28210}</Project>
       <Name>SiteFlowHelper</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SpreadsheetReaderLibrary\SpreadsheetReaderLibrary.csproj">
-      <Project>{8DA411F9-662F-43CD-8FAA-10F79C532EA7}</Project>
-      <Name>SpreadsheetReaderLibrary</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Web2PrintModel\PicsMeEntity.csproj">
       <Project>{db4fe651-5e1c-47f2-901c-04164e69acd8}</Project>
       <Name>PicsMeEntity</Name>
