@@ -1,20 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Web.UI.WebControls;
-using System.Windows.Forms;
-using PicsMeEntity.Entity;
 using PicsMeEntity.MediaClipEntity;
 using PicsMeOrderHelper;
 using PicsMeOrderHelper.Model;
-using iTextSharp.text;
 using Newtonsoft.Json;
 using PicsMeSiteFlowApp.Interface;
 using SiteFlowHelper;
@@ -36,12 +29,7 @@ namespace PicsMeSiteFlowApp
         readonly string _localProcessingPath = ConfigurationManager.AppSettings["WorkingDirectory"] +
                                                ConfigurationManager.AppSettings["ServiceFolderPath"];
 
-
-        public ProcessHelper()
-        {
-        }
-
-        public  SiteflowOrder.RootObject ReadJsonFile(FileInfo jsonFile, ref string json)
+        public SiteflowOrder.RootObject ReadJsonFile(FileInfo jsonFile, ref string json)
         {
             SiteflowOrder.RootObject jsonObject;
 
@@ -59,6 +47,12 @@ namespace PicsMeSiteFlowApp
             return jsonObject;
         }
 
+        /// <summary>
+        /// download the pdf from url
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="filename"></param>
+        /// <returns></returns>
         public bool DownloadPdf(string url, string filename)
         {
             bool success = true;
@@ -76,7 +70,9 @@ namespace PicsMeSiteFlowApp
 
             return success;
         }
-
+        /// <summary>
+        /// Download the orders from SFTP path to local path for processing
+        /// </summary>
         public static void DownloadOrders()
         {
             var inputPathJson = ConfigurationManager.AppSettings["SFTP_path"];
@@ -147,7 +143,11 @@ namespace PicsMeSiteFlowApp
             }
 
         }
-
+        /// <summary>
+        /// notify for the orders for which json is missing, only pdfs have been received.
+        /// </summary>
+        /// <param name="pdfFiles"></param>
+        /// <param name="jsonFiles"></param>
         private static void MissingJsonNotification(FileInfo[] pdfFiles, FileInfo[] jsonFiles)
         {
             List<string> pdfNameList = new List<string>();
@@ -207,7 +207,10 @@ namespace PicsMeSiteFlowApp
         }
 
 
-
+        /// <summary>
+        /// Order processing summary email generation
+        /// </summary>
+        /// <param name="messages"></param>
         public static void SendProcessingSummaryEmail(Dictionary<string, string> messages)
         {
             if (messages.Count == 0)
@@ -254,7 +257,10 @@ namespace PicsMeSiteFlowApp
                     "PicsMe Order Summary - " + timeNow, defaultMessage);
             }
         }
-       
+        /// <summary>
+        /// push the orders to siteflow for processing
+        /// </summary>
+        /// <param name="processingStatus"></param>
         public void PushOrdersToSiteFlow(Dictionary<string, string> processingStatus)
         {
             foreach (var orderReference in processingStatus.Keys)
@@ -328,7 +334,6 @@ namespace PicsMeSiteFlowApp
                 try
                 {
                     sourceOrderId = jsonObject.orderData.sourceOrderId;
-
                 }
                 catch
                 {
@@ -345,12 +350,10 @@ namespace PicsMeSiteFlowApp
 
                 }
 
-
                 var itemFound = _orderHelper.DoesOrderExists(sourceOrderId);
 
                 if (itemFound)
                 {
-
                     if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" +
                                     Path.GetFileName(jsonFile.FullName)))
                         File.Delete(_localProcessingPath + "\\ProcessedInput\\" +
@@ -410,9 +413,7 @@ namespace PicsMeSiteFlowApp
                             processingSummary.Add(sourceOrderId, "NULL SKU - Order failed");
 
                         break;
-
                     }
-
 
                     var qty = item.quantity;
                     var pdfUri = item.components[0].path;
@@ -441,7 +442,6 @@ namespace PicsMeSiteFlowApp
                             {
                                 pdfCount = 1;
                             }
-
                         }
                     }
 
@@ -553,12 +553,15 @@ namespace PicsMeSiteFlowApp
 
             }
 
-
-
             return processingSummary;
         }
 
-
+        /// <summary>
+        /// set customer name as shipment customer name
+        /// </summary>
+        /// <param name="jsonObject"></param>
+        /// <param name="customerName"></param>
+        /// <returns></returns>
         public string SetCustomerName(SiteflowOrder.RootObject jsonObject, string customerName)
         {
             if (jsonObject.orderData.shipments.Count > 0)
@@ -566,10 +569,14 @@ namespace PicsMeSiteFlowApp
                 customerName = jsonObject.orderData.shipments[0].shipTo.name;
                 jsonObject.orderData.customerName = customerName;
             }
-
             return customerName;
         }
-
+        /// <summary>
+        /// Based on supplierPartAuxiliaryId download the files
+        /// </summary>
+        /// <param name="hasMediaClipItem"></param>
+        /// <param name="jsonObject"></param>
+        /// <param name="pdfCount"></param>
         public void MediaClipFilesDownload(bool hasMediaClipItem, SiteflowOrder.RootObject jsonObject, int pdfCount)
         {
             if (hasMediaClipItem)
@@ -638,23 +645,14 @@ namespace PicsMeSiteFlowApp
             }
         }
 
-        public void SetRushOrderForPicsMeHelp(SiteflowOrder.RootObject jsonObject)
-        {
-            if (jsonObject.orderData.shipments.Count > 0 && jsonObject.orderData.shipments[0].shipTo != null)
-            {
-                if (jsonObject.orderData.shipments[0].shipTo.email == "help@thePicsMe.tv")
-                {
-                    foreach (var item in jsonObject.orderData.items)
-                    {
-                        foreach (var component in item.components)
-                        {
-                            component.attributes.RUSH = "rush";
-                        }
-                    }
-                }
-            }
-        }
-
+        /// <summary>
+        /// photobook processing - process cover and text
+        /// </summary>
+        /// <param name="sourceOrderId"></param>
+        /// <param name="originalOrderInputPath"></param>
+        /// <param name="orderorderId"></param>
+        /// <param name="orderbarcode"></param>
+        /// <param name="item"></param>
         public void PhotobookProcessing(string sourceOrderId, string originalOrderInputPath, string orderorderId, string orderbarcode, SiteflowOrder.Item item)
         {
             File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + 1 + ".PDF", originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode + "_1.PDF", true);
@@ -667,6 +665,11 @@ namespace PicsMeSiteFlowApp
                 "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId + "_" + orderbarcode + "_2.PDF";
         }
 
+        /// <summary>
+        /// check media clip item exists
+        /// </summary>
+        /// <param name="jsonObject"></param>
+        /// <returns></returns>
         public bool ContainsMediaClipItem(SiteflowOrder.RootObject jsonObject)
         {
             bool hasMediaClipItem = false;
