@@ -661,7 +661,7 @@ namespace PicsMeSiteFlowApp
                                     var extrinsic = extrinsicDetails.FirstOrDefault();
 
                                     DownloadPdf(extrinsic.ExtrinsicValue,
-                                        _localProcessingPath + "/PDFS/" + item.sourceItemId + "-" + (pdfCount) + ".PDF");
+                                        _localProcessingPath + "/PDFS/" + jsonObject.orderData.sourceOrderId + "-" + (pdfCount) + ".PDF");
 
                                 }
                             }
