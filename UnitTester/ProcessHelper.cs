@@ -255,54 +255,7 @@ namespace PicsMeSiteFlowApp
                     "PicsMe Order Summary - " + timeNow, defaultMessage);
             }
         }
-
-        public static void SendProcessingSummaryWelcomeCardsEmail(Dictionary<string, string> messages)
-        {
-            if (messages.Count == 0)
-                return;
-
-            var defaultMessage = EmailHelper.ProcessingStatusSummaryWelcomeCardsEmailTemplate;
-
-            var orderstatuscontent = "";
-
-            orderstatuscontent +=
-                "<table border='1'><tr><td colspan='1'><strong>Order ID</strong></td><td colspan='1'><strong>Status</strong></td></tr>";
-
-            var orderStatusdetails = "";
-
-            if (messages.Keys.Count == 0)
-                return;
-
-            foreach (var key in messages.Keys)
-            {
-
-                orderStatusdetails += "<tr>";
-                orderStatusdetails += "<td>" + key + "</td>";
-
-                orderStatusdetails += "<td>" + messages[key] + "</td>";
-
-                orderStatusdetails += "</tr>";
-            }
-
-            orderstatuscontent += orderStatusdetails;
-            orderstatuscontent += "</table>";
-
-            defaultMessage = Regex.Replace(defaultMessage, "\\[ORDERSTATUS\\]", orderstatuscontent);
-
-            var emails = ConfigurationManager.AppSettings["NotificationEmails"].Split(new char[] { ';' });
-
-            foreach (var email in emails)
-            {
-                if (String.IsNullOrEmpty(email))
-                    continue;
-
-                var timeNow = DateTime.Now.ToString("MM/dd/yyyy H:mm:ss");
-                EmailHelper.SendMail(email,
-                    "PicsMe Welcome Cards Order Summary - " + timeNow, defaultMessage);
-            }
-        }
-
-
+       
         public void PushOrdersToSiteFlow(Dictionary<string, string> processingStatus)
         {
             foreach (var orderReference in processingStatus.Keys)
