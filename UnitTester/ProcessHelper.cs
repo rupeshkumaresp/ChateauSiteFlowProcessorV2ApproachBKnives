@@ -37,11 +37,9 @@ namespace PicsMeSiteFlowApp
         readonly string _localProcessingPath = ConfigurationManager.AppSettings["WorkingDirectory"] +
                                                ConfigurationManager.AppSettings["ServiceFolderPath"];
 
-        private readonly PdfModificationHelper _pdfModificationHelper;
 
         public ProcessHelper()
         {
-            _pdfModificationHelper = new PdfModificationHelper();
         }
 
         public  SiteflowOrder.RootObject ReadJsonFile(FileInfo jsonFile, ref string json)
