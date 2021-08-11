@@ -139,7 +139,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ChateauOrderHelper\PicsMeOrderHelper.csproj">
+    <ProjectReference Include="..\PicsMeOrderHelper\PicsMeOrderHelper.csproj">
       <Project>{425747a3-0035-4dfe-8a74-a4a5a418ced2}</Project>
       <Name>PicsMeOrderHelper</Name>
     </ProjectReference>

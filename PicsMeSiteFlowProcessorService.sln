@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PicsMeSiteFlowApp", "UnitTe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiteFlowHelper", "SiteFlowHelper\SiteFlowHelper.csproj", "{523E54F3-A8D2-4C12-AD86-BDB463D28210}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PicsMeOrderHelper", "ChateauOrderHelper\PicsMeOrderHelper.csproj", "{425747A3-0035-4DFE-8A74-A4A5A418CED2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PicsMeOrderHelper", "PicsMeOrderHelper\PicsMeOrderHelper.csproj", "{425747A3-0035-4DFE-8A74-A4A5A418CED2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

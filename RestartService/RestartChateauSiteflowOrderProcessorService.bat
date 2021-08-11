@@ -1,2 +1,0 @@
-net stop ChateauSiteflowOrderProcessorService
-net start ChateauSiteflowOrderProcessorService
