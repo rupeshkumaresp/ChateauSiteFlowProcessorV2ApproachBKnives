@@ -498,6 +498,9 @@ namespace PicsMeSiteFlowApp
 
                     bool hasMediaClipItem = !string.IsNullOrEmpty(item.supplierPartAuxiliaryId);
 
+                    if (hasMediaClipItem)
+                        staticOrder = false;
+
                     MediaClipFilesDownload(hasMediaClipItem, jsonObject, pdfCount);
 
                     var substrate = item.components[0].attributes.Substrate;
@@ -506,47 +509,49 @@ namespace PicsMeSiteFlowApp
 
                     var staticPdfPath = ConfigurationManager.AppSettings["StaticPDFPath"];
 
-
-                    if (staticOrder)
+                    if (!sku.ToLower().Contains("photobook"))
                     {
-                        if (!File.Exists(staticPdfPath + pdfName))
+                        if (staticOrder)
                         {
-                            //send email
-                            processingSummary.Add(sourceOrderId + "-" + sourceItemId,
-                                staticPdfPath + pdfName + " not found in static folder");
-
-                            if (processingSummary.ContainsKey(sourceOrderId))
-                                processingSummary[sourceOrderId] += "Order failed";
-                            else
-                                processingSummary.Add(sourceOrderId, "Order failed");
-
-                            continue;
-                        }
-
-                        File.Copy(staticPdfPath + pdfName, pdfPath + sourceItemId + ".PDF", true);
-                    }
-                    else
-                    {
-                        if (!File.Exists(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) +
-                                         ".PDF"))
-                        {
-                            processingSummary.Add(sourceOrderId + "-" + sourceItemId,
-                                sourceOrderId + "-" + (pdfCount) + ".PDF" + " PDF not found");
-
-                            if (processingSummary.ContainsKey(sourceOrderId))
+                            if (!File.Exists(staticPdfPath + pdfName))
                             {
-                                processingSummary[sourceOrderId] += "Order failed";
-                            }
-                            else
-                            {
-                                processingSummary.Add(sourceOrderId, "Order failed");
+                                //send email
+                                processingSummary.Add(sourceOrderId + "-" + sourceItemId,
+                                    staticPdfPath + pdfName + " not found in static folder");
+
+                                if (processingSummary.ContainsKey(sourceOrderId))
+                                    processingSummary[sourceOrderId] += "Order failed";
+                                else
+                                    processingSummary.Add(sourceOrderId, "Order failed");
+
+                                continue;
                             }
 
-                            continue;
+                            File.Copy(staticPdfPath + pdfName, pdfPath + sourceItemId + ".PDF", true);
                         }
+                        else
+                        {
+                            if (!File.Exists(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) +
+                                             ".PDF"))
+                            {
+                                processingSummary.Add(sourceOrderId + "-" + sourceItemId,
+                                    sourceOrderId + "-" + (pdfCount) + ".PDF" + " PDF not found");
 
-                        File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) + ".PDF",
-                            pdfPath + sourceItemId + ".PDF", true);
+                                if (processingSummary.ContainsKey(sourceOrderId))
+                                {
+                                    processingSummary[sourceOrderId] += "Order failed";
+                                }
+                                else
+                                {
+                                    processingSummary.Add(sourceOrderId, "Order failed");
+                                }
+
+                                continue;
+                            }
+
+                            File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) + ".PDF",
+                                pdfPath + sourceItemId + ".PDF", true);
+                        }
                     }
 
                     string orderfileName = pdfPath + sourceItemId + ".PDF";
@@ -632,37 +637,51 @@ namespace PicsMeSiteFlowApp
                         var extrinsicDetails = _mediaClipEntities.tMediaClipOrderExtrinsic
                             .Where(e => e.MediaClipOrderDetailsId == orderDetails.OrderDetailsId).ToList();
 
-                        foreach (var component in item.components)
+
+                        if (item.components.Count == 1)
                         {
-                            var path = component.path;
-                            var coverOrText = component.code;
+                            var extrinsic = extrinsicDetails.FirstOrDefault();
 
-                            if (coverOrText == "Cover")
-                            {
-                                var coverExtrinsic = extrinsicDetails.FirstOrDefault(x => x.ExtrinsicName.Contains("cover"));
+                            DownloadPdf(extrinsic.ExtrinsicValue,
+                                _localProcessingPath + "/PDFS/" + jsonObject.orderData.sourceOrderId + "-" + (pdfCount) + ".PDF");
 
-                                DownloadPdf(coverExtrinsic.ExtrinsicValue,
-                                    _localProcessingPath + "/PDFS/" + jsonObject.orderData.sourceOrderId + "-" +
-                                    (1) + ".PDF");
-                            }
-                            else
+                        }
+                        else
+                        {
+                            foreach (var component in item.components)
                             {
-                                if (coverOrText == "Text")
+                                var path = component.path;
+                                var coverOrText = component.code;
+
+                                if (coverOrText == "Cover")
                                 {
-                                    var pageExtrinsic =
-                                        extrinsicDetails.FirstOrDefault(x => x.ExtrinsicName.Contains("pages"));
+                                    var coverExtrinsic =
+                                        extrinsicDetails.FirstOrDefault(x => x.ExtrinsicName.Contains("cover"));
 
-                                    DownloadPdf(pageExtrinsic.ExtrinsicValue,
+                                    DownloadPdf(coverExtrinsic.ExtrinsicValue,
                                         _localProcessingPath + "/PDFS/" + jsonObject.orderData.sourceOrderId + "-" +
-                                        (2) + ".PDF");
+                                        (1) + ".PDF");
                                 }
                                 else
                                 {
-                                    var extrinsic = extrinsicDetails.FirstOrDefault();
+                                    if (coverOrText == "Text")
+                                    {
+                                        var pageExtrinsic =
+                                            extrinsicDetails.FirstOrDefault(x => x.ExtrinsicName.Contains("pages"));
 
-                                    DownloadPdf(extrinsic.ExtrinsicValue,
-                                        _localProcessingPath + "/PDFS/" + jsonObject.orderData.sourceOrderId + "-" + (pdfCount) + ".PDF");
+                                        DownloadPdf(pageExtrinsic.ExtrinsicValue,
+                                            _localProcessingPath + "/PDFS/" + jsonObject.orderData.sourceOrderId + "-" +
+                                            (2) + ".PDF");
+                                    }
+                                    else
+                                    {
+                                        var extrinsic = extrinsicDetails.FirstOrDefault();
 
+                                        DownloadPdf(extrinsic.ExtrinsicValue,
+                                            _localProcessingPath + "/PDFS/" + jsonObject.orderData.sourceOrderId + "-" +
+                                            (pdfCount) + ".PDF");
+
+                                    }
                                 }
                             }
                         }
