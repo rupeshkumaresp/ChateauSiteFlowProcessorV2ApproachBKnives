@@ -16,16 +16,16 @@ using PicsMeOrderHelper;
 using PicsMeOrderHelper.Model;
 using iTextSharp.text;
 using Newtonsoft.Json;
+using PicsMeSiteFlowApp.Interface;
 using SiteFlowHelper;
 using SpreadsheetReaderLibrary;
 
 namespace PicsMeSiteFlowApp
 {
-
     /// <summary>
     /// HELPER CLASS - DOWNLOAD ORDER, READ JSON AND UPDATE JSON, CREATE ORDER AND SEND TO SITE FLOW
     /// </summary>
-    public class ProcessHelper
+    public class ProcessHelper : IProcessHelper
     {
         readonly OrderHelper _orderHelper = new OrderHelper();
         SiteFlowEngine _siteflowEngine;
@@ -33,7 +33,6 @@ namespace PicsMeSiteFlowApp
         private static readonly string SiteflowKey = ConfigurationManager.AppSettings["SiteflowKey"];
         private static readonly string SiteflowSecretKey = ConfigurationManager.AppSettings["SiteflowSecretKey"];
         MediaClipEntities _mediaClipEntities = new MediaClipEntities();
-
 
         readonly string _localProcessingPath = ConfigurationManager.AppSettings["WorkingDirectory"] +
                                                ConfigurationManager.AppSettings["ServiceFolderPath"];
@@ -45,7 +44,7 @@ namespace PicsMeSiteFlowApp
             _pdfModificationHelper = new PdfModificationHelper();
         }
 
-        public static SiteflowOrder.RootObject ReadJsonFile(FileInfo jsonFile, ref string json)
+        public  SiteflowOrder.RootObject ReadJsonFile(FileInfo jsonFile, ref string json)
         {
             SiteflowOrder.RootObject jsonObject;
 
@@ -357,7 +356,7 @@ namespace PicsMeSiteFlowApp
                 bool exceptionJsonRead = false;
                 try
                 {
-                    jsonObject = ProcessHelper.ReadJsonFile(jsonFile, ref json);
+                    jsonObject = ReadJsonFile(jsonFile, ref json);
                 }
                 catch (Exception e)
                 {
@@ -610,8 +609,7 @@ namespace PicsMeSiteFlowApp
         }
 
 
-
-        private static string SetCustomerName(SiteflowOrder.RootObject jsonObject, string customerName)
+        public string SetCustomerName(SiteflowOrder.RootObject jsonObject, string customerName)
         {
             if (jsonObject.orderData.shipments.Count > 0)
             {
@@ -622,7 +620,7 @@ namespace PicsMeSiteFlowApp
             return customerName;
         }
 
-        private void MediaClipFilesDownload(bool hasMediaClipItem, SiteflowOrder.RootObject jsonObject, int pdfCount)
+        public void MediaClipFilesDownload(bool hasMediaClipItem, SiteflowOrder.RootObject jsonObject, int pdfCount)
         {
             if (hasMediaClipItem)
             {
@@ -690,7 +688,7 @@ namespace PicsMeSiteFlowApp
             }
         }
 
-        private static void SetRushOrderForPicsMeHelp(SiteflowOrder.RootObject jsonObject)
+        public void SetRushOrderForPicsMeHelp(SiteflowOrder.RootObject jsonObject)
         {
             if (jsonObject.orderData.shipments.Count > 0 && jsonObject.orderData.shipments[0].shipTo != null)
             {
@@ -707,7 +705,7 @@ namespace PicsMeSiteFlowApp
             }
         }
 
-        private void PhotobookProcessing(string sourceOrderId, string originalOrderInputPath, string orderorderId, string orderbarcode, SiteflowOrder.Item item)
+        public void PhotobookProcessing(string sourceOrderId, string originalOrderInputPath, string orderorderId, string orderbarcode, SiteflowOrder.Item item)
         {
             File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + 1 + ".PDF", originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode + "_1.PDF", true);
             File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + 2 + ".PDF", originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode + "_2.PDF", true);
@@ -719,7 +717,7 @@ namespace PicsMeSiteFlowApp
                 "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId + "_" + orderbarcode + "_2.PDF";
         }
 
-        private static bool ContainsMediaClipItem(SiteflowOrder.RootObject jsonObject)
+        public bool ContainsMediaClipItem(SiteflowOrder.RootObject jsonObject)
         {
             bool hasMediaClipItem = false;
             foreach (var item in jsonObject.orderData.items)
@@ -735,7 +733,7 @@ namespace PicsMeSiteFlowApp
         }
 
 
-        private bool IsGoodOrder(Dictionary<string, string> processingSummary, string sourceOrderId)
+        public bool IsGoodOrder(Dictionary<string, string> processingSummary, string sourceOrderId)
         {
             var goodOrder = true;
 
@@ -754,7 +752,7 @@ namespace PicsMeSiteFlowApp
             return goodOrder;
         }
 
-        private static DateTime SetOrderDatetime(SiteflowOrder.RootObject jsonObject)
+        public DateTime SetOrderDatetime(SiteflowOrder.RootObject jsonObject)
         {
             var orderDatetime = Convert.ToDateTime(jsonObject.orderData.slaTimestamp);
 

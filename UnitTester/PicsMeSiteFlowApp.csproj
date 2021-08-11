@@ -100,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EmailHelper.cs" />
+    <Compile Include="Interface\IProcessHelper.cs" />
     <Compile Include="NetworkConnection.cs" />
     <Compile Include="PDfMerger.cs" />
     <Compile Include="PDFModificationHelper.cs" />
@@ -157,6 +158,7 @@
       <Name>PicsMeEntity</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
