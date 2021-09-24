@@ -5,7 +5,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using ChateauOrderHelper;
@@ -26,6 +28,33 @@ namespace ChateauSiteFlowApp
         {
             ProcessJsonOrders();
             this.Close();
+        }
+
+        public bool CheckPrinegyStatus()
+        {
+            Ping pingSender = new Ping();
+            PingOptions options = new PingOptions();
+
+            // Use the default Ttl value which is 128,
+            // but change the fragmentation behavior.
+            options.DontFragment = true;
+
+            // Create a buffer of 32 bytes of data to be transmitted.
+            string data = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+            byte[] buffer = Encoding.ASCII.GetBytes(data);
+            int timeout = 120;
+            PingReply reply = pingSender.Send("192.168.16.231", timeout, buffer, options);
+
+            if (reply.Status == IPStatus.Success)
+            {
+                if (Directory.Exists(@"\\192.168.16.231\AraxiVolume_HW33546-46_J\Jobs\Auto_Impose\SmartHotFolders"))
+                {
+                    return true;
+                }
+            }
+
+
+            return false;
         }
 
         private void ProcessJsonOrders()
@@ -64,9 +93,13 @@ namespace ChateauSiteFlowApp
 
             if (now.Hour == 15 || now.Hour == 16 || now.Hour == 17)
             {
+
+
                 string path = "";
                 try
                 {
+                    if (!CheckPrinegyStatus())
+                        throw new Exception("PRINERGY SERVER IS NOT ACCESSIBLE");
 
                     OrderHelper orderHelper = new OrderHelper();
                     path = chateauBelfieldReportengine.CreateSpreadSheetBelfield(
