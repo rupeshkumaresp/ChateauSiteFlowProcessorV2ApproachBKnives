@@ -30,7 +30,32 @@ namespace ChateauSiteFlowApp
             this.Close();
         }
 
-      
+        public bool CheckPrinegyStatus()
+        {
+            Ping pingSender = new Ping();
+            PingOptions options = new PingOptions();
+
+            // Use the default Ttl value which is 128,
+            // but change the fragmentation behavior.
+            options.DontFragment = true;
+
+            // Create a buffer of 32 bytes of data to be transmitted.
+            string data = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+            byte[] buffer = Encoding.ASCII.GetBytes(data);
+            int timeout = 120;
+            PingReply reply = pingSender.Send("192.168.16.231", timeout, buffer, options);
+
+            if (reply.Status == IPStatus.Success)
+            {
+                if (Directory.Exists(@"\\192.168.16.231\AraxiVolume_HW33546-46_J\Jobs\Auto_Impose\SmartHotFolders"))
+                {
+                    return true;
+                }
+            }
+
+
+            return false;
+        }
 
         private void ProcessJsonOrders()
         {
@@ -73,7 +98,7 @@ namespace ChateauSiteFlowApp
                 string path = "";
                 try
                 {
-                    if (!PrinergyStatus.CheckPrinegyStatus())
+                    if (!CheckPrinegyStatus())
                         throw new Exception("PRINERGY SERVER IS NOT ACCESSIBLE");
 
                     OrderHelper orderHelper = new OrderHelper();
@@ -315,7 +340,7 @@ namespace ChateauSiteFlowApp
 
                 var fileShortName = Path.GetFileNameWithoutExtension(pdfFile);
 
-                using (new NetworkConnection(PrinergyInputPath, new NetworkCredential(UserName, Password, domain)))
+                //using (new NetworkConnection(PrinergyInputPath, new NetworkCredential(UserName, Password, domain)))
                 {
                     if (File.Exists(PrinergyInputPath + @"\" + fileShortName + ".pdf"))
                         File.Delete(PrinergyInputPath + @"\" + fileShortName + ".pdf");

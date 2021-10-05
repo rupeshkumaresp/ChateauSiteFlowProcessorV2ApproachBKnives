@@ -742,21 +742,12 @@ namespace ChateauSiteFlowApp
                                                         }
                                                         else
                                                         {
-                                                            if (sku.ToLower().Contains("cookbook"))
-                                                            {
-                                                                CookbookProcessing(sourceOrderId, originalOrderInputPath, orderorderId, orderbarcode, item);
-                                                            }
-                                                            else
-                                                            {
-                                                                File.Copy(
-                                                                    _localProcessingPath + "/PDFS/" + sourceOrderId + "-" +
-                                                                    (pdfCount) +
-                                                                    ".PDF",
-                                                                    finalPdfPath, true);
-                                                            }
+                                                            File.Copy(
+                                                                _localProcessingPath + "/PDFS/" + sourceOrderId + "-" +
+                                                                (pdfCount) +
+                                                                ".PDF",
+                                                                finalPdfPath, true);
                                                         }
-
-
                                                     }
                                                 }
                                             }
@@ -1045,66 +1036,6 @@ namespace ChateauSiteFlowApp
                     }
                 }
             }
-        }
-
-        private void CookbookProcessing(string sourceOrderId, string originalOrderInputPath, string orderorderId, string orderbarcode, SiteflowOrder.Item item)
-        {
-            File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + 1 + ".PDF", originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode + "_1.PDF", true);
-            File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + 2 + ".PDF", originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode + "_2.PDF", true);
-
-            int coverIndex = 0;
-            int textIndex = 1;
-
-            coverIndex = item.components[0].code == "Cover" ? 0 : 1;
-
-            textIndex = item.components[0].code == "Text" ? 0 : 1;
-
-
-            item.components[coverIndex].path =
-                "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId + "_" + orderbarcode + "_1.PDF";
-
-            item.components[textIndex].path =
-                "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId + "_" + orderbarcode + "_2.PDF";
-
-            var componentC = GenerateCookbookAdditionalComponent(item, textIndex, "C");
-            var componentD = GenerateCookbookAdditionalComponent(item, textIndex, "D");
-            var componentE = GenerateCookbookAdditionalComponent(item, textIndex, "E");
-
-
-            componentC.path = "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId + "_" + orderbarcode + "_2.PDF";
-            componentD.path = "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId + "_" + orderbarcode + "_2.PDF";
-            componentE.path = "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId + "_" + orderbarcode + "_2.PDF";
-
-            item.components.Add(componentC);
-            item.components.Add(componentD);
-            item.components.Add(componentE);
-
-        }
-
-        private static SiteflowOrder.Component GenerateCookbookAdditionalComponent(SiteflowOrder.Item item, int textIndex, string replaceChar)
-        {
-            var componentId = item.components[textIndex].componentId;
-            var barcode = item.components[textIndex].barcode;
-
-            componentId = componentId.Replace("B", replaceChar);
-
-            barcode = barcode.Replace("B", replaceChar);
-
-            SiteflowOrder.Component componentC = new SiteflowOrder.Component
-            {
-                fetch = item.components[textIndex].fetch,
-                localFile = item.components[textIndex].localFile,
-                code = item.components[textIndex].code,
-                path = item.components[textIndex].path,
-                componentId = componentId,
-                barcode = barcode,
-                attributes = new SiteflowOrder.Attributes
-                {
-                    Substrate = item.components[textIndex].attributes.Substrate,
-                    ProductFinishedPageSize = item.components[textIndex].attributes.ProductFinishedPageSize
-                }
-            };
-            return componentC;
         }
 
         private void PhotobookProcessing(string sourceOrderId, string originalOrderInputPath, string orderorderId, string orderbarcode, SiteflowOrder.Item item)
