@@ -88,7 +88,7 @@ namespace PicsMeSiteFlowApp
             var pdfFiles = new DirectoryInfo(inputPathPdf).GetFiles("*.pdf");
             var jsonFiles = new DirectoryInfo(inputPathJson).GetFiles("*.json");
 
-            MissingJsonNotification(pdfFiles, jsonFiles);
+            //MissingJsonNotification(pdfFiles, jsonFiles);
 
             foreach (var pdfFile in pdfFiles)
             {
@@ -585,9 +585,10 @@ namespace PicsMeSiteFlowApp
                 {
                     if (!string.IsNullOrEmpty(item.supplierPartAuxiliaryId))
                     {
+                        var mediaClipNumber = Convert.ToInt32(item.mediaclipLineNumber);
                         var orderDetails = _mediaClipEntities.tMediaClipOrderDetails.FirstOrDefault(m =>
                             m.SupplierPartAuxilliaryId == item.supplierPartAuxiliaryId &&
-                            m.LineNumber == item.mediaclipLineNumber);
+                            m.LineNumber == mediaClipNumber);
 
                         var extrinsicDetails = _mediaClipEntities.tMediaClipOrderExtrinsic
                             .Where(e => e.MediaClipOrderDetailsId == orderDetails.OrderDetailsId).ToList();
