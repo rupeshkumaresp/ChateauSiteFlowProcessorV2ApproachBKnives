@@ -69,6 +69,7 @@ namespace ChateauSiteFlowApp
             try
             {
                 WebClient webClient = new WebClient();
+                System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
                 webClient.DownloadFile(url, filename);
 
             }
@@ -495,11 +496,6 @@ namespace ChateauSiteFlowApp
                         var sourceItemId = item.sourceItemId;
                         var sku = item.sku;
 
-                        var hasMediaClipItem = false;
-                        hasMediaClipItem = !string.IsNullOrEmpty(item.supplierPartAuxiliaryId);
-
-                        MediaClipFilesDownload(hasMediaClipItem, jsonObject);
-
                         if (string.IsNullOrEmpty(sku))
                         {
                             if (processingSummary.ContainsKey(sourceOrderId))
@@ -542,6 +538,11 @@ namespace ChateauSiteFlowApp
 
                             }
                         }
+
+                        var hasMediaClipItem = false;
+                        hasMediaClipItem = !string.IsNullOrEmpty(item.supplierPartAuxiliaryId);
+
+                        MediaClipFilesDownload(hasMediaClipItem, item.mediaclipLineNumber, jsonObject, ConfigurationManager.AppSettings["OriginalOrderInputPath"]);
 
                         var substrate = item.components[0].attributes.Substrate;
 
@@ -736,7 +737,7 @@ namespace ChateauSiteFlowApp
                                                     }
                                                     else
                                                     {
-                                                        if (sku.ToLower().Contains("photobook"))
+                                                        if (sku.ToLower().Contains("photobook") && item.components.Count >= 2)
                                                         {
                                                             PhotobookProcessing(sourceOrderId, originalOrderInputPath, orderorderId, orderbarcode, item);
                                                         }
@@ -744,15 +745,33 @@ namespace ChateauSiteFlowApp
                                                         {
                                                             if (sku.ToLower().Contains("cookbook"))
                                                             {
-                                                                CookbookProcessingPrintzware(sourceOrderId, originalOrderInputPath, orderorderId, orderbarcode, item, pdfCount);
+                                                                try
+                                                                {
+                                                                    CookbookProcessingPrintzware(sourceOrderId, item.mediaclipLineNumber, originalOrderInputPath, orderorderId, orderbarcode, item, pdfCount);
+                                                                }
+                                                                catch (Exception e)
+                                                                {
+                                                                    if (processingSummary.ContainsKey(sourceOrderId))
+                                                                        processingSummary[sourceOrderId] += "Order failed - cookbook must have Media clip";
+                                                                    else
+                                                                        processingSummary.Add(sourceOrderId, "Order failed - cookbook must have Media clip");
+                                                                }
+
                                                             }
                                                             else
                                                             {
-                                                                File.Copy(
-                                                                    _localProcessingPath + "/PDFS/" + sourceOrderId + "-" +
-                                                                    (pdfCount) +
-                                                                    ".PDF",
-                                                                    finalPdfPath, true);
+                                                                if (sku.ToLower().Contains("chateau-mediaclip-photobook"))
+                                                                {
+                                                                    ProcessMediaclipPhotobook(item, sku, finalPdfPath, sourceOrderId, orderbarcode, originalOrderInputPath);
+                                                                }
+                                                                else
+                                                                {
+                                                                    File.Copy(
+                                                                        _localProcessingPath + "/PDFS/" + sourceOrderId + "-" +
+                                                                        (pdfCount) +
+                                                                        ".PDF",
+                                                                        finalPdfPath, true);
+                                                                }
                                                             }
                                                         }
 
@@ -784,7 +803,7 @@ namespace ChateauSiteFlowApp
                             }
                             else
                             {
-                                if (!sku.ToLower().Contains("photobook"))
+                                if (!sku.ToLower().Contains("photobook") && !sku.ToLower().Contains("cookbook"))
                                 {
                                     item.components[0].path =
                                         "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
@@ -792,6 +811,11 @@ namespace ChateauSiteFlowApp
                                 }
                             }
                         }
+
+                        //Process Tags
+
+                        ProcessTags(item, originalOrderInputPath);
+
 
                         //If item is knife then add this to database Knife table
                         DumpKnivesToDatabase(sku, orderContainsKnivesAndOtherProducts, knifeJsonItems, item, orderId,
@@ -848,6 +872,93 @@ namespace ChateauSiteFlowApp
             }
 
             return processingSummary;
+        }
+
+        private static void ProcessTags(SiteflowOrder.Item item, string originalOrderInputPath)
+        {
+            for (int compCount = 0; compCount < item.components.Count; compCount++)
+            {
+
+                if (item.components[compCount].code == "Tag")
+                {
+
+                    var tagFileName = item.components[compCount].attributes.GiftTag;
+
+                    var guid = Guid.NewGuid().ToString();
+
+                    var source = ConfigurationManager.AppSettings["ChateauTags"] + tagFileName + ".PDF";
+
+                    if (!File.Exists(source))
+                        throw new Exception("Chateau Tag file not found: " + tagFileName);
+
+                    File.Copy(source, originalOrderInputPath + "/Processed/" + guid + ".PDF", true);
+
+                    item.components[compCount].path =
+                        "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + guid + ".PDF";
+
+
+                }
+            }
+        }
+
+        private void ProcessMediaclipPhotobook(SiteflowOrder.Item item, string sku, string pdfPath, string sourceOrderId, string orderbarcode, string originalOrderInputPath)
+        {
+
+            var coverComponent = item.components[0];
+
+            var supplierAuxId = item.supplierPartAuxiliaryId;
+
+            var orderDetails = _mediaClipEntities.tMediaClipOrderDetails.FirstOrDefault(m => m.SupplierPartAuxilliaryId == supplierAuxId);
+
+            var mediaclipOrderDetailId = orderDetails.OrderDetailsId;
+
+            var extrinsics = _mediaClipEntities.tMediaClipOrderExtrinsic.Where(e => e.MediaClipOrderDetailsId == mediaclipOrderDetailId).ToList();
+
+            SiteflowOrder.Component textComponent = new SiteflowOrder.Component
+            {
+                fetch = coverComponent.fetch,
+                localFile = coverComponent.localFile,
+                code = "Text",
+                componentId = coverComponent.componentId,
+                barcode = coverComponent.barcode,
+            };
+
+            if (extrinsics.Count == 1)
+            {
+                File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "_T.PDF", originalOrderInputPath + "/Processed/" + sourceOrderId + "_" + orderbarcode + "_T.PDF", true);
+
+
+                coverComponent.path = "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + sourceOrderId + "_" + orderbarcode + "_T.PDF";
+                textComponent.path = "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + sourceOrderId + "_" + orderbarcode + "_T.PDF";
+            }
+
+            if (extrinsics.Count == 2)
+            {
+                coverComponent.path = "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + sourceOrderId + "_" + orderbarcode + "_C.PDF";
+                textComponent.path = "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + sourceOrderId + "_" + orderbarcode + "_T.PDF";
+            }
+
+
+            SiteflowOrder.Attributes textAttr = new SiteflowOrder.Attributes
+            {
+                ProductFinishedPageSize = coverComponent.attributes.ProductFinishedPageSize,
+                Pages = _pdfModificationHelper.GetPageCount(originalOrderInputPath + "/Processed/" + sourceOrderId + "_" + orderbarcode + "_T.PDF"),
+                ProductCode = coverComponent.attributes.ProductCode,
+                TourProduct = coverComponent.attributes.TourProduct,
+                DesignCode = coverComponent.attributes.DesignCode,
+                Length = coverComponent.attributes.Length,
+                SizeForImpo = coverComponent.attributes.SizeForImpo,
+                Substrate = coverComponent.attributes.Substrate,
+                GiftWrap = coverComponent.attributes.GiftWrap,
+                CoverType = coverComponent.attributes.CoverType,
+                PageDesign = coverComponent.attributes.PageDesign,
+                CardDesign = coverComponent.attributes.CardDesign
+            };
+            textComponent.attributes = textAttr;
+
+            item.components.Add(textComponent);
+
+
         }
 
         private void BelfieldProcessingInit(string orderorderId, string orderbarcode, string sku, SiteflowOrder.Item item, long orderId,
@@ -915,6 +1026,15 @@ namespace ChateauSiteFlowApp
 
             File.Copy(orderfileName, finalPdfPath, true);
 
+
+            var giftWrap = string.Empty;
+
+            try
+            {
+                giftWrap = item.components[0].attributes.GiftWrap;
+            }
+            catch { }
+
             //label
             for (int i = 1; i <= qty; i++)
             {
@@ -924,7 +1044,7 @@ namespace ChateauSiteFlowApp
                 var qtyString = i.ToString() + " of " + qty.ToString();
 
                 _pdfModificationHelper.ChateauCandleLabelGeneration(labelFileName, substrate,
-                    orderbarcode, orderorderId, qtyString);
+                    orderbarcode, orderorderId, qtyString, giftWrap);
             }
 
             _orderHelper.AddOrderItem(orderId, sku, sourceItemId, qty, substrate, finalPdfPath);
@@ -949,10 +1069,29 @@ namespace ChateauSiteFlowApp
                 var artworkFileName =
                     @"\\192.168.0.84\TheChateauTV\DyeSubChateau\" + substrate + @"\Artwork\" + orderbarcode +
                     "_Artwork_" + i.ToString() + ".pdf";
+                var pngFileName =
+                  @"\\192.168.0.84\TheChateauTV\DyeSubChateau\" + substrate + @"\Artwork\" + orderbarcode +
+                  "_Artwork_" + i.ToString() + ".png";
+
                 File.Copy(orderfileName, artworkFileName, true);
+
+                try
+                {
+                    ConvertPDFToPNG(artworkFileName, pngFileName);
+                }
+                catch { }
+
             }
 
             File.Copy(orderfileName, finalPdfPath, true);
+
+            var giftWrap = string.Empty;
+
+            try
+            {
+                giftWrap = item.components[0].attributes.GiftWrap;
+            }
+            catch { }
 
             //label
             for (int i = 1; i <= qty; i++)
@@ -962,8 +1101,10 @@ namespace ChateauSiteFlowApp
 
                 var qtyString = i.ToString() + " of " + qty.ToString();
 
+
+
                 _pdfModificationHelper.ChateauBagApronLabelGeneration(labelFileName, substrate,
-                    orderbarcode, orderorderId, qtyString);
+                    orderbarcode, orderorderId, qtyString, giftWrap);
             }
 
             _orderHelper.AddOrderItem(orderId, sku, sourceItemId, qty, substrate, finalPdfPath);
@@ -971,6 +1112,39 @@ namespace ChateauSiteFlowApp
             item.components[0].path =
                 "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
                 "_" + orderbarcode + ".PDF";
+        }
+
+        private void ConvertPDFToPNG(string inputPDF, string imageName)
+        {
+            string AsposeLicense = ConfigurationManager.AppSettings["WorkingDirectory"] +
+                                      ConfigurationManager.AppSettings["ServiceFolderPath"] +
+                                      @"License/Aspose.Pdf.lic";
+
+            Aspose.Pdf.License license = new Aspose.Pdf.License();
+            license.SetLicense(AsposeLicense);
+
+            Aspose.Pdf.Document sourcePdfDoc = new Aspose.Pdf.Document(inputPDF);
+
+            //// Create Resolution object            
+            Aspose.Pdf.Devices.Resolution imgResolution = new Aspose.Pdf.Devices.Resolution(300);
+
+            // Initialize the PngDevice object to create and configure output images
+            Aspose.Pdf.Devices.PngDevice pngDevice = new Aspose.Pdf.Devices.PngDevice(imgResolution);
+
+            // Parse through all the pages in the PDF for conversion to image
+            for (int pageNumber = 1; pageNumber <= sourcePdfDoc.Pages.Count; pageNumber++)
+            {
+                // Create the output file stream by providing different name for each image
+                using (FileStream fileStream = new FileStream(imageName,
+                FileMode.Create))
+                {
+                    // Convert a particular page and save the image to stream
+                    pngDevice.Process(sourcePdfDoc.Pages[pageNumber], fileStream);
+
+                    // Close stream
+                    fileStream.Close();
+                }
+            }
         }
 
         private static string SetCustomerName(SiteflowOrder.RootObject jsonObject, string customerName)
@@ -984,7 +1158,7 @@ namespace ChateauSiteFlowApp
             return customerName;
         }
 
-        private void MediaClipFilesDownload(bool hasMediaClipItem, SiteflowOrder.RootObject jsonObject)
+        private void MediaClipFilesDownload(bool hasMediaClipItem, int? mediaClipLineNumber, SiteflowOrder.RootObject jsonObject, string originalOrderInputPath)
         {
             if (hasMediaClipItem)
             {
@@ -994,6 +1168,9 @@ namespace ChateauSiteFlowApp
 
                 foreach (var item in jsonObject.orderData.items)
                 {
+                    if (item.mediaclipLineNumber != mediaClipLineNumber)
+                        continue;
+
                     if (!string.IsNullOrEmpty(item.supplierPartAuxiliaryId))
                     {
                         var orderDetails = _mediaClipEntities.tMediaClipOrderDetails.FirstOrDefault(m =>
@@ -1008,22 +1185,21 @@ namespace ChateauSiteFlowApp
                             var path = component.path;
                             var coverOrText = component.code;
 
-                            if (coverOrText == "Cover")
-                            {
-                                var coverExtrinsic = extrinsicDetails.FirstOrDefault(x => x.ExtrinsicName.Contains("cover"));
+                            var coverExtrinsic = extrinsicDetails.FirstOrDefault(x => x.ExtrinsicName.Contains("cover"));
 
+                            if (coverExtrinsic != null)
+                            {
                                 DownloadPdf(coverExtrinsic.ExtrinsicValue,
-                                    _localProcessingPath + "/PDFS/" + jsonObject.orderData.sourceOrderId + "-" +
-                                    (1) + ".PDF");
+                                          _localProcessingPath + "/PDFS/" + jsonObject.orderData.sourceOrderId + "_" + mediaClipLineNumber + "_C.PDF");
                             }
-                            else
-                            {
-                                var pageExtrinsic = extrinsicDetails.FirstOrDefault(x => x.ExtrinsicName.Contains("pages"));
+                            var pageExtrinsic = extrinsicDetails.FirstOrDefault(x => x.ExtrinsicName.Contains("pages"));
 
+                            if (pageExtrinsic != null)
+                            {
                                 DownloadPdf(pageExtrinsic.ExtrinsicValue,
-                                    _localProcessingPath + "/PDFS/" + jsonObject.orderData.sourceOrderId + "-" +
-                                    (2) + ".PDF");
+                                          _localProcessingPath + "/PDFS/" + jsonObject.orderData.sourceOrderId + "_" + mediaClipLineNumber + "_T.PDF");
                             }
+
                         }
                     }
                 }
@@ -1047,25 +1223,25 @@ namespace ChateauSiteFlowApp
             }
         }
 
-        private void CookbookProcessingPrintzware(string sourceOrderId, string originalOrderInputPath, string orderorderId, string orderbarcode, SiteflowOrder.Item item, int pdfCount)
+        private void CookbookProcessingPrintzware(string sourceOrderId, int? mediaclipLineNumber, string originalOrderInputPath, string orderorderId, string orderbarcode, SiteflowOrder.Item item, int pdfCount)
         {
-            File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + pdfCount + ".PDF", originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode + ".PDF", true);
-
+            File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "_" + mediaclipLineNumber + "_C.PDF", originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode + "_" + mediaclipLineNumber + "_C.PDF", true);
+            File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "_" + mediaclipLineNumber + "_T.PDF", originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode + "_" + mediaclipLineNumber + "_T.PDF", true);
             int coverIndex = 0;
             coverIndex = item.components[0].code == "Cover" ? 0 : 1;
 
             item.components[coverIndex].path =
-                  "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId + "_" + orderbarcode + ".PDF";
+                  "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId + "_" + orderbarcode + "_" + mediaclipLineNumber + "_C.PDF";
 
             var componentB = GenerateCookbookAdditionalComponent(item, coverIndex, "B");
             var componentC = GenerateCookbookAdditionalComponent(item, coverIndex, "C");
             var componentD = GenerateCookbookAdditionalComponent(item, coverIndex, "D");
             var componentE = GenerateCookbookAdditionalComponent(item, coverIndex, "E");
 
-            componentB.path = "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId + "_" + orderbarcode + ".PDF";
-            componentC.path = "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId + "_" + orderbarcode + ".PDF";
-            componentD.path = "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId + "_" + orderbarcode + ".PDF";
-            componentE.path = "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId + "_" + orderbarcode + ".PDF";
+            componentB.path = "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId + "_" + orderbarcode + "_" + mediaclipLineNumber + "_T.PDF";
+            componentC.path = "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId + "_" + orderbarcode + "_" + mediaclipLineNumber + "_T.PDF";
+            componentD.path = "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId + "_" + orderbarcode + "_" + mediaclipLineNumber + "_T.PDF";
+            componentE.path = "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId + "_" + orderbarcode + "_" + mediaclipLineNumber + "_T.PDF";
 
             item.components.Add(componentB);
             item.components.Add(componentC);
@@ -1137,7 +1313,7 @@ namespace ChateauSiteFlowApp
                 default:
                     break;
             }
-           
+
             SiteflowOrder.Component newComponent = new SiteflowOrder.Component
             {
                 fetch = item.components[coverIndex].fetch,
@@ -1380,8 +1556,6 @@ namespace ChateauSiteFlowApp
             return goodOrder;
         }
 
-
-
         private void DumpPreOrderToDatabase(string sku, bool orderContainsPreOrderAndOtherProducts,
             List<SiteflowOrder.Item> preOrderJsonItems, SiteflowOrder.Item item,
             long orderId, string sourceOrderId, string sourceItemId, string orderbarcode,
@@ -1421,7 +1595,6 @@ namespace ChateauSiteFlowApp
                 _orderHelper.AddPreOrder(model);
             }
         }
-
 
         private void DumpKnivesToDatabase(string sku, bool orderContainsKnivesAndOtherProducts,
             List<SiteflowOrder.Item> knifeJsonItems, SiteflowOrder.Item item,
@@ -1502,7 +1675,6 @@ namespace ChateauSiteFlowApp
             }
         }
 
-
         private static bool OrderContainsOnlyPreOrder(SiteflowOrder.RootObject jsonObject)
         {
             bool onlyPreOrder = true;
@@ -1520,7 +1692,6 @@ namespace ChateauSiteFlowApp
 
             return onlyPreOrder;
         }
-
 
         private static bool OrderContainsMixProductsWithPreOrder(SiteflowOrder.RootObject jsonObject)
         {
@@ -1632,7 +1803,6 @@ namespace ChateauSiteFlowApp
             }
 
         }
-
 
         public void ChateauWelcomeCardsProcessing()
         {

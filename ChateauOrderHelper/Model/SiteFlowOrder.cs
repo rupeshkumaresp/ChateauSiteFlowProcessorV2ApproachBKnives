@@ -24,6 +24,15 @@ namespace ChateauOrderHelper.Model
             [JsonProperty(PropertyName = "Size For Impo")]
             public string SizeForImpo { get; set; }
             public string Substrate { get; set; }
+            public string GiftWrap { get; set; }
+
+            public string CardFromName { get; set; }
+            public string CardToName { get; set; }
+            public string CardMessage { get; set; }
+            public string CardMessage2 { get; set; }
+            public string CardMessage3 { get; set; }
+                        
+            public string GiftTag { get; set; }
             public string CoverType { get; set; }
             public string PageDesign { get; set; }
             public string CardDesign { get; set; }
@@ -48,7 +57,7 @@ namespace ChateauOrderHelper.Model
             public string code { get; set; }
             public string componentId { get; set; }
             public string path { get; set; }
-            public int? Pages { get; set; }
+            public int? Pages { get; set; }            
         }
         [Serializable]
         public class Item
@@ -58,7 +67,7 @@ namespace ChateauOrderHelper.Model
             public string barcode { get; set; }
             public string sourceItemId { get; set; }
             public string supplierPartAuxiliaryId { get; set; }
-            public int mediaclipLineNumber { get; set; }
+            public int ? mediaclipLineNumber { get; set; }
             public int quantity { get; set; }
             public decimal unitWeight { get; set; }
             public string sku { get; set; }

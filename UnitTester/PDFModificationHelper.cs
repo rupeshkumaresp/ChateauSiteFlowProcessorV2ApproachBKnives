@@ -537,7 +537,7 @@ namespace ChateauSiteFlowApp
             AddBarcodeImage(_pdfPath, Path.GetFileName(file), substrateName, barcode, orderId, qty);
         }
 
-        internal void ChateauBagApronLabelGeneration(string labelFileName, string substrate, string orderbarcode, string orderorderId, string qtyString)
+        internal void ChateauBagApronLabelGeneration(string labelFileName, string substrate, string orderbarcode, string orderorderId, string qtyString, string giftWrap)
         {
             //Generate  label of size  54x25mm
 
@@ -600,13 +600,13 @@ namespace ChateauSiteFlowApp
             boxTable.DefaultCell.Border = 0;
             boxTable.WidthPercentage = 100;
 
-            widths = new float[] { 226f, 226f };
+            widths = new float[] { 100f, 352f };
             boxTable.SetWidths(widths);
 
 
 
             PdfPCell cell21 = new PdfPCell();
-            cell21.AddElement(new Paragraph(new Chunk("Order Number:", font)));
+            cell21.AddElement(new Paragraph(new Chunk("Order:", font)));
             cell21.BorderWidthTop = 0;
             cell21.Colspan = 1;
             cell21.BorderWidthBottom = 0;
@@ -700,6 +700,8 @@ namespace ChateauSiteFlowApp
             //cell51.PaddingTop = -20;
             boxTable.AddCell(cell51);
 
+            if (!string.IsNullOrEmpty(giftWrap))
+                qtyString = qtyString + " ( " + giftWrap + " ) ";
 
             PdfPCell cell52 = new PdfPCell();
             cell52.AddElement(new Paragraph(new Chunk(qtyString, font)));
@@ -722,8 +724,7 @@ namespace ChateauSiteFlowApp
 
         }
 
-
-        internal void ChateauCandleLabelGeneration(string labelFileName, string substrate, string orderbarcode, string orderorderId, string qtyString)
+        internal void ChateauCandleLabelGeneration(string labelFileName, string substrate, string orderbarcode, string orderorderId, string qtyString, string giftWrap)
         {
             //Generate  label of size  54x25mm
 
@@ -786,13 +787,13 @@ namespace ChateauSiteFlowApp
             boxTable.DefaultCell.Border = 0;
             boxTable.WidthPercentage = 100;
 
-            widths = new float[] { 226f, 226f };
+            widths = new float[] { 100f, 352f };
             boxTable.SetWidths(widths);
 
 
 
             PdfPCell cell21 = new PdfPCell();
-            cell21.AddElement(new Paragraph(new Chunk("Order Number:", font)));
+            cell21.AddElement(new Paragraph(new Chunk("Order:", font)));
             cell21.BorderWidthTop = 0;
             cell21.Colspan = 1;
             cell21.BorderWidthBottom = 0;
@@ -886,6 +887,8 @@ namespace ChateauSiteFlowApp
             //cell51.PaddingTop = -20;
             boxTable.AddCell(cell51);
 
+            if (!string.IsNullOrEmpty(giftWrap))
+                qtyString = qtyString + " ( " + giftWrap + " ) ";
 
             PdfPCell cell52 = new PdfPCell();
             cell52.AddElement(new Paragraph(new Chunk(qtyString, font)));
@@ -993,6 +996,17 @@ namespace ChateauSiteFlowApp
 
         }
 
+        internal int? GetPageCount(string src)
+        {
+            int pageCount = 1;
+
+            using (PdfReader pdfReader = new PdfReader(src))
+            {
+                pageCount = pdfReader.NumberOfPages;
+            }
+
+            return pageCount;
+        }
 
         public string ChateauStationeryPDFModifications(string orderorderId, string inputPDFPath, string code, string StationeryStyle, string StationeryType, string customerName, int qtyPDF, Dictionary<string, string> processingSummary)
         {
