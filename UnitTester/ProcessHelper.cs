@@ -11,6 +11,7 @@ using PicsMeOrderHelper.Model;
 using Newtonsoft.Json;
 using PicsMeSiteFlowApp.Interface;
 using SiteFlowHelper;
+using iTextSharp.text.pdf;
 
 namespace PicsMeSiteFlowApp
 {
@@ -668,6 +669,23 @@ namespace PicsMeSiteFlowApp
 
             item.components[1].path =
                 "https://siteflowpdfs.espautomation.co.uk/Picsme/" + orderorderId + "_" + orderbarcode + "_2.PDF";
+
+            item.components[0].attributes.Pages = GetPageCount(originalOrderInputPath + "/" + sourceOrderId + "_" + orderbarcode + "_1.PDF");
+            item.components[1].attributes.Pages = GetPageCount(originalOrderInputPath + "/" + sourceOrderId + "_" + orderbarcode + "_2.PDF");               
+
+        }
+
+
+        internal int? GetPageCount(string src)
+        {
+            int pageCount = 1;
+
+            using (PdfReader pdfReader = new PdfReader(src))
+            {
+                pageCount = pdfReader.NumberOfPages;
+            }
+
+            return pageCount;
         }
 
         /// <summary>
