@@ -18,6 +18,8 @@ namespace PicsMeOrderHelper.Model
         {
             public string ProductCode { get; set; }
             public string ProductFinishedPageSize { get; set; }
+            public string Extra { get; set; }
+            public string orientation { get; set; }
             public string TourProduct { get; set; }
             public string DesignCode { get; set; }
             public string Length { get; set; }
@@ -105,7 +107,6 @@ namespace PicsMeOrderHelper.Model
             public string unitWeight { get; set; }
             public int shipmentIndex { get; set; }
             public string ShipByDate { get; set; }
-            public int slaDays { get; set; }
             public bool canShipEarly { get; set; }
             public bool pspBranding { get; set; }
         }

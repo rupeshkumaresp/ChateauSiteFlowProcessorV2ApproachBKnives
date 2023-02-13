@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Microsoft.Exchange.WebServices.Autodiscover;
+using System;
 using System.Configuration;
 using System.IO;
+using System.Net;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
 
@@ -58,93 +60,72 @@ namespace PicsMeSiteFlowApp
 
         #endregion
 
+        public static void SendMailWithAttachment(string eto, string subject, string message, string attachmentPath)
+        {
+
+            try
+            {
+                MailMessage mailMessage = new MailMessage();
+                mailMessage.From = new MailAddress("info@espautomation.co.uk");
+                mailMessage.To.Add(new MailAddress(eto));
+                mailMessage.Subject = subject;
+                mailMessage.Attachments.Add(new Attachment(attachmentPath));
+                mailMessage.Body = message;
+                mailMessage.IsBodyHtml = true;
+                SmtpClient client = new SmtpClient();
+                client.Credentials = new NetworkCredential("info@espautomation.co.uk", "LT4HP8vi#pg@Vb9^$-3R9q+e");
+                client.Port = 587;
+                client.Host = "smtp.office365.com";
+                client.EnableSsl = true;
+                client.Send(mailMessage);
+            }
+            catch (SmtpException exception)
+            {
+                string msg = "Mail cannot be sent (SmtpException):";
+                msg += exception.Message;
+                throw new Exception(msg);
+            }
+
+            catch (AutodiscoverRemoteException exception)
+            {
+                string msg = "Mail cannot be sent(AutodiscoverRemoteException):";
+                msg += exception.Message;
+                throw new Exception(msg);
+
+            }
+
+        }
+
         public static void SendMail(string eto, string subject, string message)
         {
             try
             {
-
-                var priority = MailPriority.Normal;
-
-                MailMessage mailer = new MailMessage("info@espweb2print.co.uk", eto, subject, message);
-
-                SmtpClient smtp = new SmtpClient("espcolour-co-uk.mail.protection.outlook.com");
-                mailer.IsBodyHtml = true;
-                mailer.Priority = priority;
-                smtp.UseDefaultCredentials = false;
-                smtp.Credentials = null;
-                smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
-                smtp.Send(mailer);
-
+                MailMessage mailMessage = new MailMessage();
+                mailMessage.From = new MailAddress("info@espautomation.co.uk");
+                mailMessage.To.Add(new MailAddress(eto));
+                mailMessage.Subject = subject;
+                mailMessage.Body = message;
+                mailMessage.IsBodyHtml = true;
+                SmtpClient client = new SmtpClient();
+                client.Credentials = new NetworkCredential("info@espautomation.co.uk", "LT4HP8vi#pg@Vb9^$-3R9q+e");
+                client.Port = 587;
+                client.Host = "smtp.office365.com";
+                client.EnableSsl = true;
+                client.Send(mailMessage);
             }
-            catch (Exception)
+            catch (SmtpException exception)
             {
-                //LOG IT TO A LOG FILE
-            }
-
-        }
-
-      
-        public static void SendMailWithAttachment(string eto, string subject, string message, string attachmentPath1, string attachmentPath2)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(eto))
-                    return;
-                var priority = MailPriority.Normal;
-
-                MailMessage mailer = new MailMessage("info@espweb2print.co.uk", eto, subject, message);
-
-                if (!string.IsNullOrEmpty(attachmentPath1))
-                    mailer.Attachments.Add(new Attachment(attachmentPath1));
-
-                if (!string.IsNullOrEmpty(attachmentPath2))
-                {
-                    if (File.Exists(attachmentPath2))
-                        mailer.Attachments.Add(new Attachment(attachmentPath2));
-                }
-
-
-                SmtpClient smtp = new SmtpClient("espcolour-co-uk.mail.protection.outlook.com");
-                mailer.IsBodyHtml = true;
-                mailer.Priority = priority;
-                smtp.UseDefaultCredentials = false;
-                smtp.Credentials = null;
-                smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
-                smtp.Send(mailer);
-
-            }
-            catch (Exception)
-            {
-                //LOG IT TO A LOG FILE
+                string msg = "Mail cannot be sent (SmtpException):";
+                msg += exception.Message;
+                throw new Exception(msg);
             }
 
-        }
-
-        public static void SendMailWithAttachment(string eto, string subject, string message, string attachmentPath)
-        {
-            try
+            catch (AutodiscoverRemoteException exception)
             {
-                if (string.IsNullOrEmpty(eto))
-                    return;
-                var priority = MailPriority.Normal;
+                string msg = "Mail cannot be sent(AutodiscoverRemoteException):";
+                msg += exception.Message;
+                throw new Exception(msg);
 
-                MailMessage mailer = new MailMessage("info@espweb2print.co.uk", eto, subject, message);
-
-                if (!string.IsNullOrEmpty(attachmentPath))
-                    mailer.Attachments.Add(new Attachment(attachmentPath));
-
-                SmtpClient smtp = new SmtpClient("espcolour-co-uk.mail.protection.outlook.com");
-                mailer.IsBodyHtml = true;
-                mailer.Priority = priority;
-                smtp.UseDefaultCredentials = false;
-                smtp.Credentials = null;
-                smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
-                smtp.Send(mailer);
-
-            }
-            catch (Exception)
-            {
-                //LOG IT TO A LOG FILE
             }
 
         }

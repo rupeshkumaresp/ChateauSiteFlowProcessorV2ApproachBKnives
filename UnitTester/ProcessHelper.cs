@@ -59,6 +59,8 @@ namespace PicsMeSiteFlowApp
 
             try
             {
+                System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
+
                 WebClient webClient = new WebClient();
                 webClient.DownloadFile(url, filename);
 
@@ -477,6 +479,7 @@ namespace PicsMeSiteFlowApp
                             }
 
                             File.Copy(staticPdfPath + pdfName, pdfPath + sourceItemId + ".PDF", true);
+                            File.Copy(staticPdfPath + pdfName, _localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) + ".PDF", true);
                         }
                         else
                         {
@@ -511,8 +514,7 @@ namespace PicsMeSiteFlowApp
 
                     var originalOrderInputPath = ConfigurationManager.AppSettings["OriginalOrderInputPath"];
 
-                    var finalPdfPath = originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode +
-                                       ".PDF";
+                    var finalPdfPath = originalOrderInputPath + orderorderId + "_" + orderbarcode + ".PDF";
 
                     if (sku.ToLower().Contains("photobook"))
                     {
@@ -522,7 +524,7 @@ namespace PicsMeSiteFlowApp
                     {
                         File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) + ".PDF", finalPdfPath, true);
                         item.components[0].path =
-                            "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId +
+                            "https://siteflowpdfs.espautomation.co.uk/Picsme/" + orderorderId +
                             "_" + orderbarcode + ".PDF";
                     }
 
@@ -545,6 +547,8 @@ namespace PicsMeSiteFlowApp
 
                 if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" + fileName))
                     File.Delete(_localProcessingPath + "\\ProcessedInput\\" + fileName);
+
+                File.Copy(jsonFile.FullName.ToString(), ConfigurationManager.AppSettings["OriginalOrderJsonInputPath"] + fileName, true);
 
                 File.Move(jsonFile.FullName.ToString(), _localProcessingPath + "\\ProcessedInput\\" + fileName);
 
@@ -587,8 +591,8 @@ namespace PicsMeSiteFlowApp
                     {
                         var mediaClipNumber = Convert.ToInt32(item.mediaclipLineNumber);
                         var orderDetails = _mediaClipEntities.tMediaClipOrderDetails.FirstOrDefault(m =>
-                            m.SupplierPartAuxilliaryId == item.supplierPartAuxiliaryId &&
-                            m.LineNumber == mediaClipNumber);
+                            m.SupplierPartAuxilliaryId == item.supplierPartAuxiliaryId /*&&
+                            m.LineNumber == mediaClipNumber*/);
 
                         var extrinsicDetails = _mediaClipEntities.tMediaClipOrderExtrinsic
                             .Where(e => e.MediaClipOrderDetailsId == orderDetails.OrderDetailsId).ToList();
@@ -656,8 +660,8 @@ namespace PicsMeSiteFlowApp
         /// <param name="item"></param>
         public void PhotobookProcessing(string sourceOrderId, string originalOrderInputPath, string orderorderId, string orderbarcode, SiteflowOrder.Item item)
         {
-            File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + 1 + ".PDF", originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode + "_1.PDF", true);
-            File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + 2 + ".PDF", originalOrderInputPath + "/Processed/" + orderorderId + "_" + orderbarcode + "_2.PDF", true);
+            File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + 1 + ".PDF", originalOrderInputPath + "/" + orderorderId + "_" + orderbarcode + "_1.PDF", true);
+            File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + 2 + ".PDF", originalOrderInputPath + "/" + orderorderId + "_" + orderbarcode + "_2.PDF", true);
 
             item.components[0].path =
                 "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId + "_" + orderbarcode + "_1.PDF";
@@ -718,7 +722,6 @@ namespace PicsMeSiteFlowApp
             foreach (var orderDataShipment in jsonObject.orderData.shipments)
             {
                 orderDataShipment.canShipEarly = true;
-                orderDataShipment.slaDays = 3;
             }
 
             return orderDatetime;
