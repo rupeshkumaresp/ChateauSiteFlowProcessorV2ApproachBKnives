@@ -664,10 +664,10 @@ namespace PicsMeSiteFlowApp
             File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + 2 + ".PDF", originalOrderInputPath + "/" + orderorderId + "_" + orderbarcode + "_2.PDF", true);
 
             item.components[0].path =
-                "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId + "_" + orderbarcode + "_1.PDF";
+                "https://siteflowpdfs.espautomation.co.uk/Picsme/" + orderorderId + "_" + orderbarcode + "_1.PDF";
 
             item.components[1].path =
-                "https://smilepdf.espsmile.co.uk/pdfs/Processed/" + orderorderId + "_" + orderbarcode + "_2.PDF";
+                "https://siteflowpdfs.espautomation.co.uk/Picsme/" + orderorderId + "_" + orderbarcode + "_2.PDF";
         }
 
         /// <summary>
