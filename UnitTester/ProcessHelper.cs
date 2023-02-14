@@ -665,13 +665,14 @@ namespace PicsMeSiteFlowApp
             File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + 2 + ".PDF", originalOrderInputPath + "/" + orderorderId + "_" + orderbarcode + "_2.PDF", true);
 
             item.components[0].path =
-                "https://siteflowpdfs.espautomation.co.uk/Picsme/" + orderorderId + "_" + orderbarcode + "_1.PDF";
-
-            item.components[1].path =
                 "https://siteflowpdfs.espautomation.co.uk/Picsme/" + orderorderId + "_" + orderbarcode + "_2.PDF";
 
-            item.components[0].attributes.Pages = GetPageCount(originalOrderInputPath + "/" + sourceOrderId + "_" + orderbarcode + "_1.PDF");
-            item.components[1].attributes.Pages = GetPageCount(originalOrderInputPath + "/" + sourceOrderId + "_" + orderbarcode + "_2.PDF");               
+            item.components[1].path =
+                "https://siteflowpdfs.espautomation.co.uk/Picsme/" + orderorderId + "_" + orderbarcode + "_1.PDF";
+
+            item.components[0].attributes.Pages = GetPageCount(originalOrderInputPath + "/" + sourceOrderId + "_" + orderbarcode + "_2.PDF");
+            item.components[1].attributes.Pages = GetPageCount(originalOrderInputPath + "/" + sourceOrderId + "_" + orderbarcode + "_1.PDF");
+
 
         }
 
