@@ -295,7 +295,6 @@ namespace PicsMeSiteFlowApp
         }
 
 
-
         public Dictionary<string, string> CreateOrder()
         {
 
@@ -370,23 +369,12 @@ namespace PicsMeSiteFlowApp
                     continue;
                 }
 
-                if (jsonObject.orderData.shipments.Count > 0 && jsonObject.orderData.shipments[0].shipTo != null)
+                bool incompleteAddress = CheckIncompleteAddress(jsonFile, jsonObject);
+
+                if (incompleteAddress)
                 {
-                    if (string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.address1) ||
-                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.town) ||
-                        string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.postcode))
-                    {
-                        if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" +
-                                        Path.GetFileName(jsonFile.FullName)))
-                            File.Delete(_localProcessingPath + "\\ProcessedInput\\" +
-                                        Path.GetFileName(jsonFile.FullName));
-
-                        File.Move(jsonFile.FullName,
-                            _localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
-
-                        processingSummary.Add(sourceOrderId, "Error - Incomplete Address");
-                        continue;
-                    }
+                    processingSummary.Add(sourceOrderId, "Error - Incomplete Address");
+                    continue;
                 }
 
                 var orderDatetime = SetOrderDatetime(jsonObject);
@@ -453,7 +441,28 @@ namespace PicsMeSiteFlowApp
                     if (hasMediaClipItem)
                         staticOrder = false;
 
-                    MediaClipFilesDownload(hasMediaClipItem, jsonObject, pdfCount);
+                    bool success = MediaClipFilesDownload(hasMediaClipItem, jsonObject, pdfCount);
+
+                    if (!success)
+                    {
+                        if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName)))
+                            File.Delete(_localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
+
+                        File.Copy(jsonFile.FullName.ToString(), ConfigurationManager.AppSettings["OriginalOrderJsonInputPath"] + Path.GetFileName(jsonFile.FullName), true);
+
+                        File.Move(jsonFile.FullName.ToString(), _localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
+
+                        if (processingSummary.ContainsKey(sourceOrderId))
+                        {
+                            processingSummary[sourceOrderId] += sourceOrderId + "- Media clip download Error!";
+                            continue;
+                        }
+                        else
+                        {
+                            processingSummary.Add(sourceOrderId, sourceOrderId + "- Media clip download Error!");
+                            continue;
+                        }
+                    }
 
                     var substrate = item.components[0].attributes.Substrate;
 
@@ -561,6 +570,32 @@ namespace PicsMeSiteFlowApp
             return processingSummary;
         }
 
+        private bool CheckIncompleteAddress(FileInfo jsonFile, SiteflowOrder.RootObject jsonObject)
+        {
+            bool incompleteAddress = false;
+
+            if (jsonObject.orderData.shipments.Count > 0 && jsonObject.orderData.shipments[0].shipTo != null)
+            {
+                if (string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.address1) ||
+                    string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.town) ||
+                    string.IsNullOrEmpty(jsonObject.orderData.shipments[0].shipTo.postcode))
+                {
+                    incompleteAddress = true;
+                    if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" +
+                                    Path.GetFileName(jsonFile.FullName)))
+                        File.Delete(_localProcessingPath + "\\ProcessedInput\\" +
+                                    Path.GetFileName(jsonFile.FullName));
+
+                    File.Move(jsonFile.FullName,
+                        _localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
+
+
+                }
+            }
+
+            return incompleteAddress;
+        }
+
         /// <summary>
         /// set customer name as shipment customer name
         /// </summary>
@@ -582,73 +617,82 @@ namespace PicsMeSiteFlowApp
         /// <param name="hasMediaClipItem"></param>
         /// <param name="jsonObject"></param>
         /// <param name="pdfCount"></param>
-        public void MediaClipFilesDownload(bool hasMediaClipItem, SiteflowOrder.RootObject jsonObject, int pdfCount)
+        public bool MediaClipFilesDownload(bool hasMediaClipItem, SiteflowOrder.RootObject jsonObject, int pdfCount)
         {
+            bool sucess = true;
+
             if (hasMediaClipItem)
             {
-                foreach (var item in jsonObject.orderData.items)
+                try
                 {
-                    if (!string.IsNullOrEmpty(item.supplierPartAuxiliaryId))
+                    foreach (var item in jsonObject.orderData.items)
                     {
-                        var mediaClipNumber = Convert.ToInt32(item.mediaclipLineNumber);
-                        var orderDetails = _mediaClipEntities.tMediaClipOrderDetails.FirstOrDefault(m =>
-                            m.SupplierPartAuxilliaryId == item.supplierPartAuxiliaryId /*&&
+                        if (!string.IsNullOrEmpty(item.supplierPartAuxiliaryId))
+                        {
+                            var mediaClipNumber = Convert.ToInt32(item.mediaclipLineNumber);
+                            var orderDetails = _mediaClipEntities.tMediaClipOrderDetails.FirstOrDefault(m =>
+                                m.SupplierPartAuxilliaryId == item.supplierPartAuxiliaryId /*&&
                             m.LineNumber == mediaClipNumber*/);
 
-                        var extrinsicDetails = _mediaClipEntities.tMediaClipOrderExtrinsic
-                            .Where(e => e.MediaClipOrderDetailsId == orderDetails.OrderDetailsId).ToList();
+                            var extrinsicDetails = _mediaClipEntities.tMediaClipOrderExtrinsic
+                                .Where(e => e.MediaClipOrderDetailsId == orderDetails.OrderDetailsId).ToList();
 
 
-                        if (item.components.Count == 1)
-                        {
-                            var extrinsic = extrinsicDetails.FirstOrDefault();
-
-                            DownloadPdf(extrinsic.ExtrinsicValue,
-                                _localProcessingPath + "/PDFS/" + jsonObject.orderData.sourceOrderId + "-" + (pdfCount) + ".PDF");
-
-                        }
-                        else
-                        {
-                            foreach (var component in item.components)
+                            if (item.components.Count == 1)
                             {
-                                var path = component.path;
-                                var coverOrText = component.code;
+                                var extrinsic = extrinsicDetails.FirstOrDefault();
 
-                                if (coverOrText == "Cover")
-                                {
-                                    var coverExtrinsic =
-                                        extrinsicDetails.FirstOrDefault(x => x.ExtrinsicName.Contains("cover"));
+                                DownloadPdf(extrinsic.ExtrinsicValue,
+                                    _localProcessingPath + "/PDFS/" + jsonObject.orderData.sourceOrderId + "-" + (pdfCount) + ".PDF");
 
-                                    DownloadPdf(coverExtrinsic.ExtrinsicValue,
-                                        _localProcessingPath + "/PDFS/" + jsonObject.orderData.sourceOrderId + "-" +
-                                        (1) + ".PDF");
-                                }
-                                else
+                            }
+                            else
+                            {
+                                foreach (var component in item.components)
                                 {
-                                    if (coverOrText == "Text")
+                                    var path = component.path;
+                                    var coverOrText = component.code;
+
+                                    if (coverOrText == "Cover")
                                     {
-                                        var pageExtrinsic =
-                                            extrinsicDetails.FirstOrDefault(x => x.ExtrinsicName.Contains("pages"));
+                                        var coverExtrinsic =
+                                            extrinsicDetails.FirstOrDefault(x => x.ExtrinsicName.Contains("cover"));
 
-                                        DownloadPdf(pageExtrinsic.ExtrinsicValue,
+                                        DownloadPdf(coverExtrinsic.ExtrinsicValue,
                                             _localProcessingPath + "/PDFS/" + jsonObject.orderData.sourceOrderId + "-" +
-                                            (2) + ".PDF");
+                                            (1) + ".PDF");
                                     }
                                     else
                                     {
-                                        var extrinsic = extrinsicDetails.FirstOrDefault();
+                                        if (coverOrText == "Text")
+                                        {
+                                            var pageExtrinsic =
+                                                extrinsicDetails.FirstOrDefault(x => x.ExtrinsicName.Contains("pages"));
 
-                                        DownloadPdf(extrinsic.ExtrinsicValue,
-                                            _localProcessingPath + "/PDFS/" + jsonObject.orderData.sourceOrderId + "-" +
-                                            (pdfCount) + ".PDF");
+                                            DownloadPdf(pageExtrinsic.ExtrinsicValue,
+                                                _localProcessingPath + "/PDFS/" + jsonObject.orderData.sourceOrderId + "-" +
+                                                (2) + ".PDF");
+                                        }
+                                        else
+                                        {
+                                            var extrinsic = extrinsicDetails.FirstOrDefault();
 
+                                            DownloadPdf(extrinsic.ExtrinsicValue,
+                                                _localProcessingPath + "/PDFS/" + jsonObject.orderData.sourceOrderId + "-" +
+                                                (pdfCount) + ".PDF");
+
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
+                catch { sucess = false; }
+
             }
+
+            return sucess;
         }
 
         /// <summary>
