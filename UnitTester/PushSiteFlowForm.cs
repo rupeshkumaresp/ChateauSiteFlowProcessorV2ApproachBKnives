@@ -30,6 +30,11 @@ namespace PicsMeSiteFlowApp
 
         private void ProcessJsonOrders()
         {
+            var now  = DateTime.Now;
+
+            if (now.Hour >= 17 || now.Hour <= 8)
+                return;
+
             var processHelper = new ProcessHelper();
 
 

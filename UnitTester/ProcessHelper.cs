@@ -158,6 +158,66 @@ namespace PicsMeSiteFlowApp
             if (messages.Count == 0)
                 return;
 
+
+            ProcessingStatusErrorEmailNotification(messages);
+            ProcessingStatusEmailNotification(messages);
+        }
+
+        private static void ProcessingStatusErrorEmailNotification(Dictionary<string, string> messages)
+        {
+            var defaultMessage = EmailHelper.ProcessingStatusSummaryEmailTemplate;
+
+            var orderstatuscontent = "";
+
+            orderstatuscontent +=
+                "<table border='1'><tr><td colspan='1'><strong>Order ID</strong></td><td colspan='1'><strong>Status</strong></td></tr>";
+
+            var orderStatusdetails = "";
+
+            if (messages.Keys.Count == 0)
+                return;
+
+            bool errorEmail = false;
+
+            foreach (var key in messages.Keys)
+            {
+                if (messages[key].Contains("Order failed"))
+                {
+                    errorEmail = true;
+                    orderStatusdetails += "<tr>";
+                    orderStatusdetails += "<td>" + key + "</td>";
+
+                    orderStatusdetails += "<td>" + messages[key] + "</td>";
+
+                    orderStatusdetails += "</tr>";
+                }
+            }
+
+            if (!errorEmail)
+                return;
+
+            orderstatuscontent += orderStatusdetails;
+            orderstatuscontent += "</table>";
+
+            defaultMessage = Regex.Replace(defaultMessage, "\\[ORDERSTATUS\\]", orderstatuscontent);
+
+            var emails = ConfigurationManager.AppSettings["NotificationErrorEmails"].Split(new char[] { ';' });
+
+            foreach (var email in emails)
+            {
+                if (String.IsNullOrEmpty(email))
+                    continue;
+
+                var timeNow = DateTime.Now.ToString("MM/dd/yyyy H:mm:ss");
+
+                EmailHelper.SendMail(email,
+                    "PicsMe Order Processing Error Notification - " + timeNow, defaultMessage);
+            }
+        }
+
+
+        private static void ProcessingStatusEmailNotification(Dictionary<string, string> messages)
+        {
             var defaultMessage = EmailHelper.ProcessingStatusSummaryEmailTemplate;
 
             var orderstatuscontent = "";
@@ -199,6 +259,7 @@ namespace PicsMeSiteFlowApp
                     "PicsMe Order Summary - " + timeNow, defaultMessage);
             }
         }
+
         /// <summary>
         /// push the orders to siteflow for processing
         /// </summary>
@@ -240,7 +301,7 @@ namespace PicsMeSiteFlowApp
         public Dictionary<string, string> CreateOrder()
         {
 
-            //GET EACH ORDER JSON PDF FROM FTP LOCATION            
+            //GET EACH ORDER JSON PDF FROM local directory
             var jsonFiles = new DirectoryInfo(_localProcessingPath + "\\Input\\").GetFiles("*.json");
 
             if (!jsonFiles.Any())
@@ -284,7 +345,7 @@ namespace PicsMeSiteFlowApp
                 catch
                 {
                     processingSummary.Add(Path.GetFileNameWithoutExtension(jsonFile.FullName),
-                        "Error- Json structure issue");
+                        "Error- Json structure issue - Order failed");
 
 
                     if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName)))
@@ -311,7 +372,7 @@ namespace PicsMeSiteFlowApp
                         _localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
 
                     processingSummary.Add(sourceOrderId,
-                        "Order exists in database and order has already been pushed to siteflow");
+                        "Order exists in database and order has already been pushed to siteflow - Order failed");
                     continue;
                 }
 
@@ -323,7 +384,7 @@ namespace PicsMeSiteFlowApp
 
                 if (incompleteAddress)
                 {
-                    processingSummary.Add(sourceOrderId, "Error - Incomplete Address");
+                    processingSummary.Add(sourceOrderId, "Error - Incomplete Address - Order failed");
                     continue;
                 }
 
@@ -412,12 +473,12 @@ namespace PicsMeSiteFlowApp
 
                         if (processingSummary.ContainsKey(sourceOrderId))
                         {
-                            processingSummary[sourceOrderId] += sourceOrderId + "- Media clip download Error!";
+                            processingSummary[sourceOrderId] += sourceOrderId + "- Media clip download Error! - Order failed";
                             continue;
                         }
                         else
                         {
-                            processingSummary.Add(sourceOrderId, sourceOrderId + "- Media clip download Error!");
+                            processingSummary.Add(sourceOrderId, sourceOrderId + "- Media clip download Error! - Order failed");
                             continue;
                         }
                     }
@@ -439,7 +500,7 @@ namespace PicsMeSiteFlowApp
                             {
                                 //send email
                                 processingSummary.Add(sourceOrderId + "-" + sourceItemId,
-                                    staticPdfPath + pdfName + " not found in static folder");
+                                    staticPdfPath + pdfName + " not found in static folder - Order failed");
 
                                 if (processingSummary.ContainsKey(sourceOrderId))
                                     processingSummary[sourceOrderId] += "Order failed";
@@ -461,7 +522,7 @@ namespace PicsMeSiteFlowApp
                                              ".PDF"))
                             {
                                 processingSummary.Add(sourceOrderId + "-" + sourceItemId,
-                                    sourceOrderId + "-" + (pdfCount) + ".PDF" + " PDF not found");
+                                    sourceOrderId + "-" + (pdfCount) + ".PDF" + " PDF not found - Order failed");
 
                                 if (processingSummary.ContainsKey(sourceOrderId))
                                 {
