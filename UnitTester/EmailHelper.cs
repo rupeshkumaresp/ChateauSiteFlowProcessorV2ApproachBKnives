@@ -73,7 +73,7 @@ namespace PicsMeSiteFlowApp
                 mailMessage.Body = message;
                 mailMessage.IsBodyHtml = true;
                 SmtpClient client = new SmtpClient();
-                client.Credentials = new NetworkCredential("info@espautomation.co.uk", "LT4HP8vi#pg@Vb9^$-3R9q+e");
+                client.Credentials = new NetworkCredential("info@espautomation.co.uk", "[Z0XI3A}kv0KAR$;K+)>");
                 client.Port = 587;
                 client.Host = "smtp.office365.com";
                 client.EnableSsl = true;
@@ -107,7 +107,7 @@ namespace PicsMeSiteFlowApp
                 mailMessage.Body = message;
                 mailMessage.IsBodyHtml = true;
                 SmtpClient client = new SmtpClient();
-                client.Credentials = new NetworkCredential("info@espautomation.co.uk", "LT4HP8vi#pg@Vb9^$-3R9q+e");
+                client.Credentials = new NetworkCredential("info@espautomation.co.uk", "[Z0XI3A}kv0KAR$;K+)>");
                 client.Port = 587;
                 client.Host = "smtp.office365.com";
                 client.EnableSsl = true;

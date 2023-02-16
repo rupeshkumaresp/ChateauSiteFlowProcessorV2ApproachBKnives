@@ -42,6 +42,7 @@ namespace PicsMeSiteFlowApp
             //PUsH ORDERS TO SITEFLOW
             processHelper.PushOrdersToSiteFlow(processingResults);
 
+            //Send Processing email
             ProcessHelper.SendProcessingSummaryEmail(processingResults);
 
         }

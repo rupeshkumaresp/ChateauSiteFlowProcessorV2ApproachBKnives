@@ -37,11 +37,13 @@ namespace PicsMeSiteFlowApp
             using (StreamReader r = new StreamReader(jsonFile.FullName))
             {
                 json = r.ReadToEnd();
+                //REMOVE EMPTY ATTRIBUTES
                 json = json.Replace("\"" + "error" + "\"" + ":[],", "");
                 json = json.Replace("\"" + "stockItems" + "\"" + ":[],", "");
                 json = json.Replace("\"" + "attributes" + "\"" + ":[],", "");
                 json = json.Replace("\"" + "extraData" + "\"" + ": [],", "");
                 json = json.Replace("\"" + "extraData" + "\"" + ":[],", "");
+                //DESERIALIZE TO OBJECT
                 jsonObject = JsonConvert.DeserializeObject<SiteflowOrder.RootObject>(json);
             }
 
@@ -146,69 +148,6 @@ namespace PicsMeSiteFlowApp
             }
 
         }
-        /// <summary>
-        /// notify for the orders for which json is missing, only pdfs have been received.
-        /// </summary>
-        /// <param name="pdfFiles"></param>
-        /// <param name="jsonFiles"></param>
-        private static void MissingJsonNotification(FileInfo[] pdfFiles, FileInfo[] jsonFiles)
-        {
-            List<string> pdfNameList = new List<string>();
-            List<string> jsonNameList = new List<string>();
-
-            foreach (var pdfFile in pdfFiles)
-            {
-                var fileName = Path.GetFileName(pdfFile.FullName);
-
-                var splitArray = fileName.Split(new char[] { '-' });
-
-                if (!pdfNameList.Contains(splitArray[0]))
-                    pdfNameList.Add(splitArray[0]);
-            }
-
-            foreach (var jsonFile in jsonFiles)
-            {
-                var fileName = Path.GetFileName(jsonFile.FullName);
-
-                var splitArray = fileName.Split(new char[] { '-' });
-
-                if (!jsonNameList.Contains(splitArray[0]))
-                    jsonNameList.Add(splitArray[0]);
-            }
-
-            List<string> missingJsonFiles = new List<string>();
-
-            foreach (var pdfname in pdfNameList)
-            {
-                if (!jsonNameList.Contains(pdfname))
-                {
-                    missingJsonFiles.Add(pdfname);
-                }
-            }
-
-            if (missingJsonFiles.Count > 0)
-            {
-                var defaultMessage = EmailHelper.MissingJsonEmailTemplate;
-
-                var missingNames = string.Join(",", missingJsonFiles);
-
-                defaultMessage = Regex.Replace(defaultMessage, "\\[FILENAME\\]", missingNames);
-
-                var emails = ConfigurationManager.AppSettings["NotificationEmails"].Split(new char[] { ';' });
-
-                foreach (var email in emails)
-                {
-                    if (String.IsNullOrEmpty(email))
-                        continue;
-
-                    var timeNow = DateTime.Now.ToString("MM/dd/yyyy H:mm:ss");
-
-                    EmailHelper.SendMail(email,
-                        "PicsMe - Action Required- Missing order Json" + timeNow, defaultMessage);
-                }
-            }
-        }
-
 
         /// <summary>
         /// Order processing summary email generation
@@ -294,12 +233,14 @@ namespace PicsMeSiteFlowApp
             }
         }
 
-
+        /// <summary>
+        /// Order processing steps - process static, photobook , media clip items
+        /// </summary>
+        /// <returns></returns>
         public Dictionary<string, string> CreateOrder()
         {
 
-            //get each order json pdf from FTP location            
-
+            //GET EACH ORDER JSON PDF FROM FTP LOCATION            
             var jsonFiles = new DirectoryInfo(_localProcessingPath + "\\Input\\").GetFiles("*.json");
 
             if (!jsonFiles.Any())
@@ -307,8 +248,10 @@ namespace PicsMeSiteFlowApp
 
             Dictionary<string, string> processingSummary = new Dictionary<string, string>();
 
+            //PROCESS EACH ORDER JSON
             foreach (var jsonFile in jsonFiles)
             {
+                #region READ JSON file
                 string json = "";
                 SiteflowOrder.RootObject jsonObject = new SiteflowOrder.RootObject();
                 bool exceptionJsonRead = false;
@@ -327,6 +270,7 @@ namespace PicsMeSiteFlowApp
                     File.Delete(_localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
                     continue;
                 }
+
 
                 var customerName = "";
 
@@ -351,7 +295,9 @@ namespace PicsMeSiteFlowApp
                     continue;
 
                 }
+                #endregion
 
+                #region Check Duplicate Order
                 var itemFound = _orderHelper.DoesOrderExists(sourceOrderId);
 
                 if (itemFound)
@@ -369,6 +315,10 @@ namespace PicsMeSiteFlowApp
                     continue;
                 }
 
+                #endregion
+
+                #region Check Incomplete Address
+
                 bool incompleteAddress = CheckIncompleteAddress(jsonFile, jsonObject);
 
                 if (incompleteAddress)
@@ -376,6 +326,8 @@ namespace PicsMeSiteFlowApp
                     processingSummary.Add(sourceOrderId, "Error - Incomplete Address");
                     continue;
                 }
+
+                #endregion
 
                 var orderDatetime = SetOrderDatetime(jsonObject);
 
@@ -393,6 +345,7 @@ namespace PicsMeSiteFlowApp
 
                 foreach (var item in jsonObject.orderData.items)
                 {
+                    #region Valdiation
                     var sourceItemId = item.sourceItemId;
                     var sku = item.sku;
 
@@ -435,6 +388,9 @@ namespace PicsMeSiteFlowApp
                             }
                         }
                     }
+                    #endregion
+
+                    #region Media Clip download
 
                     bool hasMediaClipItem = !string.IsNullOrEmpty(item.supplierPartAuxiliaryId);
 
@@ -442,6 +398,8 @@ namespace PicsMeSiteFlowApp
                         staticOrder = false;
 
                     bool success = MediaClipFilesDownload(hasMediaClipItem, jsonObject, pdfCount);
+
+
 
                     if (!success)
                     {
@@ -463,6 +421,7 @@ namespace PicsMeSiteFlowApp
                             continue;
                         }
                     }
+                    #endregion
 
                     var substrate = item.components[0].attributes.Substrate;
 
@@ -472,6 +431,8 @@ namespace PicsMeSiteFlowApp
 
                     if (!sku.ToLower().Contains("photobook"))
                     {
+                        #region Static Order
+
                         if (staticOrder)
                         {
                             if (!File.Exists(staticPdfPath + pdfName))
@@ -491,6 +452,9 @@ namespace PicsMeSiteFlowApp
                             File.Copy(staticPdfPath + pdfName, pdfPath + sourceItemId + ".PDF", true);
                             File.Copy(staticPdfPath + pdfName, _localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) + ".PDF", true);
                         }
+                        #endregion
+
+                        #region Non Static Order
                         else
                         {
                             if (!File.Exists(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) +
@@ -514,6 +478,7 @@ namespace PicsMeSiteFlowApp
                             File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) + ".PDF",
                                 pdfPath + sourceItemId + ".PDF", true);
                         }
+                        #endregion
                     }
 
                     string orderfileName = pdfPath + sourceItemId + ".PDF";
@@ -526,10 +491,14 @@ namespace PicsMeSiteFlowApp
 
                     var finalPdfPath = originalOrderInputPath + orderorderId + "_" + orderbarcode + ".PDF";
 
+                    #region PhotoBook Processing
                     if (sku.ToLower().Contains("photobook"))
                     {
                         PhotobookProcessing(sourceOrderId, originalOrderInputPath, orderorderId, orderbarcode, item);
                     }
+                    #endregion
+
+                    #region Other products
                     else
                     {
                         File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + (pdfCount) + ".PDF", finalPdfPath, true);
@@ -537,10 +506,13 @@ namespace PicsMeSiteFlowApp
                             "https://siteflowpdfs.espautomation.co.uk/Picsme/" + orderorderId +
                             "_" + orderbarcode + ".PDF";
                     }
+                    #endregion
 
                     _orderHelper.AddOrderItem(orderId, sku, sourceItemId, qty, substrate, finalPdfPath);
 
                 }
+
+                #region Siteflow Json creation & updating database
 
                 var serializedResultJson = JsonConvert.SerializeObject(
                     jsonObject,
@@ -552,7 +524,9 @@ namespace PicsMeSiteFlowApp
                 if (goodOrder)
                     _orderHelper.SubmitModifiedSiteflowJson(orderId, serializedResultJson);
 
+                #endregion
 
+                #region Cleanup
                 var fileName = Path.GetFileName(jsonFile.FullName);
 
                 if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" + fileName))
@@ -564,12 +538,18 @@ namespace PicsMeSiteFlowApp
 
                 if (!processingSummary.ContainsKey(sourceOrderId))
                     processingSummary.Add(sourceOrderId, "OK");
+                #endregion
 
             }
 
             return processingSummary;
         }
-
+        /// <summary>
+        /// Address validation
+        /// </summary>
+        /// <param name="jsonFile"></param>
+        /// <param name="jsonObject"></param>
+        /// <returns></returns>
         private bool CheckIncompleteAddress(FileInfo jsonFile, SiteflowOrder.RootObject jsonObject)
         {
             bool incompleteAddress = false;
@@ -708,12 +688,14 @@ namespace PicsMeSiteFlowApp
             File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + 1 + ".PDF", originalOrderInputPath + "/" + orderorderId + "_" + orderbarcode + "_1.PDF", true);
             File.Copy(_localProcessingPath + "/PDFS/" + sourceOrderId + "-" + 2 + ".PDF", originalOrderInputPath + "/" + orderorderId + "_" + orderbarcode + "_2.PDF", true);
 
+            //assign the cover and Text pages
             item.components[0].path =
                 "https://siteflowpdfs.espautomation.co.uk/Picsme/" + orderorderId + "_" + orderbarcode + "_2.PDF";
 
             item.components[1].path =
                 "https://siteflowpdfs.espautomation.co.uk/Picsme/" + orderorderId + "_" + orderbarcode + "_1.PDF";
 
+            //Set the Page count for Siteflow
             item.components[0].attributes.Pages = GetPageCount(originalOrderInputPath + "/" + sourceOrderId + "_" + orderbarcode + "_2.PDF");
             item.components[1].attributes.Pages = GetPageCount(originalOrderInputPath + "/" + sourceOrderId + "_" + orderbarcode + "_1.PDF");
 

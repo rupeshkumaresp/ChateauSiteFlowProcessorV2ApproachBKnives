@@ -64,18 +64,11 @@ namespace SiteFlowHelper
                         var responseContent = await response.Content.ReadAsStringAsync();
 
                         MarkSiteFlowSubmissionSucess(orderId);
-                    }
-                    else
-                    {
-                       // _orderHelper.WriteLog("SiteFlow order submission- failed, Error: " + response.ReasonPhrase, Convert.ToInt64(orderId));
-                    }
+                    }                    
                 }
                 catch (Exception ex)
                 {
-
                     var msg = ex.Message;
-                    //_orderHelper.WriteLog("SiteFlow order submission- failed, Error: " + ex.Message, Convert.ToInt64(orderId));
-
                 }
             }
         }

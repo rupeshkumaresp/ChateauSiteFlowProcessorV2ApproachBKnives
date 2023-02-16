@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace PicsMeOrderHelper.Model
 {
+    /// <summary>
+    /// Object to push to Siteflow
+    /// </summary>
     [Serializable]
     public class SiteflowOrder
     {
