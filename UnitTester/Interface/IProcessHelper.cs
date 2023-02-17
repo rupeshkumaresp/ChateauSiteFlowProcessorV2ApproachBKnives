@@ -12,7 +12,7 @@ namespace PicsMeSiteFlowApp.Interface
         void PushOrdersToSiteFlow(Dictionary<string, string> processingStatus);
         Dictionary<string, string> CreateOrder();
         string SetCustomerName(SiteflowOrder.RootObject jsonObject, string customerName);
-        bool MediaClipFilesDownload(bool hasMediaClipItem, SiteflowOrder.RootObject jsonObject, int pdfCount);
+        bool MediaClipFilesDownload(bool hasMediaClipItem, SiteflowOrder.RootObject jsonObject, int pdfCount, SiteflowOrder.Item itemInProcess);
         void PhotobookProcessing(string sourceOrderId, string originalOrderInputPath, string orderorderId, string orderbarcode, SiteflowOrder.Item item);
         bool ContainsMediaClipItem(SiteflowOrder.RootObject jsonObject);
         bool IsGoodOrder(Dictionary<string, string> processingSummary, string sourceOrderId);

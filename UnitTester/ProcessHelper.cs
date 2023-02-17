@@ -458,7 +458,7 @@ namespace PicsMeSiteFlowApp
                     if (hasMediaClipItem)
                         staticOrder = false;
 
-                    bool success = MediaClipFilesDownload(hasMediaClipItem, jsonObject, pdfCount);
+                    bool success = MediaClipFilesDownload(hasMediaClipItem, jsonObject, pdfCount, item);
 
 
 
@@ -658,7 +658,7 @@ namespace PicsMeSiteFlowApp
         /// <param name="hasMediaClipItem"></param>
         /// <param name="jsonObject"></param>
         /// <param name="pdfCount"></param>
-        public bool MediaClipFilesDownload(bool hasMediaClipItem, SiteflowOrder.RootObject jsonObject, int pdfCount)
+        public bool MediaClipFilesDownload(bool hasMediaClipItem, SiteflowOrder.RootObject jsonObject, int pdfCount, SiteflowOrder.Item itemInProcess)
         {
             bool sucess = true;
 
@@ -666,7 +666,8 @@ namespace PicsMeSiteFlowApp
             {
                 try
                 {
-                    foreach (var item in jsonObject.orderData.items)
+                    //foreach (var item in jsonObject.orderData.items)
+                    var item = itemInProcess;
                     {
                         if (!string.IsNullOrEmpty(item.supplierPartAuxiliaryId))
                         {
