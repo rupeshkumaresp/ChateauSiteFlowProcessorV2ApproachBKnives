@@ -347,6 +347,7 @@ namespace PicsMeSiteFlowApp
                     processingSummary.Add(Path.GetFileNameWithoutExtension(jsonFile.FullName),
                         "Error- Json structure issue - Order failed");
 
+                    File.Copy(jsonFile.FullName.ToString(), ConfigurationManager.AppSettings["ErrorOrderJsonInputPath"] + Path.GetFileName(jsonFile.FullName), true);
 
                     if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName)))
                         File.Delete(_localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
@@ -368,8 +369,11 @@ namespace PicsMeSiteFlowApp
                         File.Delete(_localProcessingPath + "\\ProcessedInput\\" +
                                     Path.GetFileName(jsonFile.FullName));
 
+                    File.Copy(jsonFile.FullName.ToString(), ConfigurationManager.AppSettings["ErrorOrderJsonInputPath"] + Path.GetFileName(jsonFile.FullName), true);
+
                     File.Move(jsonFile.FullName,
                         _localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
+
 
                     processingSummary.Add(sourceOrderId,
                         "Order exists in database and order has already been pushed to siteflow - Order failed");
@@ -384,6 +388,7 @@ namespace PicsMeSiteFlowApp
 
                 if (incompleteAddress)
                 {
+                    File.Copy(jsonFile.FullName.ToString(), ConfigurationManager.AppSettings["ErrorOrderJsonInputPath"] + Path.GetFileName(jsonFile.FullName), true);
                     processingSummary.Add(sourceOrderId, "Error - Incomplete Address - Order failed");
                     continue;
                 }
@@ -416,6 +421,8 @@ namespace PicsMeSiteFlowApp
                             processingSummary[sourceOrderId] += "NULL SKU - Order failed";
                         else
                             processingSummary.Add(sourceOrderId, "NULL SKU - Order failed");
+
+                        File.Copy(jsonFile.FullName.ToString(), ConfigurationManager.AppSettings["ErrorOrderJsonInputPath"] + Path.GetFileName(jsonFile.FullName), true);
 
                         break;
                     }
@@ -468,8 +475,10 @@ namespace PicsMeSiteFlowApp
                             File.Delete(_localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
 
                         File.Copy(jsonFile.FullName.ToString(), ConfigurationManager.AppSettings["OriginalOrderJsonInputPath"] + Path.GetFileName(jsonFile.FullName), true);
+                        File.Copy(jsonFile.FullName.ToString(), ConfigurationManager.AppSettings["ErrorOrderJsonInputPath"] + Path.GetFileName(jsonFile.FullName), true);
 
                         File.Move(jsonFile.FullName.ToString(), _localProcessingPath + "\\ProcessedInput\\" + Path.GetFileName(jsonFile.FullName));
+
 
                         if (processingSummary.ContainsKey(sourceOrderId))
                         {
@@ -502,6 +511,8 @@ namespace PicsMeSiteFlowApp
                                 processingSummary.Add(sourceOrderId + "-" + sourceItemId,
                                     staticPdfPath + pdfName + " not found in static folder - Order failed");
 
+                                File.Copy(jsonFile.FullName.ToString(), ConfigurationManager.AppSettings["ErrorOrderJsonInputPath"] + Path.GetFileName(jsonFile.FullName), true);
+
                                 if (processingSummary.ContainsKey(sourceOrderId))
                                     processingSummary[sourceOrderId] += "Order failed";
                                 else
@@ -523,6 +534,8 @@ namespace PicsMeSiteFlowApp
                             {
                                 processingSummary.Add(sourceOrderId + "-" + sourceItemId,
                                     sourceOrderId + "-" + (pdfCount) + ".PDF" + " PDF not found - Order failed");
+
+                                File.Copy(jsonFile.FullName.ToString(), ConfigurationManager.AppSettings["ErrorOrderJsonInputPath"] + Path.GetFileName(jsonFile.FullName), true);
 
                                 if (processingSummary.ContainsKey(sourceOrderId))
                                 {
@@ -589,7 +602,6 @@ namespace PicsMeSiteFlowApp
 
                 #region Cleanup
                 var fileName = Path.GetFileName(jsonFile.FullName);
-
 
                 if (File.Exists(jsonFile.FullName.ToString()))
                 {
