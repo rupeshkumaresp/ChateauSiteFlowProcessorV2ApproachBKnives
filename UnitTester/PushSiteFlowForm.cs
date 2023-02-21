@@ -32,8 +32,8 @@ namespace PicsMeSiteFlowApp
         {
             var now  = DateTime.Now;
 
-            if (now.Hour >= 17 || now.Hour <= 8)
-                return;
+            //if (now.Hour >= 17 || now.Hour <= 8)
+            //    return;
 
             var processHelper = new ProcessHelper();
 
