@@ -590,12 +590,16 @@ namespace PicsMeSiteFlowApp
                 #region Cleanup
                 var fileName = Path.GetFileName(jsonFile.FullName);
 
-                if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" + fileName))
-                    File.Delete(_localProcessingPath + "\\ProcessedInput\\" + fileName);
 
-                File.Copy(jsonFile.FullName.ToString(), ConfigurationManager.AppSettings["OriginalOrderJsonInputPath"] + fileName, true);
+                if (File.Exists(jsonFile.FullName.ToString()))
+                {
+                    if (File.Exists(_localProcessingPath + "\\ProcessedInput\\" + fileName))
+                        File.Delete(_localProcessingPath + "\\ProcessedInput\\" + fileName);
 
-                File.Move(jsonFile.FullName.ToString(), _localProcessingPath + "\\ProcessedInput\\" + fileName);
+                    File.Copy(jsonFile.FullName.ToString(), ConfigurationManager.AppSettings["OriginalOrderJsonInputPath"] + fileName, true);
+
+                    File.Move(jsonFile.FullName.ToString(), _localProcessingPath + "\\ProcessedInput\\" + fileName);
+                }
 
                 if (!processingSummary.ContainsKey(sourceOrderId))
                     processingSummary.Add(sourceOrderId, "OK");
